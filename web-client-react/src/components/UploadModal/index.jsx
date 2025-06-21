@@ -1,0 +1,583 @@
+import "./index.scss"
+import {
+    Button,
+    Divider,
+    Dropdown,
+    Form,
+    Grid,
+    Header,
+    Icon,
+    Image,
+    Input,
+    Radio,
+    Segment,
+    Step,
+    Table,
+    Transition
+} from "semantic-ui-react"
+import { Modal } from "react-responsive-modal"
+import {
+    addAction,
+    clearForm,
+    setAction,
+    clearChar,
+    setChar,
+    setChars,
+    setImg,
+    setVideo,
+    setVideos
+} from "../../reducers/form"
+import { useCallback, useRef, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { useSelector, useStore, useDispatch } from "react-redux"
+import { useDropzone } from "react-dropzone"
+import { DebounceInput } from "react-debounce-input"
+import { filterTypes } from "../../options/filters"
+import { accept } from "../../options/formUpload"
+import { appendClassName } from "../../utils/general"
+import axios from "axios"
+import MapComponent from "../Map"
+import moment from "moment-timezone"
+import PropTypes from "prop-types"
+
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
+const animation = "fade"
+const duration = 600
+
+const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
+    const navigate = useNavigate()
+    const store = useStore()
+    const state = store.getState()
+    const dispatch = useDispatch()
+    const { location } = state.form
+
+    const inverted = useSelector((state) => state.app.inverted)
+    const action = useSelector((state) => state.form.action)
+    const actions = useSelector((state) => state.form.actions)
+    const img = useSelector((state) => state.form.img)
+    const char = useSelector((state) => state.form.char)
+    const chars = useSelector((state) => state.form.chars)
+    const video = useSelector((state) => state.form.video)
+    const videos = useSelector((state) => state.form.videos)
+
+    const hintRef = useRef(null)
+
+    const [pageNum, setPageNum] = useState(1)
+    const [videoType, setVideoType] = useState(1)
+    const [videoVal, setVideoVal] = useState("")
+    const [videosVisible, setVideosVisible] = useState(false)
+    const [charsVisible, setCharsVisible] = useState(false)
+    const [actionsVisible, setActionsVisible] = useState(false)
+    const [imgFile, setImgFile] = useState("")
+    const [charIsSelf, setCharIsSelf] = useState(false)
+    const [actorName, setActorName] = useState("")
+
+    const imgEmpty = img.path === null
+    const videoEmpty = video.id === null
+    const charEmpty = char.id === null
+    const actionEmpty = action.id === null
+    const answerStepDisabled = imgEmpty || videoEmpty || charEmpty || actionEmpty
+    const submitBtnDisabled = pageNum !== 3
+
+    let placeholderStyle = {}
+    if (!imgEmpty) {
+        placeholderStyle = {
+            backgroundImage: `url(${img.src})`,
+            height: `${img.height / 1.5}px`
+        }
+    }
+
+    const getVideos = (q, type = 5) => {
+        setVideosVisible(false)
+        axios({
+            url: `${apiBaseUrl}videos?q=${q}&type=${type}`
+        }).then((response) => {
+            const { videos } = response.data.data
+            dispatch(setVideos({ videos }))
+            setVideosVisible(true)
+        })
+    }
+
+    const getCharacters = (videoId) => {
+        axios({
+            url: `${apiBaseUrl}chars/${videoId}`
+        }).then((response) => {
+            const { chars } = response.data.data
+            dispatch(setChars({ chars }))
+        })
+    }
+
+    const submitQuiz = (bearer = null) => {
+        let hint = ""
+        if (hintRef.current) {
+            hint = hintRef.current.inputRef.current.value
+        }
+        const formData = new FormData()
+        formData.set("file", imgFile)
+        formData.set("videoId", video.id)
+        formData.set("charId", char.id)
+        formData.set("action", action.value)
+        formData.set("actionId", action.id)
+        formData.set("lat", location.lat)
+        formData.set("lng", location.lng)
+        formData.set("hintOne", hint)
+
+        axios
+            .post(`${apiBaseUrl}quiz/submit`, formData, {
+                headers: {
+                    Authorization: `Bearer ${bearer}`,
+                    "Content-Type": "multipart/form-data",
+                    enctype: "multipart/form-data"
+                }
+            })
+            .then((response) => {
+                const quizId = response.data.quiz
+                navigate(`/${quizId}`)
+                setModalOpen(false)
+                dispatch(clearForm())
+                setPageNum(1)
+                setVideoVal("")
+                setVideosVisible(false)
+                setCharsVisible(false)
+                setActionsVisible(false)
+            })
+            .catch((error) => {
+                console.error(error)
+            })
+    }
+
+    const onDrop = useCallback((files) => {
+        if (files.length !== 1) {
+            return
+        }
+        const file = files[0]
+        setImgFile(file)
+        const reader = new FileReader()
+        reader.onabort = () => console.error("file reading was aborted")
+        reader.onerror = () => console.error("file reading has failed")
+        reader.onload = () => {
+            const img = document.createElement("img")
+            img.src = reader.result
+            img.onload = () => {
+                const data = {
+                    dimensions: {
+                        height: img.height,
+                        width: img.width
+                    },
+                    path: file.path,
+                    src: img.src
+                }
+                dispatch(setImg({ data }))
+            }
+        }
+        reader.readAsDataURL(file)
+    }, [])
+
+    const { getRootProps, getInputProps, open } = useDropzone({
+        accept,
+        maxFiles: 1,
+        onDrop
+    })
+
+    const UploadForm = (
+        <>
+            <div {...getRootProps()}>
+                <input {...getInputProps()} />
+                <Segment inverted={inverted} placeholder style={placeholderStyle}>
+                    {imgEmpty && (
+                        <>
+                            <Header
+                                content="A picture is worth a thousand words..."
+                                inverted
+                                size="large"
+                                textAlign="center"
+                            />
+                            <Button
+                                color={inverted ? "green" : "blue"}
+                                content="Add Picture"
+                                inverted={inverted}
+                            />
+                        </>
+                    )}
+                </Segment>
+            </div>
+            {!imgEmpty && (
+                <>
+                    <div className="uploadAgain">
+                        <span onClick={() => open()}>select another photo</span>
+                    </div>
+                    <Button
+                        color={inverted ? "green" : "black"}
+                        content="Next"
+                        fluid
+                        inverted={inverted}
+                        onClick={() => setPageNum(2)}
+                        size="large"
+                    />
+                </>
+            )}
+        </>
+    )
+
+    const InfoForm = (
+        <Form inverted={inverted} size="large">
+            <Form.Field>
+                <Header className="videoHeader" content="Where is this from?" inverted={inverted} />
+                <div className={`ui left icon input fluid ${inverted ? "inverted" : ""}`}>
+                    <Icon name="film" />
+                    <DebounceInput
+                        debounceTimeout={500}
+                        minLength={1}
+                        onChange={(e) => {
+                            const val = e.target.value
+                            setVideoVal(val)
+                            getVideos(val, videoType)
+                        }}
+                        placeholder="Search movies, TV shows, and music videos"
+                        value={videoVal}
+                    />
+                </div>
+                <div style={{ margin: "1em 0" }}>
+                    {filterTypes.map((filter) => (
+                        <Radio
+                            checked={videoType === filter.value}
+                            key={filter.name}
+                            label={filter.name}
+                            name="videoType"
+                            onChange={(e, { value }) => {
+                                setVideoType(value)
+                                getVideos(videoVal, value)
+                            }}
+                            value={filter.value}
+                        />
+                    ))}
+                </div>
+                {!videoEmpty && (
+                    <Header className="videoItemHeader" inverted={inverted} size="small">
+                        <Image alt={video.title} rounded src={video.img} />
+                        <Header.Content>
+                            {video.title}
+                            <Header.Subheader>{video.year}</Header.Subheader>
+                        </Header.Content>
+                    </Header>
+                )}
+                {/* Video Drop Down */}
+                <Transition
+                    animation={animation}
+                    duration={duration}
+                    unmountOnHide
+                    visible={videosVisible}
+                >
+                    <div>
+                        {videos.length > 0 ? (
+                            <Table celled inverted={inverted} selectable striped>
+                                <Table.Body>
+                                    {videos.map((v) => (
+                                        <Table.Row
+                                            key={v.id}
+                                            onClick={() => {
+                                                const video = {
+                                                    id: v.id,
+                                                    img: v.img,
+                                                    title: v.title,
+                                                    year: v.year
+                                                }
+                                                dispatch(setVideo({ video }))
+                                                dispatch(clearChar())
+                                                getCharacters(v.id)
+                                                setVideosVisible(false)
+                                                setCharsVisible(true)
+                                            }}
+                                        >
+                                            <Table.Cell>
+                                                <Header inverted={inverted} size="small">
+                                                    <Image bordered rounded src={v.img} />
+                                                    <Header.Content>
+                                                        {v.title}
+                                                        <Header.Subheader>
+                                                            {`${v.year} • ${moment(v.releaseDate).fromNow()}`}
+                                                        </Header.Subheader>
+                                                    </Header.Content>
+                                                </Header>
+                                            </Table.Cell>
+                                        </Table.Row>
+                                    ))}
+                                </Table.Body>
+                            </Table>
+                        ) : (
+                            <Segment
+                                basic
+                                className="noResults"
+                                inverted={inverted}
+                                textAlign="center"
+                            >
+                                <Header content="no results" size="small" />
+                            </Segment>
+                        )}
+                    </div>
+                </Transition>
+                {!videoEmpty && chars.length > 0 && (
+                    <Divider horizontal inverted={inverted} section>
+                        <Icon inverted={inverted} name="question" />
+                    </Divider>
+                )}
+            </Form.Field>
+            {/* Characters drop down */}
+            <Form.Field>
+                {chars.length > 0 && (
+                    <Header className="charHeader" inverted={inverted}>
+                        <Header.Content>
+                            Who is in this pic?
+                            <Header.Subheader>
+                                {!charEmpty && (
+                                    <a href="#" onClick={() => setCharsVisible(true)}>
+                                        see full cast
+                                    </a>
+                                )}
+                            </Header.Subheader>
+                        </Header.Content>
+                    </Header>
+                )}
+                <Transition
+                    animation={animation}
+                    duration={duration}
+                    unmountOnHide
+                    visible={!charEmpty}
+                >
+                    <div>
+                        <Segment
+                            className="activeCharSegment"
+                            color={inverted ? "green" : "blue"}
+                            inverted={inverted}
+                            secondary
+                        >
+                            <Header inverted={inverted} size="small">
+                                <Header.Content>
+                                    {char.name}
+                                    <Header.Subheader>{char.actor.name}</Header.Subheader>
+                                </Header.Content>
+                            </Header>
+                        </Segment>
+                    </div>
+                </Transition>
+                <Transition
+                    animation={animation}
+                    duration={duration}
+                    unmountOnHide
+                    visible={charsVisible && chars.length > 0}
+                >
+                    <div>
+                        <Table celled inverted={inverted} selectable striped>
+                            <Table.Body>
+                                {chars.map((c) => {
+                                    const { actor, firstName, lastName } = c
+                                    const charName = `${firstName}${!lastName ? "" : " " + lastName}`
+                                    const actorName = `${actor.firstName}${!actor.lastName ? "" : " " + actor.lastName}`
+                                    return (
+                                        <Table.Row
+                                            key={`${charName}-${c.id}`}
+                                            onClick={() => {
+                                                setCharIsSelf(firstName.toLowerCase() === "self")
+                                                setActorName(actorName)
+                                                const char = {
+                                                    id: c.id,
+                                                    name: charName,
+                                                    actor: {
+                                                        id: actor.id,
+                                                        name: actorName
+                                                    }
+                                                }
+                                                dispatch(setChar({ char }))
+                                                setCharsVisible(false)
+                                                setActionsVisible(true)
+                                            }}
+                                        >
+                                            <Table.Cell>
+                                                <Header inverted={inverted} size="small">
+                                                    {charIsSelf ? (
+                                                        <Header.Content>{actorName}</Header.Content>
+                                                    ) : (
+                                                        <Header.Content>
+                                                            {charName}
+                                                            <Header.Subheader>
+                                                                {actorName}
+                                                            </Header.Subheader>
+                                                        </Header.Content>
+                                                    )}
+                                                </Header>
+                                            </Table.Cell>
+                                        </Table.Row>
+                                    )
+                                })}
+                            </Table.Body>
+                        </Table>
+                    </div>
+                </Transition>
+                {!videoEmpty && !charEmpty && actionsVisible && (
+                    <Divider horizontal inverted={inverted} section>
+                        <Icon inverted={inverted} name="question" />
+                    </Divider>
+                )}
+            </Form.Field>
+            <Form.Field>
+                {actionsVisible && (
+                    <>
+                        <Header
+                            className="actionHeader"
+                            content={`What is ${charIsSelf ? actorName : char.name} doing?`}
+                            inverted={inverted}
+                        />
+                        <Dropdown
+                            allowAdditions
+                            className={inverted ? "inverted" : ""}
+                            defaultUpward
+                            fluid
+                            onAddItem={(e, { value }) => {
+                                const action = {
+                                    id: value,
+                                    key: value,
+                                    name: value,
+                                    text: value,
+                                    value
+                                }
+                                dispatch(addAction({ action }))
+                                dispatch(setAction({ action }))
+                            }}
+                            onChange={(e, { value }) => {
+                                // NOT on keyup. This gets triggered when an item from the dropdown is clicked
+                                const action = actions.find((a) => a.value === value)
+                                if (action === undefined) {
+                                    return
+                                }
+                                dispatch(setAction({ action }))
+                            }}
+                            options={actions}
+                            placeholder="eg: walking his dog, eating pizza, smoking a blunt, etc..."
+                            search
+                            selection
+                            value={action.value}
+                        />
+                    </>
+                )}
+            </Form.Field>
+            <Form.Field>
+                {!videoEmpty && !charEmpty && (
+                    <Button
+                        color={inverted ? "green" : "black"}
+                        content="Next"
+                        disabled={actionEmpty}
+                        fluid
+                        inverted={inverted}
+                        onClick={() => setPageNum(3)}
+                        size="large"
+                    />
+                )}
+            </Form.Field>
+        </Form>
+    )
+
+    const AnswerForm = (
+        <>
+            <Grid columns="equal" inverted={inverted} stackable>
+                <Grid.Row>
+                    <Divider vertical />
+                    <Grid.Column>
+                        <Input
+                            fluid
+                            icon="map marker"
+                            iconPosition="left"
+                            inverted={inverted}
+                            placeholder="Where is this located?"
+                            size="large"
+                            type="text"
+                        />
+                        <MapComponent style={{ marginTop: "0.75em" }} />
+                    </Grid.Column>
+                    <Grid.Column>
+                        <Input
+                            fluid
+                            inverted={inverted}
+                            placeholder="Provide a hint (optional)"
+                            ref={hintRef}
+                            size="large"
+                        />
+                    </Grid.Column>
+                </Grid.Row>
+            </Grid>
+            <Divider inverted={inverted} />
+            {!submitBtnDisabled && (
+                <Button
+                    color={inverted ? "green" : "black"}
+                    content="Submit"
+                    fluid
+                    inverted={inverted}
+                    onClick={() => {
+                        submitQuiz()
+                    }}
+                    size="large"
+                />
+            )}
+        </>
+    )
+
+    return (
+        <Modal
+            classNames={{
+                overlay: appendClassName("submitSceneModalOverlay", inverted),
+                modal: appendClassName("submitSceneModal", inverted)
+            }}
+            onClose={() => setModalOpen(false)}
+            onOpen={() => setModalOpen(true)}
+            open={modalOpen}
+            showCloseIcon={false}
+        >
+            <Step.Group fluid widths="three">
+                <Step
+                    active={pageNum === 1}
+                    className={inverted ? "inverted" : ""}
+                    onClick={() => setPageNum(1)}
+                >
+                    <Icon inverted={inverted} name="picture" />
+                    <Step.Content>
+                        <Step.Title>Picture</Step.Title>
+                        <Step.Description>From a movie, TV show, or music video</Step.Description>
+                    </Step.Content>
+                </Step>
+                <Step
+                    active={pageNum === 2}
+                    className={inverted ? "inverted" : ""}
+                    disabled={pageNum === 1 || imgEmpty}
+                    onClick={() => setPageNum(2)}
+                >
+                    <Icon inverted={inverted} name="info" />
+                    <Step.Content>
+                        <Step.Title>Information</Step.Title>
+                        <Step.Description>What is this from? Who is in it?</Step.Description>
+                    </Step.Content>
+                </Step>
+                <Step
+                    active={pageNum === 3}
+                    className={inverted ? "inverted" : ""}
+                    disabled={pageNum !== 3 || answerStepDisabled}
+                    onClick={() => setPageNum(3)}
+                >
+                    <Icon inverted={inverted} name="world" />
+                    <Step.Content>
+                        <Step.Title>Answer & Hint</Step.Title>
+                        <Step.Description>Provide a hint to help solve</Step.Description>
+                    </Step.Content>
+                </Step>
+            </Step.Group>
+            {pageNum === 1 && <>{UploadForm}</>}
+            {pageNum === 2 && <>{InfoForm}</>}
+            {pageNum === 3 && <>{AnswerForm}</>}
+        </Modal>
+    )
+}
+
+UploadModal.propTypes = {
+    modalOpen: PropTypes.bool,
+    setModalOpen: PropTypes.func
+}
+
+export default UploadModal

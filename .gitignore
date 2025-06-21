@@ -1,0 +1,39 @@
+/.phpunit.cache
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/vendor
+.env
+.env.backup
+.env.production
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+auth.json
+npm-debug.log
+yarn-error.log
+/.fleet
+/.idea
+/.vscode
+
+/web-client-react/node_modules
+/web-client-react/.pnp
+/web-client-react.pnp.js
+
+# testing
+/web-client-react/coverage
+
+# production
+/web-client-react/build
+
+# misc
+/web-client-react/.DS_Store
+/web-client-react/.env.local
+/web-client-react/.env.development.local
+/web-client-react/.env.test.local
+/web-client-react/.env.production.local
+
+/web-client-react/npm-debug.log*
+/web-client-react/yarn-debug.log*

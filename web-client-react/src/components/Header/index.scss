@@ -1,0 +1,159 @@
+@use "sass:color";
+
+@use "../../scss/fonts.scss";
+@use "../../scss/colors.scss";
+
+$logoHeight: 2.5em;
+$logoWidth: 2.5em;
+
+.headerComponent {
+	position: relative;
+
+	.menu.pointing.secondary.headerMenu {
+		height: 65px;
+		margin-bottom: 0;
+
+		.floatedRight {
+			float: right;
+		}
+
+		.ui.container {
+			display: block;
+		}
+
+		.item {
+			display: inline-block;
+
+			&.active, &:active {
+				border: none;
+			}
+		}
+
+		.brandName {
+			float: left;
+
+			@media only screen and (min-width: 320px) and (max-width: 767px) {
+				float: none;
+				text-align: center;
+			}
+
+			img#logo {
+				height: 60px;
+				position: relative;
+				top: 0.25em;
+				width: 225px;
+			}
+		}
+
+		.visible.menu.transition {
+			border-radius: 0.25em !important;
+			left: auto;
+			right: -5em;
+			width: 13em;
+
+			&:last-of-type {
+				border-radius: 0.25em !important;
+			}
+
+			.icon, .flag {
+				float: right;
+				margin-right: 0 !important;
+			}
+		}
+	
+		&.inverted {
+			background-color: transparent;
+			background: colors.$blackBackgroundDark;
+
+			.visible.menu.transition {
+				background: colors.$blackBackgroundNormal;
+				border: colors.$invertedBorder;
+				
+				.item {
+					color: colors.$white !important;
+
+					&:nth-of-type(even) {
+						background: color.adjust(colors.$blackBackgroundNormal, $lightness: 4%, $space: hsl) !important;
+					}
+
+					.icon {
+						color: colors.$terminalGreen;
+					}
+				}
+
+				&::after {
+					background: #333;
+				}
+			}
+
+			.ui.button.green.inverted {
+				color: colors.$white;
+
+				&:hover {
+					background: colors.$green;
+				}
+			}
+		}
+	}
+
+	&.bordered {
+		.menu.pointing.secondary.headerMenu.inverted {
+			border-bottom: colors.$invertedBorder;
+		}
+	}
+
+	.ui.stackable.headerGrid {
+		border-radius: 0 !important;
+		font-family: fonts.$franklin600 !important;
+		margin-bottom: 1em !important;
+
+		.row {
+			.column {
+				background: colors.$whiteBackgroundDark;
+				border-bottom: solid 1px #ddd;
+				cursor: pointer;
+
+				@media only screen and (min-width: 320px) and (max-width: 767px) {
+					padding: 0.75em !important;
+				}
+
+				@media only screen and (min-width: 700px) and (max-width: 1025px) {
+					padding: 0.25em;
+				}
+
+				p {
+					font-size: 0.75em;
+					font-family: fonts.$franklin500 !important;
+				}
+
+				&.active {
+					background: colors.$whiteBackgroundNormal;
+					border-bottom: none;
+					font-family: fonts.$franklin800 !important;
+
+					p {
+						font-family: fonts.$franklin700 !important;
+					}
+				}
+			}
+		}
+
+		&.inverted {
+			.column {
+				background: colors.$blackBackgroundDark;
+				border: colors.$invertedBorder;
+				border-right: none;
+				box-shadow: none !important;
+
+				&.active {
+					background: colors.$blackBackgroundNormal;
+					border-bottom: none;
+				}
+
+				&:first-of-type {
+					border-left: none;
+				}
+			}
+		}
+	}
+}

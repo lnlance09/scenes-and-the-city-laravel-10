@@ -1,0 +1,92 @@
+{
+    "en": {
+        "answer": {
+            "hintOne": "Hint One",
+            "hintTwo": "Hint Two",
+            "or": "Or",
+            "placeholder": "Enter the name of the street",
+            "reveal": "Reveal",
+            "submit": "Submit",
+            "title": "Know the answer?"
+        },
+        "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Weekend"],
+        "footer": {
+            "about": "About",
+            "privacy": "Privacy",
+            "rules": "Rules"
+        },
+        "header": {
+            "history": "History",
+            "leaderboard": "LeaderBoard",
+            "makeAQuiz": "Make a Quiz",
+            "settings": "Settings",
+            "stats": "Stats"
+        },
+        "main": {
+            "seeLastWeek": "see last week",
+            "seeToday": "see today",
+            "weekendOf": "Weekend of"
+        },
+        "months": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    },
+    "es": {
+        "answer": {
+            "hintOne": "Pista Número Uno",
+            "hintTwo": "Pista Número Dos",
+            "or": "o",
+            "placeholder": "Introduzca el nombre de la calle",
+            "reveal": "Revelar",
+            "submit": "Entregar",
+            "title": "¿Sabes la respuesta?"
+        },
+        "days": ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Fin de Semana"],
+        "footer": {
+            "about": "Acerca de",
+            "privacy": "Privacidad",
+            "rules": "Normas"
+        },
+        "header": {
+            "history": "Historia",
+            "leaderboard": "Tabla De Lideres",
+            "makeAQuiz": "Hacer una Prueba",
+            "settings": "Ajustes",
+            "stats": "Estadísticas"
+        },
+        "main": {
+            "seeLastWeek": "ver la semana pasada",
+            "seeToday": "ver hoy",
+            "weekendOf": "Fin de semana de"
+        },
+        "months": ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+    },
+    "cn": {
+        "answer": {
+            "hintOne": "提示一",
+            "hintTwo": "提示二",
+            "or": "或者",
+            "placeholder": "输入街道名称",
+            "reveal": "揭示",
+            "submit": "提交",
+            "title": "知道答案吗"
+        },
+        "days": ["周一", "周二", "周三", "周四", "星期五", "周末"],
+        "footer": {
+            "about": "关于",
+            "privacy": "隐私",
+            "rules": "规则"
+        },
+        "header": {
+            "history": "历史",
+            "leaderboard": "排行榜",
+            "makeAQuiz": "做一个测验",
+            "settings": "设置",
+            "stats": "统计数据"
+        },
+        "main": {
+            "seeLastWeek": "见上周",
+            "seeToday": "今天见",
+            "weekendOf": "周末"
+        },
+        "months": ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"]
+    }
+}

@@ -1,0 +1,40 @@
+@use "../../scss/colors.scss";
+@use "../../scss/fonts.scss";
+
+.footerSegment {
+	.ui.list > .item {
+		cursor: pointer;
+		font-family: fonts.$franklin700 !important;
+	}
+
+	p {
+		font-family: fonts.$franklin500 !important;
+		margin-top: 0.5em !important;
+	}
+
+	&.inverted {
+		background: colors.$blackBackgroundNormal !important;
+
+		p {
+			color: #aaa !important;
+		}
+	}
+}
+
+.footerModal {
+	&.inverted {
+        background: transparent;
+    }
+
+	.ui.header {
+		font-family: fonts.$imperial400 !important;
+	}
+}
+
+.react-responsive-modal-overlay.footerModalOverlay {
+    background: rgba(0, 0, 0, 0.87);
+
+    &.inverted {
+        background: rgba(0, 0, 0, 0.97);
+    }
+}

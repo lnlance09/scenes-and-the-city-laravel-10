@@ -1,0 +1,176 @@
+@use "sass:color";
+
+@use "../../scss/fonts.scss";
+@use "../../scss/colors.scss";
+
+.react-responsive-modal-overlay.submitSceneModalOverlay {
+    background: rgba(0, 0, 0, 0.87);
+
+    &.inverted {
+        background: rgba(0, 0, 0, 0.97);
+    }
+}
+
+.submitSceneModal {
+    overflow-x: hidden;
+
+    &.inverted {
+        background: transparent;
+    }
+
+    .step > .content > .title {
+        font-family: fonts.$franklin700 !important;
+    }
+
+    .step > .content > .description {
+        font-family: fonts.$franklin500 !important;
+    }
+
+    .step.inverted {
+        background: colors.$blackBackgroundDark !important;
+        border: colors.$invertedBorder !important;
+
+        &:not(:last-of-type) {
+            border-right: none !important;
+        }
+
+        .content > .title, .content > .description {
+            color: colors.$white;
+        }
+
+        &::after {
+            background: colors.$blackBackgroundDark !important;
+            border-color: colors.$invertedBorderColor !important;
+        }
+
+        &.active {
+            background: colors.$blackBackgroundNormal !important;
+
+            .icon {
+                color: colors.$white;
+            }
+
+            .content > .title {
+                color: colors.$terminalGreen;
+            }
+
+            &:after {
+                background: colors.$blackBackgroundNormal !important;
+            }
+        }
+
+        &.completed {
+            .icon {
+                color: colors.$white !important;
+            }
+        }
+
+        &.disabled {
+            .content > .title, .content > .description, .icon {
+                color: rgba(215, 215, 215, 0.7) !important;
+            }
+        }
+    }
+
+    .ui.placeholder.segment {
+        background-image: url("../../images/seven-year-itch.jpg");
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover; 
+        height: 450px; /* You must set a specified height */
+        margin-top: 0;
+
+        .header {
+            font-family: fonts.$cheltenham700;
+        }
+
+        .ui.button.inverted {
+            background: colors.$blackBackgroundDark;
+
+            &:hover {
+                background: colors.$terminalGreen;
+            }
+        }
+    }
+
+    .ui.segment.noResults {
+        .header {
+            font-family: fonts.$franklin600 !important;
+        }
+    }
+
+    div.uploadAgain {
+        margin: 0.5em 0.75em !important;
+
+        span {
+            cursor: pointer;
+            font-family: fonts.$imperial400 !important;
+            text-decoration: underline;
+        }
+    }
+
+    .ui.table {
+        > tbody {
+            > tr {
+                > td {
+                    cursor: pointer;
+
+                    .header {
+                        font-family: fonts.$franklin600 !important;
+                    }
+                }
+
+                &.selected {
+                    td {
+                        cursor: default;
+                    }
+                }
+            }
+        }
+
+        &.inverted {
+            &.selected {
+                &:hover {
+                    background: rgb(51, 51, 51) !important;
+                }
+            }
+        }
+    }
+
+    .ui.segment.activeCharSegment > .ui.header {
+        font-family: fonts.$franklin600 !important;
+    }
+
+    .ui.selection.dropdown {
+        font-family: fonts.$franklin600;
+
+        .menu {
+            width: 100%;
+        }
+    }
+
+    .videoItemHeader {
+        margin: 0.5em 0;
+    }
+
+    .actionHeader, .charHeader, .videoHeader, .videoItemHeader {
+        font-family: fonts.$franklin700 !important;
+
+        &.inverted {
+            a {
+                color: colors.$terminalGreen;
+            }
+        }
+    }
+
+    .ui.active.visible.fluid.search.selection.dropdown.inverted {
+        input::placeholder {
+            font-family: fonts.$franklin600 !important;
+        }
+    }
+
+	.ui.radio {
+		font-family: fonts.$franklin600;
+		margin-left: 0.75em;
+	}
+}

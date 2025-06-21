@@ -1,0 +1,203 @@
+@use "./fonts.scss";
+@use "./colors.scss";
+
+body {
+	height: 100vh !important;
+	margin: 0;
+
+	&.scrolling.dimmable.dimmed {
+		overflow-x: scroll !important; // fixes issue with content shifting to the right when the modal opens
+		overflow-y: scroll !important;
+	}
+}
+
+input, textarea {
+	font-family: fonts.$franklin600 !important;
+}
+
+// Semantic UI dropdown psuedo placeholder text
+.ui.dropdown:not(.button) > .default.text {
+	font-family: fonts.$franklin600;
+}
+
+button {
+	font-family: fonts.$franklin700 !important;
+}
+
+.clearfix {
+	clear: both;
+}
+
+.homePage.inverted {
+	background: colors.$blackBackgroundNormal;
+}
+
+.ui.container.mainContainer {
+	padding: 0 0 1.5em 0;
+
+	&.quiz {
+		padding-top: 1em;
+	}
+
+	.ui.header.dateHeader {
+		font-family: fonts.$cheltenham700 !important;
+
+		.sub.header {
+			font-family: fonts.$imperial400 !important;
+
+			.icon {
+				line-height: 1;
+				margin-right: 0.25em;
+				vertical-align: middle;
+
+				&.arrow.left {
+					margin-right: 0.25em;
+				}
+
+				&.arrow.right {
+					margin-left: 0.25em;
+				}
+			}
+
+			.navigatePrev {
+				float: left;
+			}
+
+			.navigateToday {
+				float: right;
+			}
+
+			.navigatePrev, .navigateToday {
+				cursor: pointer;
+
+				&:hover {
+					text-decoration: underline;
+
+					.icon {
+						text-decoration: none;
+					}
+				}
+			}
+		}
+	}
+
+	.ui.card {
+		cursor: pointer;
+		width: 66%;
+	}
+}
+
+.questionContainer {
+	background: colors.$whiteBackgroundDark;
+	padding: 4em 0;
+	width: 100%;
+
+	.cursorGreen {
+		color: colors.$black;
+	}
+
+	.ui.header.questionHeader {
+		font-family: fonts.$cheltenham300 !important;
+	}
+
+	&.inverted {
+		background: colors.$blackBackgroundDark;
+
+		.cursorGreen {
+			color: colors.$terminalGreen;
+		}
+
+		.ui.header.questionHeader {
+			color: colors.$terminalGreen;
+		}
+	}
+}
+
+.hintsSegment, .answersSegment {
+	border-bottom: none !important;
+	padding: 0 !important;
+
+	h2.ui.header {
+		font-size: 2em;
+		font-family: fonts.$cheltenham700 !important;
+		margin-bottom: 0.25em;
+	}
+
+	p {
+		font-size: 1.33em;
+		font-family: fonts.$cheltenham400 !important;
+	}
+}
+
+.hintsSegment {
+	.ui.grid {
+		.column {
+			padding: 4em !important;
+		}
+
+		&.inverted .column {
+			box-shadow: none !important;
+			border-left: colors.$invertedBorder;
+		}
+	}
+
+	&.inverted {
+		background: colors.$blackBackgroundNormal !important;
+
+		.dimmer {
+			border: colors.$invertedBorder;
+		}
+
+		.ui.inverted.button {
+			background: colors.$blackBackgroundDark;
+			color: colors.$white;
+
+			&:hover {
+				background: colors.$green;
+			}
+		}
+	}
+}
+
+.answersSegment {
+	background: colors.$whiteBackgroundDark !important;
+	padding: 5em 0 !important;
+
+	&.inverted {
+		background: colors.$blackBackgroundDark !important;
+	}
+
+	.ui.header {
+		margin-bottom: 0.75em !important;
+
+		.sub.header {
+			font-family: fonts.$imperial400 !important;
+		}
+	}
+}
+
+.mapWrapper {
+	border: solid 1px #ddd;
+
+	&.inverted {
+		border: colors.$invertedBorder;
+	}
+}
+
+.react-responsive-modal-overlay.loginModalOverlay {
+    background: rgba(0, 0, 0, 0.87);
+
+    &.inverted {
+        background: rgba(0, 0, 0, 0.97);
+    }
+}
+
+.loginModal {
+	border-radius: 0.25em;
+    overflow-x: hidden;
+	min-width: 500px;
+
+    &.inverted {
+        background: transparent;
+    }
+}
