@@ -13,6 +13,7 @@ import {
     Icon,
     Image,
     Input,
+    Modal as SemanticModal,
     Segment,
     Transition
 } from "semantic-ui-react"
@@ -28,9 +29,8 @@ import { translateMonth, translateWeekday } from "../utils/translate"
 import axios from "axios"
 import img from "../images/cocktail-uws.png"
 import isAlphanumeric from "validator/lib/isAlphanumeric"
-import paragraphPic from "../images/paragraphs/short-paragraph.png"
 import MapComponent from "../components/Map"
-import moment from "moment-timezone"
+import moment, { duration } from "moment-timezone"
 import PropTypes from "prop-types"
 import Timer from "../components/Timer"
 import * as translations from "../assets/translate.json"
@@ -49,6 +49,7 @@ const HomepageLayout = () => {
     const isAuth = user.id === undefined ? false : true
     console.log("isAuth333", isAuth)
 
+    const [loginModal, toggleLoginModal] = useState(false)
     const [date, setDate] = useState()
     const m = moment(date).tz(nyc)
     const startOfWeek = isSunday(date) ? m.subtract(1, "days").startOf("week") : m.startOf("week")
@@ -96,6 +97,8 @@ const HomepageLayout = () => {
         })
     }
 
+    const isAfterToday = false
+
     return (
         <div className={appendClassName("homePage", inverted)}>
             <HeaderComponent
@@ -103,7 +106,7 @@ const HomepageLayout = () => {
                 isAuth={isAuth}
                 onClickDate={(d) => {
                     setDate(d)
-                    history.push(`/?d=${moment(d).format(dateFormat)}`)
+                    navigate(`/?d=${moment(d).format(dateFormat)}`)
                 }}
                 showDates={!validQuizId}
                 startOfWeek={startOfWeek.add(1, "days").format(dateFormat)}
@@ -113,21 +116,45 @@ const HomepageLayout = () => {
                 goToLastWeek={(d) => {
                     const lastWeek = moment(d).tz(nyc).subtract(7, "days").format(dateFormat)
                     setDate(lastWeek)
-                    history.push(`/?d=${lastWeek}`)
+                    navigate(`/?d=${lastWeek}`)
                 }}
                 goToToday={() => {
                     const today = moment().tz(nyc).format(dateFormat)
                     setDate(today)
-                    history.push(`/?d=${today}`)
+                    navigate(`/?d=${today}`)
                 }}
                 isAuth={isAuth}
                 isWeekend={isWeekend(date)}
                 validQuizId={validQuizId}
             />
-            <QuestionsComponent />
-            <HintsComponent isAuth={isAuth} />
-            <AnswersComponent date={date} isAuth={isAuth} />
+            {isAfterToday && (
+                <>
+                    <QuestionsComponent />
+                    <HintsComponent
+                        callback={() => {
+                            if (isAuth) {
+                                return
+                            }
+                            toggleLoginModal(true)
+                        }}
+                    />
+                    <AnswersComponent date={date} isAuth={isAuth} />
+                </>
+            )}
             <FooterComponent />
+            <Modal
+                classNames={{
+                    overlay: appendClassName("loginModalOverlay simpleModalOverlay", inverted),
+                    modal: appendClassName("loginModal simpleModal", inverted)
+                }}
+                center
+                onClose={() => toggleLoginModal(false)}
+                onOpen={() => toggleLoginModal(true)}
+                open={loginModal}
+                showCloseIcon={false}
+            >
+                <AuthenticationForm size="large" />
+            </Modal>
         </div>
     )
 }
@@ -137,7 +164,6 @@ const ImageComponent = ({
     date = moment().tz(nyc).format(dateFormat),
     goToLastWeek = () => null,
     goToToday = () => null,
-    isAuth = false,
     validQuizId = false
 }) => {
     const user = useSelector((state) => state.app.user)
@@ -191,31 +217,43 @@ const ImageComponent = ({
                         <div className="clearfix"></div>
                     </Header.Subheader>
                 </Header>
-                <Transition animation="slide left" duration={600} visible={true}>
+                <Transition animation="slide left" duration={duration} visible={true}>
                     <div>
-                        <Card centered raised>
-                            <Card.Content>
-                                <Image
-                                    alt="Scenes and the City"
-                                    onClick={() => setModalOpen(true)}
-                                    src={img}
-                                />
-                            </Card.Content>
-                        </Card>
+                        {inverted ? (
+                            <Image
+                                alt="Scenes and the City"
+                                onClick={() => setModalOpen(true)}
+                                onError={() => null}
+                                rounded
+                                src={img}
+                            />
+                        ) : (
+                            <Card centered raised fluid>
+                                <Card.Content>
+                                    <Image
+                                        alt="Scenes and the City"
+                                        fluid
+                                        onClick={() => setModalOpen(true)}
+                                        size="big"
+                                        src={img}
+                                    />
+                                </Card.Content>
+                            </Card>
+                        )}
                     </div>
                 </Transition>
             </Container>
-            <Modal
+            <SemanticModal
                 basic
                 onClose={() => setModalOpen(false)}
                 onOpen={() => setModalOpen(true)}
                 open={modalOpen}
                 size="large"
             >
-                <Modal.Content>
+                <SemanticModal.Content>
                     <Image alt="Scenes and the City" src={img} />
-                </Modal.Content>
-            </Modal>
+                </SemanticModal.Content>
+            </SemanticModal>
         </>
     )
 }
@@ -255,14 +293,13 @@ const QuestionsComponent = () => {
     )
 }
 
-const HintsComponent = ({ isAuth = false }) => {
+const HintsComponent = ({ isAuth = false, callback = () => null }) => {
     const inverted = useSelector((state) => state.app.inverted)
     const language = useSelector((state) => state.app.language)
     const lang = translations[language]
 
-    const [hintOneVisible, setHintOneVisible] = useState(true)
-    const [hintTwoVisible, setHintTwoVisible] = useState(true)
-    const [loginModal, toggleLoginModal] = useState(false)
+    const [hintOneVisible, setHintOneVisible] = useState(false)
+    const [hintTwoVisible, setHintTwoVisible] = useState(false)
 
     const hintBox = (text, hint, visible, callback) => (
         <Grid.Column>
@@ -271,18 +308,29 @@ const HintsComponent = ({ isAuth = false }) => {
                 as={Segment}
                 blurring
                 className="padded very"
-                dimmed={visible}
+                dimmed={!visible}
                 inverted={inverted}
             >
-                <Dimmer active={visible} inverted={inverted}>
+                <Dimmer active={!visible} inverted={inverted}>
                     <Button
                         color={inverted ? "green" : "blue"}
                         content={lang.answer.reveal}
                         inverted={inverted}
-                        onClick={() => callback()}
+                        onClick={callback}
                     />
                 </Dimmer>
-                {visible ? <Image centered fluid src={paragraphPic} /> : <p>{hint}</p>}
+                {visible ? (
+                    <p>{hint}</p>
+                ) : (
+                    <div className="hintPlaceholder">
+                        <Header
+                            content="He's in the mafia. He's in the mafia. He's in the mafia. He's in the mafia.
+                        He's in the mafia. He's in the mafia. He's in the mafia."
+                            inverted={inverted}
+                            size="large"
+                        />
+                    </div>
+                )}
             </Dimmer.Dimmable>
         </Grid.Column>
     )
@@ -293,35 +341,20 @@ const HintsComponent = ({ isAuth = false }) => {
                 <Grid celled="internally" columns="equal" inverted={inverted} stackable>
                     <Grid.Row>
                         {hintBox(lang.answer.hintOne, "", hintOneVisible, (visible) => {
-                            if (!isAuth) {
-                                toggleLoginModal(true)
+                            callback()
+                            if (isAuth) {
+                                setHintOneVisible(!visible)
                             }
-                            setHintOneVisible(!visible)
                         })}
                         {hintBox(lang.answer.hintTwo, "", hintTwoVisible, (visible) => {
-                            if (!isAuth) {
-                                toggleLoginModal(true)
+                            callback()
+                            if (isAuth) {
+                                setHintTwoVisible(!visible)
                             }
-                            setHintTwoVisible(!visible)
                         })}
                     </Grid.Row>
                 </Grid>
             </Segment>
-            <Modal
-                classNames={{
-                    overlay: appendClassName("loginModalOverlay", inverted),
-                    modal: appendClassName("loginModal", inverted)
-                }}
-                center
-                onClose={() => toggleLoginModal(false)}
-                onOpen={() => toggleLoginModal(true)}
-                open={loginModal}
-                showCloseIcon={false}
-            >
-                <Segment fluid inverted={inverted}>
-                    <AuthenticationForm />
-                </Segment>
-            </Modal>
         </>
     )
 }
@@ -357,12 +390,17 @@ const AnswersComponent = ({ date = moment().tz(nyc).format(dateFormat), isAuth =
                     </>
                 )}
                 <MapComponent />
-                <Divider inverted={inverted} />
                 <Button
-                    color={inverted ? "green" : "black"}
+                    color={inverted ? "green" : "yellow"}
                     content={lang.answer.submit}
                     fluid
                     inverted={inverted}
+                    onClick={() => {
+                        if (isAuth) {
+                            // submit answer with api
+                            return
+                        }
+                    }}
                     size="large"
                 />
             </Container>

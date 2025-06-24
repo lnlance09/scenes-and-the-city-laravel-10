@@ -1,0 +1,71 @@
+@use "../../scss/colors.scss";
+@use "../../scss/fonts.scss";
+
+.authComponent {
+    margin: auto;
+    // width: 48%;
+
+    .header.huge {
+        font-family: fonts.$cheltenham700 !important;
+        margin-bottom: 0;
+    }
+
+    p.header {
+        font-family: fonts.$imperial400 !important;
+    }
+
+    @media only screen and (max-width: 1025px) {
+        width: 100%;
+
+        .header.huge {
+            margin-bottom: 0;
+        }
+
+        .registerText {
+            font-size: 16px !important;
+        }
+    }
+
+    .authSegment {
+        border: none !important;
+        margin: 0 auto;
+        padding: 1em 0 0 0;
+
+        .divider {
+            margin-bottom: 16px;
+        }
+
+        .ui.form {
+            .ui.labeled.input {
+                .ui.label {
+                    text-align: center;
+                    width: 75px;
+                }
+            }
+        }
+    }
+
+    .footerText {
+        font-size: 16px !important;
+        font-weight: normal;
+        margin-bottom: 11px;
+        margin-top: 9px;
+
+        .footerLink {
+            border-bottom: solid 1px colors.$blue;
+            cursor: pointer;
+            padding-bottom: 3px;
+        }
+    }
+
+    .forgotText {
+        cursor: pointer;
+        font-size: 14px !important;
+        font-weight: normal !important;
+
+        .icon.arrow {
+            font-size: 14px !important;
+            margin-right: 4px !important;
+        }
+    }
+}

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\Quiz as QuizResource;
 use App\Models\Action;
+use App\Models\Answer;
+use App\Models\Character;
 use App\Models\Quiz;
 use App\Models\Scene;
 use App\Models\ScenePic;
@@ -15,12 +17,12 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
-use Intervention\Image\Decoders\DataUriImageDecoder;
-use Intervention\Image\Decoders\Base64ImageDecoder;
 
 class QuizController extends Controller
 {
     const OFFICIAL_USER_ID = 1;
+
+    private $realQuizId;
 
     /**
      * Display the specified resource.
@@ -54,10 +56,11 @@ class QuizController extends Controller
         ]);
         // $ago = Carbon::now()->subDays(2)->format('Y-m-d h:i:s');
 
-        $quiz = Quiz::where([
-            'created_at' => $date,
-            'user_id' => Self::OFFICIAL_USER_ID
-        ])
+        $quiz = Quiz::where('user_id', Self::OFFICIAL_USER_ID)
+            ->whereBetween('created_at', [
+                Carbon::now()->format(),
+                Carbon::parse('2024-01-01')
+            ])
             ->with(['user', 'scene'])
             ->first();
         if (empty($quiz)) {
@@ -110,6 +113,17 @@ class QuizController extends Controller
         $lng = $request->input('lng');
         $hintOne = $request->input('hintOne');
 
+        // Make sure that the character belongs to the specified video
+        $char = Character::where([
+            'id' => $videoId,
+            'video_id' => $videoId
+        ])->first();
+        if (!$char) {
+            return response([
+                'message' => 'The character is not in that movie'
+            ], 400);
+        }
+
         $scene = Scene::create([
             'video_id' => $videoId,
         ]);
@@ -155,7 +169,84 @@ class QuizController extends Controller
         ], 201);
     }
 
-    public function answer(Request $request) {}
+    private function validateQuiz(Request $request, String $quizId)
+    {
+        $userId = $request->user()->id;
+        $quiz = Quiz::where('quizId', $quizId)->first();
+        if (!$quiz) {
+            return response([
+                'message' => 'The quiz does not exist'
+            ], 400);
+        }
 
-    public function hint(Request $request) {}
+        if ($quiz->user_id == $userId) {
+            return response([
+                'message' => 'You cannot answer your own quiz'
+            ], 400);
+        }
+
+        $this->realQuizId = $quiz->id;
+        return Answer::where([
+            'quiz_id' => $this->realQuizId,
+            'user_id' => $userId
+        ])->first();
+    }
+
+    public function answer(Request $request, String $quizId)
+    {
+        $userId = $request->user()->id;
+        $answer = $this->validateQuiz($request, $quizId);
+
+        $lat = $request->input('lat');
+        $lng = $request->input('lng');
+        $answerText = $request->input('answer');
+
+        if ($answer) {
+            $answer->lat = $lat;
+            $answer->lng = $lng;
+            $answer->answer = $answerText;
+            $answer->save();
+        } else {
+            $answer = Answer::create([
+                'quiz_id' => $this->realQuizId,
+                'user_id' => $userId,
+                'lat' => $lat,
+                'lng' => $lng,
+                'answer' => $answerText
+            ]);
+            $answer->refresh();
+        }
+
+        return response([
+            'message' => 'Success'
+        ], 200);
+    }
+
+    public function hint(Request $request, String $quizId)
+    {
+        $userId = $request->user()->id;
+        $answer = $this->validateQuiz($request, $quizId);
+
+        if (!$answer) {
+            $answer = Answer::create([
+                'quiz_id' => $this->realQuizId,
+                'user_id' => $userId,
+            ]);
+            $answer->refresh();
+        }
+
+        $hintsUsed = $answer->hints_used;
+        if ($hintsUsed > 1) {
+            return response([
+                'message' => 'You have already used up all your hints.'
+            ], 422);
+        }
+
+        $answer->hints_used = $hintsUsed + 1;
+        $answer->save();
+
+        return response([
+            'message' => 'Success'
+        ], 200);
+    }
 }

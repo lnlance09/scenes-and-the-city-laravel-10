@@ -10,8 +10,13 @@ $logoWidth: 2.5em;
 	position: relative;
 
 	.menu.pointing.secondary.headerMenu {
+		background: colors.$blue;
 		height: 65px;
 		margin-bottom: 0;
+
+		&:not(.inverted) {
+			border-bottom: solid 0.2em colors.$yellow;
+		}
 
 		.floatedRight {
 			float: right;
@@ -105,7 +110,6 @@ $logoWidth: 2.5em;
 	.ui.stackable.headerGrid {
 		border-radius: 0 !important;
 		font-family: fonts.$franklin600 !important;
-		margin-bottom: 1em !important;
 
 		.row {
 			.column {
@@ -123,16 +127,16 @@ $logoWidth: 2.5em;
 
 				p {
 					font-size: 0.75em;
-					font-family: fonts.$franklin500 !important;
+					font-family: fonts.$imperial400 !important;
 				}
 
 				&.active {
 					background: colors.$whiteBackgroundNormal;
 					border-bottom: none;
-					font-family: fonts.$franklin800 !important;
+					// font-family: fonts.$franklin800 !important;
 
 					p {
-						font-family: fonts.$franklin700 !important;
+						// font-family: fonts.$franklin700 !important;
 					}
 				}
 			}

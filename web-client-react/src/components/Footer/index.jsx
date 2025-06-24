@@ -19,7 +19,7 @@ const FooterComponent = () => {
         <>
             <Segment className="footerSegment" inverted={inverted} vertical>
                 <Container textAlign="center">
-                    <List horizontal inverted={inverted}>
+                    <List horizontal inverted>
                         {items.map((item) => (
                             <List.Item
                                 key={item}
@@ -32,19 +32,14 @@ const FooterComponent = () => {
                             </List.Item>
                         ))}
                     </List>
-                    <Header
-                        as="p"
-                        content="&copy; 2025 Scenes and the City"
-                        inverted={inverted}
-                        size="tiny"
-                    />
+                    <Header as="p" content="&copy; 2025 Scenes and the City" inverted size="tiny" />
                 </Container>
             </Segment>
             {activeItem && (
                 <Modal
                     classNames={{
-                        overlay: appendClassName("footerModalOverlay", inverted),
-                        modal: appendClassName("footerModal", inverted)
+                        overlay: appendClassName("footerModalOverlay simpleModalOverlay", inverted),
+                        modal: appendClassName("footerModal simpleModal", inverted)
                     }}
                     onClose={() => setModalOpen(false)}
                     onOpen={() => setModalOpen(true)}

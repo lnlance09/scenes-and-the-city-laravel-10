@@ -1,5 +1,5 @@
 import "./index.scss"
-import { Button, Container, Dropdown, Grid, Icon, Menu, Segment } from "semantic-ui-react"
+import { Button, Container, Dropdown, Flag, Grid, Icon, Menu, Segment } from "semantic-ui-react"
 import { useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { setLanguage, toggleInverted } from "../../reducers/app"
@@ -25,7 +25,7 @@ const HeaderComponent = ({ date, onClickDate = () => {}, showDates = true, start
     const weekend = days[lastIndex]
     const sat = moment(startOfWeek, dateFormat).add(5, "days")
     const sun = moment(startOfWeek, dateFormat).add(6, "days")
-    const btnColor = inverted ? "green" : "black"
+    const btnColor = inverted ? "green" : "yellow"
     // console.log("date", date)
     // console.log("start of week", startOfWeek)
     // console.log("date format", dateFormat)
@@ -44,18 +44,6 @@ const HeaderComponent = ({ date, onClickDate = () => {}, showDates = true, start
                         />
                     </div>
                     <div className="floatedRight">
-                        <Menu.Item
-                            onClick={() => {
-                                dispatch(toggleInverted())
-                                localStorage.setItem("inverted", !inverted)
-                            }}
-                        >
-                            <Icon
-                                color={btnColor}
-                                inverted={inverted}
-                                name={inverted ? "sun" : "moon"}
-                            />
-                        </Menu.Item>
                         <Menu.Item>
                             <Dropdown
                                 className="inverted"
@@ -68,9 +56,19 @@ const HeaderComponent = ({ date, onClickDate = () => {}, showDates = true, start
                                 }}
                                 options={languages}
                                 pointing
-                                trigger={
-                                    <Icon color={btnColor} inverted={inverted} name="translate" />
-                                }
+                                trigger={<Flag name={language === "en" ? "us" : language} />}
+                            />
+                        </Menu.Item>
+                        <Menu.Item
+                            onClick={() => {
+                                dispatch(toggleInverted())
+                                localStorage.setItem("inverted", !inverted)
+                            }}
+                        >
+                            <Icon
+                                color={btnColor}
+                                inverted={inverted}
+                                name={inverted ? "sun" : "moon"}
                             />
                         </Menu.Item>
                         <Menu.Item>

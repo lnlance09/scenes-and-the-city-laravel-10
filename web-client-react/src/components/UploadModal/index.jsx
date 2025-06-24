@@ -39,10 +39,11 @@ import axios from "axios"
 import MapComponent from "../Map"
 import moment from "moment-timezone"
 import PropTypes from "prop-types"
+import * as translations from "../../assets/translate.json"
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
 const animation = "fade"
-const duration = 600
+const duration = 400
 
 const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
     const navigate = useNavigate()
@@ -50,6 +51,9 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
     const state = store.getState()
     const dispatch = useDispatch()
     const { location } = state.form
+
+    const language = useSelector((state) => state.app.language)
+    const lang = translations[language]
 
     const inverted = useSelector((state) => state.app.inverted)
     const action = useSelector((state) => state.form.action)
@@ -132,7 +136,6 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
             })
             .then((response) => {
                 const quizId = response.data.quiz
-                navigate(`/${quizId}`)
                 setModalOpen(false)
                 dispatch(clearForm())
                 setPageNum(1)
@@ -140,6 +143,7 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
                 setVideosVisible(false)
                 setCharsVisible(false)
                 setActionsVisible(false)
+                navigate(`/${quizId}`)
             })
             .catch((error) => {
                 console.error(error)
@@ -187,14 +191,14 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
                     {imgEmpty && (
                         <>
                             <Header
-                                content="A picture is worth a thousand words..."
+                                content={lang.form.steps[0].header}
                                 inverted
                                 size="large"
                                 textAlign="center"
                             />
                             <Button
                                 color={inverted ? "green" : "blue"}
-                                content="Add Picture"
+                                content={lang.form.steps[0].addPicture}
                                 inverted={inverted}
                             />
                         </>
@@ -207,7 +211,7 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
                         <span onClick={() => open()}>select another photo</span>
                     </div>
                     <Button
-                        color={inverted ? "green" : "black"}
+                        color={inverted ? "green" : "blue"}
                         content="Next"
                         fluid
                         inverted={inverted}
@@ -222,7 +226,11 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
     const InfoForm = (
         <Form inverted={inverted} size="large">
             <Form.Field>
-                <Header className="videoHeader" content="Where is this from?" inverted={inverted} />
+                <Header
+                    className="videoHeader"
+                    content={lang.form.steps[1].headerOne}
+                    inverted={inverted}
+                />
                 <div className={`ui left icon input fluid ${inverted ? "inverted" : ""}`}>
                     <Icon name="film" />
                     <DebounceInput
@@ -233,7 +241,7 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
                             setVideoVal(val)
                             getVideos(val, videoType)
                         }}
-                        placeholder="Search movies, TV shows, and music videos"
+                        placeholder={lang.form.steps[1].formOnePlaceholder}
                         value={videoVal}
                     />
                 </div>
@@ -311,7 +319,7 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
                                 inverted={inverted}
                                 textAlign="center"
                             >
-                                <Header content="no results" size="small" />
+                                <Header content={lang.form.steps[1].noResults} size="small" />
                             </Segment>
                         )}
                     </div>
@@ -327,11 +335,11 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
                 {chars.length > 0 && (
                     <Header className="charHeader" inverted={inverted}>
                         <Header.Content>
-                            Who is in this pic?
+                            {lang.form.steps[1].headerTwo}
                             <Header.Subheader>
                                 {!charEmpty && (
                                     <a href="#" onClick={() => setCharsVisible(true)}>
-                                        see full cast
+                                        {lang.form.steps[1].seeFullCast}
                                     </a>
                                 )}
                             </Header.Subheader>
@@ -452,7 +460,7 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
                                 dispatch(setAction({ action }))
                             }}
                             options={actions}
-                            placeholder="eg: walking his dog, eating pizza, smoking a blunt, etc..."
+                            placeholder={lang.form.steps[1].formThreePlaceholder}
                             search
                             selection
                             value={action.value}
@@ -463,7 +471,7 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
             <Form.Field>
                 {!videoEmpty && !charEmpty && (
                     <Button
-                        color={inverted ? "green" : "black"}
+                        color={inverted ? "green" : "blue"}
                         content="Next"
                         disabled={actionEmpty}
                         fluid
@@ -487,7 +495,7 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
                             icon="map marker"
                             iconPosition="left"
                             inverted={inverted}
-                            placeholder="Where is this located?"
+                            placeholder={lang.form.steps[2].locationHeader}
                             size="large"
                             type="text"
                         />
@@ -497,7 +505,7 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
                         <Input
                             fluid
                             inverted={inverted}
-                            placeholder="Provide a hint (optional)"
+                            placeholder={lang.form.steps[2].hintHeader}
                             ref={hintRef}
                             size="large"
                         />
@@ -507,7 +515,7 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
             <Divider inverted={inverted} />
             {!submitBtnDisabled && (
                 <Button
-                    color={inverted ? "green" : "black"}
+                    color={inverted ? "green" : "blue"}
                     content="Submit"
                     fluid
                     inverted={inverted}
@@ -523,8 +531,8 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
     return (
         <Modal
             classNames={{
-                overlay: appendClassName("submitSceneModalOverlay", inverted),
-                modal: appendClassName("submitSceneModal", inverted)
+                overlay: appendClassName("submitSceneModalOverlay simpleModalOverlay", inverted),
+                modal: appendClassName("submitSceneModal simpleModal", inverted)
             }}
             onClose={() => setModalOpen(false)}
             onOpen={() => setModalOpen(true)}
@@ -539,8 +547,8 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
                 >
                     <Icon inverted={inverted} name="picture" />
                     <Step.Content>
-                        <Step.Title>Picture</Step.Title>
-                        <Step.Description>From a movie, TV show, or music video</Step.Description>
+                        <Step.Title>{lang.form.steps[0].name}</Step.Title>
+                        <Step.Description>{lang.form.steps[0].description}</Step.Description>
                     </Step.Content>
                 </Step>
                 <Step
@@ -551,8 +559,8 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
                 >
                     <Icon inverted={inverted} name="info" />
                     <Step.Content>
-                        <Step.Title>Information</Step.Title>
-                        <Step.Description>What is this from? Who is in it?</Step.Description>
+                        <Step.Title>{lang.form.steps[1].name}</Step.Title>
+                        <Step.Description>{lang.form.steps[1].description}</Step.Description>
                     </Step.Content>
                 </Step>
                 <Step
@@ -563,8 +571,8 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
                 >
                     <Icon inverted={inverted} name="world" />
                     <Step.Content>
-                        <Step.Title>Answer & Hint</Step.Title>
-                        <Step.Description>Provide a hint to help solve</Step.Description>
+                        <Step.Title>{lang.form.steps[2].name}</Step.Title>
+                        <Step.Description>{lang.form.steps[2].description}</Step.Description>
                     </Step.Content>
                 </Step>
             </Step.Group>

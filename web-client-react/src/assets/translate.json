@@ -10,6 +10,40 @@
             "title": "Know the answer?"
         },
         "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Weekend"],
+        "form": {
+            "steps": [
+                {
+                    "name": "Picture",
+                    "description": "From a movie, TV show, or music video",
+                    "addPicture": "Add Picture",
+                    "header": "A picture is worth a thousand words...",
+                    "buttonText": "Next"
+                },
+                {
+                    "name": "Information",
+                    "description": "What is this from? Who is in it?",
+                    "headerOne": "Where is this from?",
+                    "formOnePlaceholder": "Search movies, TV shows, and music videos",
+                    "headerTwo": "Who is in this pic?",
+                    "seeFullCast": "see full cast",
+                    "headerThree": "What is {name} doing?",
+                    "formThreePlaceholder": "eg: walking his dog, eating pizza, smoking a blunt, etc...",
+                    "noResults": "no results"
+                },
+                {
+                    "name": "Answer & Hint",
+                    "description": "Provide a hint to help solve",
+                    "buttonText": "Submit",
+                    "locationHeader": "Where is this located?",
+                    "hintHeader": "Provide a hint (optional)"
+                }
+            ]
+        },
+        "time": {
+            "hour": "hour",
+            "minute": "minute",
+            "second": "second"
+        },
         "footer": {
             "about": "About",
             "privacy": "Privacy",
@@ -40,6 +74,40 @@
             "title": "¿Sabes la respuesta?"
         },
         "days": ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Fin de Semana"],
+        "form": {
+            "steps": [
+                {
+                    "name": "",
+                    "description": "",
+                    "addPicture": "",
+                    "header": "",
+                    "buttonText": ""
+                },
+                {
+                    "name": "",
+                    "description": "",
+                    "headerOne": "",
+                    "formOnePlaceholder": "",
+                    "headerTwo": "",
+                    "seeFullCast": "",
+                    "headerThree": "",
+                    "formThreePlaceholder": "",
+                    "noResults": ""
+                },
+                {
+                    "name": "",
+                    "description": "",
+                    "buttonText": "",
+                    "locationHeader": "",
+                    "hintHeader": ""
+                }
+            ]
+        },
+        "time": {
+            "hour": "hora",
+            "minute": "minuto",
+            "second": "segundo"
+        },
         "footer": {
             "about": "Acerca de",
             "privacy": "Privacidad",
@@ -70,6 +138,40 @@
             "title": "知道答案吗"
         },
         "days": ["周一", "周二", "周三", "周四", "星期五", "周末"],
+        "form": {
+            "steps": [
+                {
+                    "name": "",
+                    "description": "",
+                    "addPicture": "",
+                    "header": "",
+                    "buttonText": ""
+                },
+                {
+                    "name": "",
+                    "description": "",
+                    "headerOne": "",
+                    "formOnePlaceholder": "",
+                    "headerTwo": "",
+                    "seeFullCast": "",
+                    "headerThree": "",
+                    "formThreePlaceholder": "",
+                    "noResults": ""
+                },
+                {
+                    "name": "",
+                    "description": "",
+                    "buttonText": "",
+                    "locationHeader": "",
+                    "hintHeader": ""
+                }
+            ]
+        },
+        "time": {
+            "hour": "",
+            "minute": "",
+            "second": ""
+        },
         "footer": {
             "about": "关于",
             "privacy": "隐私",

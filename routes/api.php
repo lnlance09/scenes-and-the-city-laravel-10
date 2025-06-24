@@ -28,7 +28,7 @@ Route::get('/chars/{videoId}', [CharacterController::class, 'index']);
 Route::get('/quiz/{quizId}', [QuizController::class, 'show']);
 Route::get('/quiz/date/{date}', [QuizController::class, 'showByDate']);
 Route::post('/quiz/submit', [QuizController::class, 'create']);
-Route::post('/quiz/hint', [QuizController::class, 'hint'])->middleware(['auth:api', 'verified']);
+Route::post('/quiz/hint/{quizId}', [QuizController::class, 'hint'])->middleware(['auth:api', 'verified']);
 Route::post('/quiz/answer', [QuizController::class, 'answer'])->middleware(['auth:api', 'verified']);
 
 Route::get('/users/leaderboard', [UserController::class, 'leaderboard']);

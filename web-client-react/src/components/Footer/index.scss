@@ -2,6 +2,9 @@
 @use "../../scss/fonts.scss";
 
 .footerSegment {
+	background: colors.$blue !important;
+	border-top: solid 0.2em colors.$yellow!important;
+
 	.ui.list > .item {
 		cursor: pointer;
 		font-family: fonts.$franklin700 !important;
@@ -12,8 +15,13 @@
 		margin-top: 0.5em !important;
 	}
 
+	.ui.list .item {
+		color: colors.$white !important;
+	}
+
 	&.inverted {
 		background: colors.$blackBackgroundNormal !important;
+		border-top: colors.$invertedBorder !important;
 
 		p {
 			color: #aaa !important;
@@ -22,19 +30,11 @@
 }
 
 .footerModal {
-	&.inverted {
-        background: transparent;
-    }
+	h2.ui.header {
+		font-family: fonts.$cheltenham700 !important;
+	}
 
-	.ui.header {
+	p.ui.header.small {
 		font-family: fonts.$imperial400 !important;
 	}
-}
-
-.react-responsive-modal-overlay.footerModalOverlay {
-    background: rgba(0, 0, 0, 0.87);
-
-    &.inverted {
-        background: rgba(0, 0, 0, 0.97);
-    }
 }

@@ -1,0 +1,5 @@
+export const PASSWORD_RECOVERY_SENT = "PASSWORD_RECOVERY_SENT"
+export const SET_FORGOT = "SET_FORGOT"
+export const SET_LOGIN = "SET_LOGIN"
+export const SET_REGISTER = "SET_REGISTER"
+export const SET_VERIFY = "SET_VERIFY"

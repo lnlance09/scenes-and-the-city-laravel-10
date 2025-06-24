@@ -5,3 +5,5 @@
 @importGoogleFonts: false;
 @green: #179b69;
 @lightGreen: #21de97;
+@blue: #0E3FA9;
+@yellow: #FFA903;

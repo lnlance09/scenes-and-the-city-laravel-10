@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="Logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496.23 69.54">
+<svg id="Logo" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 496.2 69.5">
   <defs>
     <style>
       .cls-1 {
-        letter-spacing: -.02em;
-      }
-
-      .cls-2 {
-        fill: #2185d0;
-        font-family: TrajanPro-Bold, 'Trajan Pro';
-        font-size: 60px;
-        font-weight: 700;
-      }
-
-      .cls-3 {
         fill: #fff;
         font-family: TrajanPro-Regular, 'Trajan Pro';
         font-size: 21px;
+      }
+
+      .cls-1, .cls-2, .cls-3, .cls-4 {
+        isolation: isolate;
+      }
+
+      .cls-2, .cls-4 {
+        fill: #21de97;
+        font-family: TrajanPro-Bold, 'Trajan Pro';
+        font-size: 60px;
+        font-weight: 700;
       }
 
       .cls-4 {
@@ -24,8 +24,20 @@
       }
     </style>
   </defs>
-  <text class="cls-2" transform="translate(5.09 52.5)"><tspan x="0" y="0">Sc</tspan><tspan class="cls-1" x="77.22" y="0">e</tspan><tspan x="110.58" y="0">nes</tspan></text>
-  <text class="cls-3" transform="translate(241.41 30.98)"><tspan x="0" y="0">AND</tspan></text>
-  <text class="cls-3" transform="translate(245.18 53.76)"><tspan x="0" y="0">THE</tspan></text>
-  <text class="cls-2" transform="translate(303.27 52.5)"><tspan x="0" y="0">Ci</tspan><tspan class="cls-4" x="72.42" y="0">t</tspan><tspan x="110.7" y="0">y</tspan></text>
+  <g class="cls-3">
+    <text class="cls-2" transform="translate(5.1 52.5)"><tspan x="0" y="0">Sc</tspan></text>
+    <text class="cls-4" transform="translate(82.3 52.5)"><tspan x="0" y="0">e</tspan></text>
+    <text class="cls-2" transform="translate(115.7 52.5)"><tspan x="0" y="0">nes</tspan></text>
+  </g>
+  <g class="cls-3">
+    <text class="cls-1" transform="translate(241.4 31)"><tspan x="0" y="0">AND</tspan></text>
+  </g>
+  <g class="cls-3">
+    <text class="cls-1" transform="translate(245.2 53.8)"><tspan x="0" y="0">THE</tspan></text>
+  </g>
+  <g class="cls-3">
+    <text class="cls-2" transform="translate(303.3 52.5)"><tspan x="0" y="0">Ci</tspan></text>
+    <text class="cls-2" transform="translate(375.7 52.5)"><tspan x="0" y="0">t</tspan></text>
+    <text class="cls-2" transform="translate(414 52.5)"><tspan x="0" y="0">y</tspan></text>
+  </g>
 </svg>

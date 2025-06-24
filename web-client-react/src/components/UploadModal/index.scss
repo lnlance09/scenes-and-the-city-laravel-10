@@ -3,14 +3,6 @@
 @use "../../scss/fonts.scss";
 @use "../../scss/colors.scss";
 
-.react-responsive-modal-overlay.submitSceneModalOverlay {
-    background: rgba(0, 0, 0, 0.87);
-
-    &.inverted {
-        background: rgba(0, 0, 0, 0.97);
-    }
-}
-
 .submitSceneModal {
     overflow-x: hidden;
 
