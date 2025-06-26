@@ -1,22 +1,14 @@
 @use "sass:color";
-
 @use "../../scss/fonts.scss";
 @use "../../scss/colors.scss";
-
-$logoHeight: 2.5em;
-$logoWidth: 2.5em;
 
 .headerComponent {
 	position: relative;
 
 	.menu.pointing.secondary.headerMenu {
-		background: colors.$blue;
+		background: colors.$offWhite;
 		height: 65px;
 		margin-bottom: 0;
-
-		&:not(.inverted) {
-			border-bottom: solid 0.2em colors.$yellow;
-		}
 
 		.floatedRight {
 			float: right;
@@ -32,17 +24,34 @@ $logoWidth: 2.5em;
 			&.active, &:active {
 				border: none;
 			}
+
+			@media only screen and (min-width: 320px) and (max-width: 767px) {
+				display: none;
+			}
 		}
 
 		.brandName {
 			float: left;
 
+			.icon {
+				display: none;
+				position: absolute;
+			}
+
 			@media only screen and (min-width: 320px) and (max-width: 767px) {
 				float: none;
 				text-align: center;
+
+				.icon {
+					display: inline;
+					float: right;
+					line-height: 65px;
+					right: 1em;
+				}
 			}
 
 			img#logo {
+				cursor: pointer;
 				height: 60px;
 				position: relative;
 				top: 0.25em;
@@ -117,14 +126,6 @@ $logoWidth: 2.5em;
 				border-bottom: solid 1px #ddd;
 				cursor: pointer;
 
-				@media only screen and (min-width: 320px) and (max-width: 767px) {
-					padding: 0.75em !important;
-				}
-
-				@media only screen and (min-width: 700px) and (max-width: 1025px) {
-					padding: 0.25em;
-				}
-
 				p {
 					font-size: 0.75em;
 					font-family: fonts.$imperial400 !important;
@@ -158,6 +159,19 @@ $logoWidth: 2.5em;
 					border-left: none;
 				}
 			}
+		}
+
+		@media only screen and (min-width: 320px) and (max-width: 767px) {
+			display: none;
+		}
+	}
+
+	.sidebar.menu {
+		font-family: fonts.$cheltenham700;
+		z-index: 99999;
+
+		a.item {
+			text-align: left;
 		}
 	}
 }

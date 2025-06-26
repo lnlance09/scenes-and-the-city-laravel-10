@@ -19,24 +19,22 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/actions', [ActionController::class, 'index']);
+Route::get('/actions', [ActionController::class, 'index']); // 
+Route::get('/videos', [VideoController::class, 'index']); // 
+Route::get('/chars/{videoId}', [CharacterController::class, 'index']); //
 
-Route::get('/videos', [VideoController::class, 'index']);
-
-Route::get('/chars/{videoId}', [CharacterController::class, 'index']);
-
-Route::get('/quiz/{quizId}', [QuizController::class, 'show']);
-Route::get('/quiz/date/{date}', [QuizController::class, 'showByDate']);
-Route::post('/quiz/submit', [QuizController::class, 'create']);
+Route::get('/quiz/{quizId}', [QuizController::class, 'show']); //
+Route::get('/quiz/date', [QuizController::class, 'showByDate']); //
+Route::post('/quiz/submit', [QuizController::class, 'create']); // 
 Route::post('/quiz/hint/{quizId}', [QuizController::class, 'hint'])->middleware(['auth:api', 'verified']);
 Route::post('/quiz/answer', [QuizController::class, 'answer'])->middleware(['auth:api', 'verified']);
+Route::get('/quiz/leaderboard', [QuizController::class, 'leaderboard']);
 
-Route::get('/users/leaderboard', [UserController::class, 'leaderboard']);
 Route::get('/users/changePassword', [UserController::class, 'changePassword'])->middleware(['auth:api', 'verified']);
 Route::get('/users/changeUsername', [UserController::class, 'changeUsername'])->middleware(['auth:api', 'verified']);
 Route::get('/users/checkUsername', [UserController::class, 'checkUsername']);
-Route::post('/users/login', [UserController::class, 'login']);
-Route::post('/users/register', [UserController::class, 'register']);
+Route::post('/users/login', [UserController::class, 'login']); // 
+Route::post('/users/register', [UserController::class, 'register']); // 
 Route::post('/users/forgot', [UserController::class, 'forgot']);
 Route::post('/users/recover', [UserController::class, 'recoverPassword']);
-Route::post('/users/verify', [UserController::class, 'verify'])->middleware('auth:api');
+Route::post('/users/verify', [UserController::class, 'verify'])->middleware('auth:api'); // 

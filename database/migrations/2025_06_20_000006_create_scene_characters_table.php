@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('scene_characters', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('scene_id');
-            $table->unsignedBigInteger('char_id');
+            $table->unsignedBigInteger('character_id');
             $table->timestamp('created_at')->useCurrent();
 
             $table->foreign('scene_id')->references('id')->on('scenes');
-            $table->foreign('char_id')->references('id')->on('characters');
+            $table->foreign('character_id')->references('id')->on('characters');
         });
     }
 

@@ -1,11 +1,22 @@
 import "./index.scss"
-import { Button, Container, Dropdown, Flag, Grid, Icon, Menu, Segment } from "semantic-ui-react"
+import {
+    Button,
+    Container,
+    Dropdown,
+    Flag,
+    Grid,
+    Icon,
+    Menu,
+    Segment,
+    Sidebar
+} from "semantic-ui-react"
+import { useNavigate } from "react-router-dom"
 import { useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { setLanguage, toggleInverted } from "../../reducers/app"
 import { languages } from "../../options/languages"
 import { options } from "../../options/options"
-import { dateFormat, nyc } from "../../utils/date"
+import { dateFormat, isSunday, nyc } from "../../utils/date"
 import moment from "moment-timezone"
 import PropTypes from "prop-types"
 import UploadModal from "../UploadModal/"
@@ -13,24 +24,28 @@ import WordsLogo from "../../images/logo.svg"
 import WordsLogoInverted from "../../images/logo-inverted.svg"
 import * as translations from "../../assets/translate.json"
 
-const HeaderComponent = ({ date, onClickDate = () => {}, showDates = true, startOfWeek }) => {
+const HeaderComponent = ({ date, onClickDate = () => {}, showDates = true }) => {
+    const navigate = useNavigate()
     const dispatch = useDispatch()
+    const isAuth = useSelector((state) => state.app.auth)
     const inverted = useSelector((state) => state.app.inverted)
     const language = useSelector((state) => state.app.language)
     const lang = translations[language]
     const translatedOptions = options(language)
 
+    const [modalOpen, setModalOpen] = useState(false)
+    const [sidebarVisible, setSidebarVisible] = useState(false)
+
     const days = lang.days
     const lastIndex = days.length - 1
     const weekend = days[lastIndex]
-    const sat = moment(startOfWeek, dateFormat).add(5, "days")
-    const sun = moment(startOfWeek, dateFormat).add(6, "days")
-    const btnColor = inverted ? "green" : "yellow"
-    // console.log("date", date)
-    // console.log("start of week", startOfWeek)
-    // console.log("date format", dateFormat)
 
-    const [modalOpen, setModalOpen] = useState(false)
+    const m = moment(date).tz(nyc)
+    const startWeek = (isSunday(date) ? m.subtract(1, "days") : m).startOf("week").add(1, "days")
+    const sat = moment(startWeek, dateFormat).add(5, "days")
+    const sun = moment(startWeek, dateFormat).add(6, "days")
+
+    const btnColor = inverted ? "green" : "black"
 
     return (
         <div className={`headerComponent ${!showDates ? "bordered" : ""}`}>
@@ -40,7 +55,14 @@ const HeaderComponent = ({ date, onClickDate = () => {}, showDates = true, start
                         <img
                             alt="Scenes and the City"
                             id="logo"
+                            onClick={() => navigate("/")}
                             src={inverted ? WordsLogoInverted : WordsLogo}
+                        />
+                        <Icon
+                            color={btnColor}
+                            inverted={inverted}
+                            name="options"
+                            onClick={() => setSidebarVisible(true)}
                         />
                     </div>
                     <div className="floatedRight">
@@ -113,7 +135,7 @@ const HeaderComponent = ({ date, onClickDate = () => {}, showDates = true, start
                             if (i === lastIndex) {
                                 return
                             }
-                            const weekdate = moment(startOfWeek).tz(nyc).add(i, "days")
+                            const weekdate = moment(startWeek).tz(nyc).add(i, "days")
                             return (
                                 <Grid.Column
                                     className={weekdate.isSame(date, "day") ? "active" : ""}
@@ -139,6 +161,36 @@ const HeaderComponent = ({ date, onClickDate = () => {}, showDates = true, start
                     </Grid.Row>
                 </Grid>
             )}
+            <Sidebar
+                as={Menu}
+                direction="bottom"
+                icon="labeled"
+                inverted={inverted}
+                onHide={() => setSidebarVisible(false)}
+                size="massive"
+                style={{ textAlign: "left" }}
+                vertical
+                visible={sidebarVisible}
+            >
+                <Menu.Item as="a" onClick={() => {}}>
+                    Stats
+                </Menu.Item>
+                <Menu.Item as="a" onClick={() => {}}>
+                    Settings
+                </Menu.Item>
+                <Menu.Item as="a" onClick={() => {}}>
+                    History
+                </Menu.Item>
+                <Menu.Item as="a" onClick={() => {}}>
+                    Leader Board
+                </Menu.Item>
+                <Menu.Item as="a" onClick={() => {}}>
+                    Make a Quiz
+                </Menu.Item>
+                <Menu.Item as="a" onClick={() => {}}>
+                    Sign In/Sign Up
+                </Menu.Item>
+            </Sidebar>
             <UploadModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
         </div>
     )
@@ -147,8 +199,7 @@ const HeaderComponent = ({ date, onClickDate = () => {}, showDates = true, start
 HeaderComponent.propTypes = {
     date: PropTypes.string,
     onClickDate: PropTypes.func,
-    showDates: PropTypes.bool,
-    startOfWeek: PropTypes.string
+    showDates: PropTypes.bool
 }
 
 export default HeaderComponent

@@ -18,7 +18,6 @@ class Quiz extends Model
         'scene_id',
         'user_id',
         'quiz_id',
-        'img',
         'hint_one',
         'hint_two',
         'lat',

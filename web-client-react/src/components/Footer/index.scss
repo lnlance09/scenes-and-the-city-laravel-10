@@ -2,8 +2,7 @@
 @use "../../scss/fonts.scss";
 
 .footerSegment {
-	background: colors.$blue !important;
-	border-top: solid 0.2em colors.$yellow!important;
+	background: colors.$offWhite !important;
 
 	.ui.list > .item {
 		cursor: pointer;
@@ -16,7 +15,7 @@
 	}
 
 	.ui.list .item {
-		color: colors.$white !important;
+		// color: colors.$white !important;
 	}
 
 	&.inverted {

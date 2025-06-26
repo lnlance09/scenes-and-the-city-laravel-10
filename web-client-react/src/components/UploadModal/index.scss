@@ -6,10 +6,6 @@
 .submitSceneModal {
     overflow-x: hidden;
 
-    &.inverted {
-        background: transparent;
-    }
-
     .step > .content > .title {
         font-family: fonts.$franklin700 !important;
     }
@@ -165,4 +161,12 @@
 		font-family: fonts.$franklin600;
 		margin-left: 0.75em;
 	}
+
+    &.inverted {
+        background: transparent;
+
+        div.uploadAgain {
+            color: colors.$white;
+        }
+    }
 }

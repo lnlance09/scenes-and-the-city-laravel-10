@@ -9,6 +9,7 @@ class ScenePic extends Model
 {
     use HasFactory;
 
+    protected $table = 'scene_pics';
     public $timestamps = false;
 
     /**

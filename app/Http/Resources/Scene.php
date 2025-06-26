@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\SceneAction as SceneActionResource;
+use App\Http\Resources\SceneCharacter as SceneCharacterResource;
 use App\Http\Resources\SceneCharacterCollection;
 use App\Http\Resources\Video as VideoResource;
 use Illuminate\Http\Request;
@@ -18,7 +20,8 @@ class Scene extends JsonResource
     {
         return [
             'name' => $this->name,
-            'characters' => new SceneCharacterCollection($this->sceneCharacters),
+            'action' => new SceneActionResource($this->action),
+            'characters' => new SceneCharacterCollection($this->characters),
             'video' => new VideoResource($this->video),
         ];
     }

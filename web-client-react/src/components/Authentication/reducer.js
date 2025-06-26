@@ -19,9 +19,6 @@ export const reducer = (state, action) => {
             return {
                 ...state,
                 headerText: "Reset your password",
-                footerLinkText: "Sign In",
-                footerText: "Already have an account?",
-                showFooter: false,
                 forgot: true,
                 login: false,
                 register: false
@@ -30,9 +27,6 @@ export const reducer = (state, action) => {
             return {
                 ...state,
                 headerText: "Sign In",
-                footerLinkText: "Create an account",
-                footerText: "New to this site?",
-                showFooter: true,
                 forgot: false,
                 login: true,
                 register: false,
@@ -42,9 +36,6 @@ export const reducer = (state, action) => {
             return {
                 ...state,
                 headerText: "Sign Up",
-                footerLinkText: "Sign in",
-                footerText: "Already have an account?",
-                showFooter: true,
                 forgot: false,
                 login: false,
                 register: true,
@@ -54,9 +45,6 @@ export const reducer = (state, action) => {
             return {
                 ...state,
                 headerText: "Verify your email",
-                footerLinkText: "",
-                footerText: "",
-                showFooter: false,
                 forgot: false,
                 login: false,
                 register: false,

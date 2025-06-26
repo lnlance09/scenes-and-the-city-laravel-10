@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('character_pics', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('char_id');
+            $table->unsignedBigInteger('character_id');
             $table->string('s3_url');
             $table->timestamp('created_at')->useCurrent();
 
-            $table->foreign('char_id')->references('id')->on('characters');
+            $table->foreign('character_id')->references('id')->on('characters');
         });
     }
 

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Video;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,8 @@ class SceneFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'video_id' => Video::inRandomOrder()->first()?->id,
+            'name' => fake()->sentence(1)
         ];
     }
 }

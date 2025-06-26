@@ -19,7 +19,7 @@ const FooterComponent = () => {
         <>
             <Segment className="footerSegment" inverted={inverted} vertical>
                 <Container textAlign="center">
-                    <List horizontal inverted>
+                    <List horizontal inverted={inverted}>
                         {items.map((item) => (
                             <List.Item
                                 key={item}
@@ -32,7 +32,12 @@ const FooterComponent = () => {
                             </List.Item>
                         ))}
                     </List>
-                    <Header as="p" content="&copy; 2025 Scenes and the City" inverted size="tiny" />
+                    <Header
+                        as="p"
+                        content="&copy; 2025 Scenes and the City"
+                        inverted={inverted}
+                        size="tiny"
+                    />
                 </Container>
             </Segment>
             {activeItem && (

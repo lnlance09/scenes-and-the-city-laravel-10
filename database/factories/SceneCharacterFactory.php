@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Character;
+use App\Models\Scene;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +19,8 @@ class SceneCharacterFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'scene_id' => Scene::inRandomOrder()->first()?->id,
+            'character_id' => Character::inRandomOrder()->first()?->id,
         ];
     }
 }

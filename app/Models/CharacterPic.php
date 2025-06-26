@@ -9,13 +9,15 @@ class CharacterPic extends Model
 {
     use HasFactory;
 
+    protected $table = 'character_pics';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'char_id',
+        'character_id',
         's3_url',
     ];
 
@@ -33,8 +35,8 @@ class CharacterPic extends Model
      */
     protected $casts = [];
 
-    public function char()
+    public function character()
     {
-        return $this->hasOne(Character::class);
+        return $this->hasOne(Character::class, 'id', 'character_id');
     }
 }

@@ -73,7 +73,6 @@ class UserController extends Controller
                 'available' => true
             ]);
         }
-
         $request->validate([
             'username' => 'bail|required|max:20|unique:users,username|alpha_dash'
         ]);
@@ -96,19 +95,13 @@ class UserController extends Controller
         ]);
         $user = User::where([
             'email' => $request->input('email'),
-            'password' => $request->input('password')
+            'password' => sha1($request->input('password'))
         ])->first();
-
         if (!$user) {
             return response([
                 'message' => 'Incorrect password'
             ], 401);
         }
-
-        $user->api_token = Str::random(60);
-        $user->save();
-        $user->refresh();
-
         return response()->json([
             'bearer' => $user->api_token,
             'user' => new UserResource($user),
@@ -145,27 +138,29 @@ class UserController extends Controller
         }
 
         $user = User::create([
-            'api_token' => Str::random(60),
-            'email' => $email,
-            'password' => $password,
-            'remember_token' => Str::random(10),
             'username' => $username,
-            'verification_code' => mt_rand(1000, 9999)
+            'email' => $email,
+            'password' => sha1($password),
+            'remember_token' => Str::random(10),
+            'verification_code' => mt_rand(1000, 9999),
+            'api_token' => bin2hex(random_bytes(32)),
         ]);
         $user->refresh();
 
+        /*
         try {
             Mail::to($email)->send(new VerificationCode($user));
         } catch (\Exception $e) {
+            Log::error($e);
             return response([
                 'message' => 'Error sending confirmation email'
             ], 401);
         }
+        */
 
         return response()->json([
             'bearer' => $user->api_token,
-            'user' => new UserResource($user),
-            'verify' => true
+            'user' => new UserResource($user)
         ]);
     }
 
@@ -182,8 +177,7 @@ class UserController extends Controller
         ]);
         $user = $request->user();
         $code = $request->input('code');
-
-        if ($user->verification_code !== $code) {
+        if ($user->verification_code != $code) {
             return response([
                 'message' => 'That code is incorrect'
             ], 401);

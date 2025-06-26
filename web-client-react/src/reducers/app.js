@@ -5,17 +5,31 @@ const appSlice = createSlice({
     name: "app",
     initialState: initialAppState,
     reducers: {
-        logout: (state, action) => {},
-        setUserData: (state, action) => {},
-        toggleInverted: (state) => {
-            state.inverted = !state.inverted
+        logout: (state) => {
+            state.auth = false
+            state.bearer = null
+            state.user = {}
+            state.verify = false
         },
         setLanguage: (state, action) => {
             state.language = action.payload.language
         },
-        verifyEmail: (state, action) => {}
+        setNeedToVerify: (state) => {
+            state.verify = true
+        },
+        toggleInverted: (state) => {
+            state.inverted = !state.inverted
+        },
+        verifyEmail: (state) => {
+            state.verify = false
+        },
+        setUserData: (state, action) => {
+            state.auth = true
+            state.user = action.payload.data
+        }
     }
 })
 
-export const { logout, setUserData, toggleInverted, setLanguage, verifyEmail } = appSlice.actions
+export const { logout, setUserData, toggleInverted, setLanguage, setNeedToVerify, verifyEmail } =
+    appSlice.actions
 export default appSlice.reducer

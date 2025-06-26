@@ -1,5 +1,22 @@
 {
     "en": {
+        "auth": {
+            "emailOrUsername": "Email or Username",
+            "password": "Password",
+            "signIn": "Sign In",
+            "newToThis": "New to this app?",
+            "signUp": "Sign Up",
+            "forgotPassword": "Forgot password?",
+            "username": "Username",
+            "regsiterBtn": "Create an account",
+            "alreadyAccount": "Already have an account?",
+            "enterYourEmail": "Enter your email",
+            "sendInstructions": "Send Instructions",
+            "backToLogin": "Back to login",
+            "emailSentToYou": "An email has been sent to you",
+            "verificationCode": "Verification code",
+            "verify": "Verify"
+        },
         "answer": {
             "hintOne": "Hint One",
             "hintTwo": "Hint Two",
@@ -64,6 +81,23 @@
         "months": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
     },
     "es": {
+        "auth": {
+            "emailOrUsername": "",
+            "password": "",
+            "signIn": "",
+            "newToThis": "",
+            "signUp": "",
+            "forgotPassword": "",
+            "username": "",
+            "regsiterBtn": "",
+            "alreadyAccount": "",
+            "enterYourEmail": "",
+            "sendInstructions": "",
+            "backToLogin": "",
+            "emailSentToYou": "",
+            "verificationCode": "",
+            "verify": ""
+        },
         "answer": {
             "hintOne": "Pista Número Uno",
             "hintTwo": "Pista Número Dos",
@@ -128,6 +162,23 @@
         "months": ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
     },
     "cn": {
+        "auth": {
+            "emailOrUsername": "",
+            "password": "",
+            "signIn": "",
+            "newToThis": "",
+            "signUp": "",
+            "forgotPassword": "",
+            "username": "",
+            "regsiterBtn": "",
+            "alreadyAccount": "",
+            "enterYourEmail": "",
+            "sendInstructions": "",
+            "backToLogin": "",
+            "emailSentToYou": "",
+            "verificationCode": "",
+            "verify": ""
+        },
         "answer": {
             "hintOne": "提示一",
             "hintTwo": "提示二",

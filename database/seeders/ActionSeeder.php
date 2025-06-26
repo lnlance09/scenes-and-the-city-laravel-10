@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Action;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -13,7 +14,8 @@ class ActionSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::unprepared(file_get_contents(__DIR__ . '/imports/coins.sql'));
-        return;
+        Action::factory()
+            ->count(20)
+            ->create();
     }
 }

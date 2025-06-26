@@ -2,8 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Http\Resources\Scene as SceneResource;
-use App\Http\Resources\User as UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -16,11 +14,20 @@ class Quiz extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $scene = $this->scene;
+        $video = $scene->video;
+        $action = $scene->action;
+        $character = $scene->characters[0]->character;
+        $charName = "{$character->first_name} {$character->last_name}";
+        $year = $video->year;
+        $actionName = $action->action->name;
+        $text = "It's {$year} and {$charName} is seen here {$actionName}";
+
         return [
-            'img' => $this->img,
-            'createdAt' => $this->created_at,
-            'scene' => new SceneResource($this->scene),
-            'user' => new UserResource($this->user),
+            'quizId' => $this->quiz_id,
+            'username' => $this->user->username,
+            'text' => $text,
+            'createdAt' => $this->created_at
         ];
     }
 }

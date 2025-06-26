@@ -36,6 +36,7 @@ import { filterTypes } from "../../options/filters"
 import { accept } from "../../options/formUpload"
 import { appendClassName } from "../../utils/general"
 import axios from "axios"
+import AuthenticationForm from "../Authentication"
 import MapComponent from "../Map"
 import moment from "moment-timezone"
 import PropTypes from "prop-types"
@@ -120,11 +121,17 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
         formData.set("file", imgFile)
         formData.set("videoId", video.id)
         formData.set("charId", char.id)
-        formData.set("action", action.value)
-        formData.set("actionId", action.id)
         formData.set("lat", location.lat)
         formData.set("lng", location.lng)
         formData.set("hintOne", hint)
+
+        if (action.id !== 0) {
+            formData.set("actionId", action.id)
+        }
+
+        if (action.value !== null) {
+            formData.set("action", action.value)
+        }
 
         axios
             .post(`${apiBaseUrl}quiz/submit`, formData, {
@@ -440,9 +447,10 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
                             className={inverted ? "inverted" : ""}
                             defaultUpward
                             fluid
+                            maxLength={20} // Need to find out how to limit to 20
                             onAddItem={(e, { value }) => {
                                 const action = {
-                                    id: value,
+                                    id: 0,
                                     key: value,
                                     name: value,
                                     text: value,
@@ -457,13 +465,23 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
                                 if (action === undefined) {
                                     return
                                 }
-                                dispatch(setAction({ action }))
+                                dispatch(
+                                    setAction({
+                                        action: {
+                                            id: action.id,
+                                            key: null,
+                                            name: null,
+                                            text: null,
+                                            value: null
+                                        }
+                                    })
+                                )
                             }}
                             options={actions}
                             placeholder={lang.form.steps[1].formThreePlaceholder}
                             search
                             selection
-                            value={action.value}
+                            value={action.id === 0 ? action.value : action.id}
                         />
                     </>
                 )}

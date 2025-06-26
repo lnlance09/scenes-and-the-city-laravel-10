@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Scene;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +19,9 @@ class ScenePicFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'scene_id' => Scene::inRandomOrder()->first()?->id,
+            'user_id' => User::inRandomOrder()->first()?->id,
+            's3_url' => ''
         ];
     }
 }

@@ -28,24 +28,25 @@ const formSlice = createSlice({
         setChars: (state, action) => {
             state.chars = [...action.payload.chars]
         },
-        addAction: (state, action) => {
-            state.actions = [...state.actions, action.payload.action]
-        },
         clearChar: (state) => {
             state.char = defaultChar
         },
+        setActions: (state, action) => {
+            // Used on home page only once
+            state.actions = action.payload.actions
+        },
         setAction: (state, action) => {
-            const { key, name, text, value } = action.payload.action
+            const { id, key, name, text, value } = action.payload.action
             state.action = {
-                id: 0,
+                id,
                 key,
                 name,
                 text,
                 value
             }
         },
-        setActions: (state, action) => {
-            state.actions = action.payload.actions
+        addAction: (state, action) => {
+            state.actions = [...state.actions, action.payload.action]
         },
         setLocation: (state, action) => {
             state.location = action.payload.location

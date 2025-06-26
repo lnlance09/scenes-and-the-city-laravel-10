@@ -16,7 +16,6 @@ return new class extends Migration
             $table->unsignedBigInteger('scene_id');
             $table->unsignedBigInteger('user_id');
             $table->string('quiz_id')->unique();
-            $table->string('img');
             $table->string('hint_one');
             $table->string('hint_two');
             $table->decimal('lat', 16, 8);

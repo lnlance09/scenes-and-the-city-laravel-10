@@ -1,29 +1,8 @@
 export const defaultQuiz = {
-    id: null,
-    answer: null,
-    haveAnswered: false,
-    hintOne: null,
-    hineTwo: null,
-    scene: {
-        name: null,
-        action: {
-            name: null
-        },
-        char: {
-            name: null,
-            actor: {
-                name: null
-            }
-        },
-        video: {
-            img: null,
-            title: null,
-            year: null
-        }
-    },
-    user: {
-        username: null
-    }
+    createdAt: null,
+    quizId: null,
+    text: null,
+    username: null
 }
 
 export const initialHomeState = {

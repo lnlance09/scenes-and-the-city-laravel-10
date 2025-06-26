@@ -9,6 +9,7 @@ class SceneCharacter extends Model
 {
     use HasFactory;
 
+    protected $table = 'scene_characters';
     public $timestamps = false;
 
     /**
@@ -18,7 +19,7 @@ class SceneCharacter extends Model
      */
     protected $fillable = [
         'scene_id',
-        'char_id',
+        'character_id',
     ];
 
     /**
@@ -42,6 +43,6 @@ class SceneCharacter extends Model
 
     public function character()
     {
-        return $this->hasOne(Character::class, 'id', 'char_id');
+        return $this->hasOne(Character::class, 'id', 'character_id');
     }
 }

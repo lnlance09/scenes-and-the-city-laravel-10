@@ -9,6 +9,7 @@ class SceneAction extends Model
 {
     use HasFactory;
 
+    protected $table = 'scene_actions';
     public $timestamps = false;
 
     /**
@@ -37,11 +38,11 @@ class SceneAction extends Model
 
     public function scene()
     {
-        return $this->hasOne(Scene::class);
+        return $this->hasOne(Scene::class, 'id', 'scene_id');
     }
 
     public function action()
     {
-        return $this->hasOne(Action::class);
+        return $this->hasOne(Action::class, 'id', 'action_id');
     }
 }

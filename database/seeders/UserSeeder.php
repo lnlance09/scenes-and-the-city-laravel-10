@@ -2,18 +2,22 @@
 
 namespace Database\Seeders;
 
-use App\Models\SceneCharacter;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
-class SceneCharacterSeeder extends Seeder
+class UserSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        SceneCharacter::factory()
+        User::factory()
+            ->count(10)
+            ->create();
+
+        User::factory()
+            ->unverified()
             ->count(10)
             ->create();
     }

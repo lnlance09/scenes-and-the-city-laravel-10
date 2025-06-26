@@ -12,7 +12,7 @@ root.render(
         <ThemeProvider>
             <Routes>
                 <Route path="/" exact element={<HomePageLayout />} />
-                <Route path="/:quizId" exact element={<HomePageLayout />} />
+                <Route path="/:slug" exact element={<HomePageLayout />} />
             </Routes>
         </ThemeProvider>
     </BrowserRouter>

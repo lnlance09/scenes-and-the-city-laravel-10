@@ -35,7 +35,12 @@ class Scene extends Model
      */
     protected $casts = [];
 
-    public function sceneCharacters()
+    public function action()
+    {
+        return $this->hasOne(SceneAction::class, 'scene_id', 'id');
+    }
+
+    public function characters()
     {
         return $this->hasMany(SceneCharacter::class, 'scene_id', 'id');
     }

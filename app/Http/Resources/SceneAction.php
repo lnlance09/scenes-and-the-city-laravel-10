@@ -2,12 +2,12 @@
 
 namespace App\Http\Resources;
 
-use App\Http\Resources\Character as CharacterResource;
+use App\Http\Resources\Action as ActionResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class SceneCharacter extends JsonResource
+class SceneAction extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,7 +17,7 @@ class SceneCharacter extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'character' => new CharacterResource($this->character),
+            'action' => new ActionResource($this->action),
         ];
     }
 }

@@ -154,9 +154,9 @@
 														color: #ffffff;
 														vertical-align: text-top;
 													"
-													onclick="location.href='https://preditc.com/'"
+													onclick="location.href='https://scenesandthecity.nyc/'"
 												>
-													Preditc
+													Scenes and the City
 												</h1>
 					  						</td>
 										</tr>
@@ -197,7 +197,7 @@
 													color: #333333;
 												"
 											>
-												Hi {{ $user->name }},
+												Hi {{ $user->username }},
 											</p>
 											<p
 												style="
@@ -231,7 +231,7 @@
 													color: #aaa;
 												"
 											>
-												The Preditc Team
+												Scenes and the City
 											</p>
 										</td>
 									</tr>
