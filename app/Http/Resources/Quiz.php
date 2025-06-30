@@ -25,6 +25,7 @@ class Quiz extends JsonResource
 
         return [
             'quizId' => $this->quiz_id,
+            'img' => env('AWS_URL', 'https://blather-new.s3.us-west-2.amazonaws.com/') . $scene->pics[0]->s3_url,
             'username' => $this->user->username,
             'text' => $text,
             'createdAt' => $this->created_at

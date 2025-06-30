@@ -6,21 +6,16 @@
 
 	.ui.list > .item {
 		cursor: pointer;
-		font-family: fonts.$franklin700 !important;
+		font-family: fonts.$cheltenham700 !important;
 	}
 
 	p {
-		font-family: fonts.$franklin500 !important;
+		font-family: fonts.$imperial400 !important;
 		margin-top: 0.5em !important;
-	}
-
-	.ui.list .item {
-		// color: colors.$white !important;
 	}
 
 	&.inverted {
 		background: colors.$blackBackgroundNormal !important;
-		border-top: colors.$invertedBorder !important;
 
 		p {
 			color: #aaa !important;

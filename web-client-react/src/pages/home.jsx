@@ -4,7 +4,6 @@ import HeaderComponent from "../components/Header"
 import { Modal } from "react-responsive-modal"
 import {
     Button,
-    Card,
     Container,
     Dimmer,
     Grid,
@@ -20,7 +19,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { setActions } from "../reducers/form"
-import { setQuiz } from "../reducers/home"
+import { clearQuiz, setAnswer, setQuiz } from "../reducers/home"
 import { Typewriter } from "react-simple-typewriter"
 import { dateFormat, isSunday, isWeekend, nyc } from "../utils/date"
 import { translateMonth, translateWeekday } from "../utils/translate"
@@ -28,11 +27,11 @@ import { toast, ToastContainer } from "react-toastify"
 import { toastConfig } from "../options/toast"
 import axios from "axios"
 import classNames from "classnames"
-import img from "../images/cocktail-uws.png"
 import isAlphanumeric from "validator/lib/isAlphanumeric"
 import MapComponent from "../components/Map"
-import moment, { duration } from "moment-timezone"
-import NotFoundImg from "../images/not-found.svg"
+import moment from "moment-timezone"
+import NotFoundSvg from "../images/not-found.svg"
+import NotFoundSvgInverted from "../images/not-found-inverted.svg"
 import PropTypes from "prop-types"
 import Timer from "../components/Timer"
 import * as translations from "../assets/translate.json"
@@ -43,6 +42,7 @@ const defaultDate = moment().tz(nyc).format(dateFormat)
 const timeout = (delay) => {
     return new Promise((res) => setTimeout(res, delay))
 }
+const duration = 400
 
 const HomepageLayout = () => {
     const navigate = useNavigate()
@@ -70,33 +70,55 @@ const HomepageLayout = () => {
             getQuiz(`/${quizId}`)
             return
         }
+
         if (validDate) {
-            getQuiz(`/date?date=${slug}`)
+            if (!isAfterToday(slug)) {
+                getQuiz(`/show/date?date=${slug}`)
+                return
+            }
             setDate(slug)
+            setLoading(false)
+            setQuiz404(true)
             return
         }
         navigate(`/${defaultDate}`)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [slug])
 
-    const getQuiz = (url) => {
+    const isAfterToday = (date) => moment(date, dateFormat).isAfter(moment().tz(nyc))
+    const isInFuture = isAfterToday(date)
+
+    const getQuiz = async (url) => {
         setLoading(true)
-        axios({
+        await axios({
             url: `${apiBaseUrl}quiz${url}`
         })
-            .then(async (response) => {
+            .then((response) => {
                 const quiz = response.data.data
                 setQuiz404(false)
-                dispatch(setQuiz({ quiz }))
                 setDate(quiz.createdAt)
-                await timeout(800)
-                setLoading(false)
+                dispatch(setQuiz({ quiz }))
+
+                if (isAuth) {
+                    getAnswer(quiz.quizId)
+                }
             })
-            .catch(async (error) => {
+            .catch(() => {
                 setQuiz404(true)
-                await timeout(800)
-                setLoading(false)
-                console.error("error getting quiz", error)
+                dispatch(clearQuiz())
+                toast.error("Error fetching quiz", toastConfig)
+            })
+        await timeout(700)
+        setLoading(false)
+    }
+
+    const getAnswer = (quizId) => {
+        axios({
+            url: `${apiBaseUrl}quiz/answer/${quizId}`
+        })
+            .then((response) => {})
+            .catch(() => {
+                console.error("Error fetching answer")
             })
     }
 
@@ -108,8 +130,6 @@ const HomepageLayout = () => {
             dispatch(setActions({ actions }))
         })
     }
-
-    const isAfterToday = moment(date, dateFormat).isAfter(moment().tz(nyc))
 
     const homePageClass = classNames({
         homePage: true,
@@ -125,9 +145,6 @@ const HomepageLayout = () => {
         simpleModalOverlay: true,
         inverted
     })
-    const mainContainerClass = classNames({
-        mainContainer: true
-    })
 
     return (
         <div className={homePageClass}>
@@ -138,57 +155,50 @@ const HomepageLayout = () => {
                     setDate(d)
                     navigate(`/${moment(d).format(dateFormat)}`)
                 }}
+                onClickLogo={() => {
+                    setDate(moment().tz(nyc).format(dateFormat))
+                    navigate(`/`)
+                }}
                 showDates={!validQuizId}
+                toggleLoginModal={() => toggleLoginModal(true)}
             />
-            {validQuizId && quiz404 ? (
-                <Container className={mainContainerClass} text>
-                    <Header
-                        content="That quiz does not exist!"
-                        inverted={inverted}
-                        textAlign="center"
-                    />
-                </Container>
-            ) : (
+
+            <ImageComponent
+                date={date}
+                goToLastWeek={(d) => {
+                    const lastWeek = moment(d).tz(nyc).subtract(7, "days").format(dateFormat)
+                    setDate(lastWeek)
+                    navigate(`/${lastWeek}`)
+                }}
+                goToToday={() => {
+                    const today = moment().tz(nyc).format(dateFormat)
+                    setDate(today)
+                    navigate(`/${today}`)
+                }}
+                isInFuture={isInFuture}
+                isWeekend={isWeekend(date)}
+                loading={loading}
+                quiz404={quiz404}
+                validQuizId={validQuizId}
+            />
+            <QuestionsComponent loading={loading} quiz404={quiz404} />
+            {!isInFuture && !quiz404 && (
                 <>
-                    <ImageComponent
-                        date={date}
-                        goToLastWeek={(d) => {
-                            const lastWeek = moment(d)
-                                .tz(nyc)
-                                .subtract(7, "days")
-                                .format(dateFormat)
-                            setDate(lastWeek)
-                            navigate(`/${lastWeek}`)
+                    <HintsComponent
+                        callback={() => {
+                            toggleLoginModal(true)
                         }}
-                        goToToday={() => {
-                            const today = moment().tz(nyc).format(dateFormat)
-                            setDate(today)
-                            navigate(`/${today}`)
-                        }}
-                        isAfterToday={isAfterToday}
-                        isWeekend={isWeekend(date)}
                         loading={loading}
-                        validQuizId={validQuizId}
                     />
-                    {!isAfterToday && (
-                        <>
-                            <QuestionsComponent loading={loading} />
-                            <HintsComponent
-                                callback={() => {
-                                    toggleLoginModal(true)
-                                }}
-                                loading={loading}
-                            />
-                            <AnswersComponent
-                                callback={() => {
-                                    toggleLoginModal(true)
-                                }}
-                                date={date}
-                            />
-                        </>
-                    )}
+                    <AnswersComponent
+                        callback={() => {
+                            toggleLoginModal(true)
+                        }}
+                        date={date}
+                    />
                 </>
             )}
+
             <FooterComponent />
             <Modal
                 classNames={{
@@ -203,6 +213,7 @@ const HomepageLayout = () => {
             >
                 <AuthenticationForm closeModal={() => toggleLoginModal(false)} size="large" />
             </Modal>
+            <ToastContainer />
         </div>
     )
 }
@@ -211,9 +222,10 @@ const ImageComponent = ({
     date = moment().tz(nyc).format(dateFormat),
     goToLastWeek = () => null,
     goToToday = () => null,
-    isAfterToday = false,
+    isInFuture = false,
     isWeekend = isWeekend(),
     loading = true,
+    quiz404 = false,
     validQuizId = false
 }) => {
     const inverted = useSelector((state) => state.app.inverted)
@@ -246,34 +258,42 @@ const ImageComponent = ({
     const mainContainerClass = classNames({
         mainContainer: true,
         quiz: validQuizId,
-        afterToday: isAfterToday
+        afterToday: isInFuture,
+        quiz404: quiz404
     })
 
-    const quizImg = (
-        <>
-            {loading ? (
-                <Placeholder fluid inverted={inverted}>
-                    <Placeholder.Image style={{ height: "360px" }} />
-                </Placeholder>
-            ) : (
-                <Image
-                    alt="Scenes and the City"
-                    onClick={() => setModalOpen(true)}
-                    // onError={(i) => (i.target.src = defaultImg)}
-                    rounded
-                    style={{ height: "360px" }}
-                    src={img}
-                />
-            )}
-        </>
-    )
+    const quizImg = () => {
+        const notFound = inverted ? NotFoundSvgInverted : NotFoundSvg
+        const img = (
+            <>
+                {loading ? (
+                    <Placeholder fluid inverted={inverted}>
+                        <Placeholder.Image style={{ height: "360px" }} />
+                    </Placeholder>
+                ) : (
+                    <div style={{ textAlign: "center" }}>
+                        <Image
+                            alt="Scenes and the City"
+                            centered
+                            onClick={() => setModalOpen(true)}
+                            onError={(i) => (i.target.src = NotFoundSvg)}
+                            rounded
+                            style={{ height: "360px" }}
+                            src={quiz.img ? quiz.img : notFound}
+                        />
+                    </div>
+                )}
+            </>
+        )
+        return img
+    }
 
     return (
         <>
             <Container className={mainContainerClass} text>
                 <Header className="dateHeader" inverted={inverted} size="large">
                     {title}
-                    {!isAfterToday && !validQuizId && (
+                    {!validQuizId && (
                         <Header.Subheader>
                             <div className="navigatePrev" onClick={() => goToLastWeek(date)}>
                                 <Icon inverted={inverted} name="arrow left circle" size="small" />
@@ -292,35 +312,15 @@ const ImageComponent = ({
                             <div className="clearfix"></div>
                         </Header.Subheader>
                     )}
-                    {validQuizId && (
+                    {validQuizId && quiz.quizId !== null && (
                         <Header.Subheader>
                             By {quiz.username} - {moment(quiz.createdAt).tz(nyc).fromNow()}
                         </Header.Subheader>
                     )}
                 </Header>
-                {isAfterToday ? (
-                    <>
-                        <Image
-                            alt="Not Found"
-                            centered
-                            id="logo"
-                            src={NotFoundImg}
-                            style={{ height: "250px", marginTop: "5em" }}
-                        />
-                    </>
-                ) : (
-                    <Transition animation="slide left" duration={duration} visible={true}>
-                        <div>
-                            {inverted ? (
-                                quizImg
-                            ) : (
-                                <Card centered raised fluid>
-                                    <Card.Content>{quizImg}</Card.Content>
-                                </Card>
-                            )}
-                        </div>
-                    </Transition>
-                )}
+                <Transition animation="slide left" duration={duration} visible={true}>
+                    <div>{quizImg()}</div>
+                </Transition>
             </Container>
             <SemanticModal
                 basic
@@ -330,10 +330,9 @@ const ImageComponent = ({
                 size="large"
             >
                 <SemanticModal.Content>
-                    <Image alt="Scenes and the City" src={img} />
+                    <Image alt="Scenes and the City" fluid src={quiz.img} />
                 </SemanticModal.Content>
             </SemanticModal>
-            <ToastContainer />
         </>
     )
 }
@@ -342,35 +341,38 @@ ImageComponent.propTypes = {
     date: PropTypes.string,
     goToLastWeek: PropTypes.func,
     goToToday: PropTypes.func,
-    isAfterToday: PropTypes.bool,
+    isInFuture: PropTypes.bool,
     isWeekend: PropTypes.bool,
     loading: PropTypes.bool,
+    quiz404: PropTypes.bool,
     validQuizId: PropTypes.bool
 }
 
-const QuestionsComponent = ({ loading = true }) => {
+const QuestionsComponent = ({ loading = true, quiz404 = false }) => {
     const inverted = useSelector((state) => state.app.inverted)
     const questionContainerClass = classNames({
         questionContainer: true,
         inverted
     })
-    const quiz = useSelector((state) => state.home.quiz)
+    const quizText = useSelector((state) => state.home.quiz.text)
+    const errorText = "There was en error fetching this quiz."
 
     return (
         <div className={questionContainerClass}>
-            <Container text>
+            <Container>
                 <Header
                     className="questionHeader"
                     id="questionHeader"
                     inverted={inverted}
                     size="large"
+                    textAlign="center"
                 >
                     {!loading && (
                         <Typewriter
                             cursor
                             cursorBlinking
                             cursorStyle={<span className="cursorGreen">|</span>}
-                            words={[quiz.text]}
+                            words={[quiz404 ? errorText : quizText]}
                         />
                     )}
                 </Header>
@@ -380,7 +382,8 @@ const QuestionsComponent = ({ loading = true }) => {
 }
 
 QuestionsComponent.propTypes = {
-    loading: PropTypes.bool
+    loading: PropTypes.bool,
+    quiz404: PropTypes.bool
 }
 
 const HintsComponent = ({ callback = () => null, loading = true }) => {
@@ -509,7 +512,7 @@ const HintsComponent = ({ callback = () => null, loading = true }) => {
 }
 
 HintsComponent.propTypes = {
-    callback: PropTypes.function,
+    callback: PropTypes.func,
     loading: PropTypes.bool
 }
 
@@ -517,11 +520,50 @@ const AnswersComponent = ({
     callback = () => null,
     date = moment().tz(nyc).format(dateFormat)
 }) => {
+    const dispatch = useDispatch()
     const inverted = useSelector((state) => state.app.inverted)
     const language = useSelector((state) => state.app.language)
     const lang = translations[language]
     const expirationDate = moment(date).tz(nyc).add(1, "days").startOf("day").toDate()
     const canSubmit = moment(date).isSameOrAfter(moment().subtract(1, "days"))
+    const answer = useSelector((state) => state.home.answer)
+
+    const submitAnswer = () => {
+        axios
+            .post(`${apiBaseUrl}quiz/answer`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("bearer")}`
+                }
+            })
+            .then(() => {
+                toast.success("Your answer has been submitted!", toastConfig)
+            })
+            .catch((error) => {
+                let errorMsg = ""
+                const { status } = error.response
+                const { errors } = error.response.data
+                if (status === 401) {
+                    errorMsg = error.response.data.message
+                } else {
+                    if (typeof errors.code !== "undefined") {
+                        errorMsg = errors.code[0]
+                    }
+                }
+                toast.error(errorMsg, toastConfig)
+            })
+    }
+
+    const showLocationDetails = (data) => {
+        dispatch(
+            setAnswer({
+                lat: data.lat,
+                lng: data.lng,
+                hood: data.hood,
+                borough: data.borough,
+                description: data.description
+            })
+        )
+    }
 
     return (
         <Segment className="answersSegment" inverted={inverted} vertical>
@@ -534,7 +576,12 @@ const AnswersComponent = ({
                         </Header.Subheader>
                     </Header>
                 )}
-                <MapComponent />
+                <MapComponent callback={(data) => showLocationDetails(data)} />
+                {answer.hood !== null && (
+                    <>
+                        <Header content={answer.hood} inverted={inverted} />
+                    </>
+                )}
                 {canSubmit && (
                     <Button
                         className="submitQuizBtn"
@@ -542,7 +589,7 @@ const AnswersComponent = ({
                         content={lang.answer.submit}
                         fluid
                         inverted={inverted}
-                        onClick={() => callback()}
+                        onClick={() => submitAnswer()}
                         size="big"
                     />
                 )}

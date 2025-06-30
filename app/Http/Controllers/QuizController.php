@@ -50,13 +50,13 @@ class QuizController extends Controller
     public function showByDate(Request $request)
     {
         $request->validate([
-            'date' => 'required|date_format:M-D-YY',
+            'date' => 'required|date_format:n-j-y',
         ]);
         $date = $request->input('date');
         $quiz = Quiz::where('user_id', Self::OFFICIAL_USER_ID)
             ->whereBetween('created_at', [
-                Carbon::parse($date)->format('Y-m-d') . '00:00:00',
-                Carbon::parse($date)->format('Y-m-d') . '23:59:59'
+                Carbon::createFromFormat('n-j-y', $date)->format('Y-m-d') . ' 00:00:00',
+                Carbon::createFromFormat('n-j-y', $date)->format('Y-m-d') . ' 23:59:59'
             ])
             ->first();
         if (empty($quiz)) {
@@ -235,4 +235,23 @@ class QuizController extends Controller
     }
 
     public function leaderboard(Request $request) {}
+
+    public function getAnswer(Request $request, String $quizId)
+    {
+        $userId = $request->user()->id;
+        $where = [
+            'quiz_id' => $quizId,
+            'user_id' => $userId,
+        ];
+        $answer = Answer::where($where)->first();
+        if ($answer) {
+            return response([
+                'message' => "You haven't submitted an answer"
+            ], 404);
+        }
+
+        return response([
+            'answer' => $answer
+        ]);
+    }
 }

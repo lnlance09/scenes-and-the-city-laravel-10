@@ -1,22 +1,25 @@
 import "./index.scss"
+import { Modal } from "react-responsive-modal"
 import {
     Button,
     Container,
     Dropdown,
     Flag,
     Grid,
+    Header,
     Icon,
     Menu,
     Segment,
     Sidebar
 } from "semantic-ui-react"
 import { useNavigate } from "react-router-dom"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { setLanguage, toggleInverted } from "../../reducers/app"
 import { languages } from "../../options/languages"
 import { options } from "../../options/options"
 import { dateFormat, isSunday, nyc } from "../../utils/date"
+import classNames from "classnames"
 import moment from "moment-timezone"
 import PropTypes from "prop-types"
 import UploadModal from "../UploadModal/"
@@ -24,17 +27,31 @@ import WordsLogo from "../../images/logo.svg"
 import WordsLogoInverted from "../../images/logo-inverted.svg"
 import * as translations from "../../assets/translate.json"
 
-const HeaderComponent = ({ date, onClickDate = () => {}, showDates = true }) => {
+const HeaderComponent = ({
+    date,
+    onClickDate = () => {},
+    onClickLogo = () => {},
+    toggleLoginModal = () => null,
+    showDates = true
+}) => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const isAuth = useSelector((state) => state.app.auth)
     const inverted = useSelector((state) => state.app.inverted)
     const language = useSelector((state) => state.app.language)
     const lang = translations[language]
-    const translatedOptions = options(language)
+    let translatedOptions = options(language)
+    const optCount = translatedOptions.length
 
-    const [modalOpen, setModalOpen] = useState(false)
+    const [uploadModalOpen, setUploadModalOpen] = useState(false)
     const [sidebarVisible, setSidebarVisible] = useState(false)
+
+    const [leaderboardVisible, setLeaderboardVisible] = useState(false)
+    const [statsVisible, setStatsVisible] = useState(false)
+    const [historyVisible, setHistoryVisible] = useState(false)
+    const [settingsVisible, setSettingsVisible] = useState(false)
+
+    const [dropdownVal, setDropdownVal] = useState(translatedOptions[optCount - 1].value)
 
     const days = lang.days
     const lastIndex = days.length - 1
@@ -47,6 +64,96 @@ const HeaderComponent = ({ date, onClickDate = () => {}, showDates = true }) => 
 
     const btnColor = inverted ? "green" : "black"
 
+    useEffect(() => {
+        if (isAuth) {
+            translatedOptions.pop()
+            translatedOptions.push({})
+        }
+    }, [isAuth])
+
+    const modalClass = classNames({
+        loginModal: true,
+        simpleModal: true,
+        inverted
+    })
+    const modalOverlayClass = classNames({
+        loginModalOverlay: true,
+        simpleModalOverlay: true,
+        inverted
+    })
+
+    const settingsModal = () => {
+        return (
+            <Modal
+                classNames={{
+                    overlay: modalOverlayClass,
+                    modal: modalClass
+                }}
+                center
+                onClose={() => setSettingsVisible(false)}
+                onOpen={() => setSettingsVisible(true)}
+                open={settingsVisible}
+                showCloseIcon={false}
+            >
+                <Header content="Settings" inverted={inverted} />
+            </Modal>
+        )
+    }
+
+    const statsModal = () => {
+        return (
+            <Modal
+                classNames={{
+                    overlay: modalOverlayClass,
+                    modal: modalClass
+                }}
+                center
+                onClose={() => setStatsVisible(false)}
+                onOpen={() => setStatsVisible(true)}
+                open={statsVisible}
+                showCloseIcon={false}
+            >
+                <Header content="Stats" inverted={inverted} />
+            </Modal>
+        )
+    }
+
+    const historyModal = () => {
+        return (
+            <Modal
+                classNames={{
+                    overlay: modalOverlayClass,
+                    modal: modalClass
+                }}
+                center
+                onClose={() => setHistoryVisible(false)}
+                onOpen={() => setHistoryVisible(true)}
+                open={historyVisible}
+                showCloseIcon={false}
+            >
+                <Header content="History" inverted={inverted} />
+            </Modal>
+        )
+    }
+
+    const leaderBoardModal = () => {
+        return (
+            <Modal
+                classNames={{
+                    overlay: modalOverlayClass,
+                    modal: modalClass
+                }}
+                center
+                onClose={() => setLeaderboardVisible(false)}
+                onOpen={() => setLeaderboardVisible(true)}
+                open={leaderboardVisible}
+                showCloseIcon={false}
+            >
+                <Header content="LeaderBoard" inverted={inverted} />
+            </Modal>
+        )
+    }
+
     return (
         <div className={`headerComponent ${!showDates ? "bordered" : ""}`}>
             <Menu className="headerMenu" inverted={inverted} pointing secondary>
@@ -55,7 +162,7 @@ const HeaderComponent = ({ date, onClickDate = () => {}, showDates = true }) => 
                         <img
                             alt="Scenes and the City"
                             id="logo"
-                            onClick={() => navigate("/")}
+                            onClick={() => onClickLogo()}
                             src={inverted ? WordsLogoInverted : WordsLogo}
                         />
                         <Icon
@@ -95,15 +202,33 @@ const HeaderComponent = ({ date, onClickDate = () => {}, showDates = true }) => 
                         </Menu.Item>
                         <Menu.Item>
                             <Dropdown
-                                defaultValue={translatedOptions[0].value}
                                 fluid
                                 icon={null}
                                 item
+                                onChange={(e, { value }) => {
+                                    if (value === "settings") {
+                                        setSettingsVisible(true)
+                                    }
+                                    if (value === "stats") {
+                                        setStatsVisible(true)
+                                    }
+                                    if (value === "history") {
+                                        setHistoryVisible(true)
+                                    }
+                                    if (value === "leaderboard") {
+                                        setLeaderboardVisible(true)
+                                    }
+                                    if (value === "signin") {
+                                        toggleLoginModal()
+                                        setDropdownVal(translatedOptions[0].value)
+                                    }
+                                }}
                                 options={translatedOptions}
                                 pointing
                                 trigger={
                                     <Icon color={btnColor} inverted={inverted} name="options" />
                                 }
+                                value={dropdownVal}
                             />
                         </Menu.Item>
                         <Menu.Item>
@@ -112,7 +237,7 @@ const HeaderComponent = ({ date, onClickDate = () => {}, showDates = true }) => 
                                 content={lang.header.makeAQuiz}
                                 fluid
                                 inverted={inverted}
-                                onClick={() => setModalOpen(true)}
+                                onClick={() => setUploadModalOpen(true)}
                             />
                         </Menu.Item>
                     </div>
@@ -187,11 +312,23 @@ const HeaderComponent = ({ date, onClickDate = () => {}, showDates = true }) => 
                 <Menu.Item as="a" onClick={() => {}}>
                     Make a Quiz
                 </Menu.Item>
-                <Menu.Item as="a" onClick={() => {}}>
-                    Sign In/Sign Up
-                </Menu.Item>
+                {isAuth ? (
+                    <Menu.Item as="a" onClick={() => {}}>
+                        Sign Out
+                    </Menu.Item>
+                ) : (
+                    <Menu.Item as="a" onClick={() => {}}>
+                        Sign In/Sign Up
+                    </Menu.Item>
+                )}
             </Sidebar>
-            <UploadModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
+
+            <UploadModal modalOpen={uploadModalOpen} setModalOpen={setUploadModalOpen} />
+
+            {settingsModal()}
+            {statsModal()}
+            {historyModal()}
+            {leaderBoardModal()}
         </div>
     )
 }
@@ -199,7 +336,9 @@ const HeaderComponent = ({ date, onClickDate = () => {}, showDates = true }) => 
 HeaderComponent.propTypes = {
     date: PropTypes.string,
     onClickDate: PropTypes.func,
-    showDates: PropTypes.bool
+    onClickLogo: PropTypes.func,
+    showDates: PropTypes.bool,
+    toggleLoginModal: PropTypes.func
 }
 
 export default HeaderComponent

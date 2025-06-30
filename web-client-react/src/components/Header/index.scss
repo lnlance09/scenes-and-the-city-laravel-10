@@ -125,19 +125,21 @@
 				background: colors.$whiteBackgroundDark;
 				border-bottom: solid 1px #ddd;
 				cursor: pointer;
+				font-family: fonts.$cheltenham400 !important;
 
 				p {
 					font-size: 0.75em;
-					font-family: fonts.$imperial400 !important;
+					// font-family: fonts.$franklin700 !important;
+					font-family: fonts.$cheltenham300 !important;
 				}
 
 				&.active {
 					background: colors.$whiteBackgroundNormal;
 					border-bottom: none;
-					// font-family: fonts.$franklin800 !important;
+					font-family: fonts.$cheltenham400 !important;
 
 					p {
-						// font-family: fonts.$franklin700 !important;
+						font-family: fonts.$cheltenham300 !important;
 					}
 				}
 			}

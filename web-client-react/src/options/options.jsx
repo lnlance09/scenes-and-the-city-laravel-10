@@ -42,5 +42,15 @@ export const options = (language) => [
                 {translations[language].header.leaderboard} <Icon name="trophy" />
             </>
         )
+    },
+    {
+        key: "signin",
+        text: "Sign In",
+        value: "signin",
+        content: (
+            <>
+                {translations[language].auth.signIn} <Icon name="sign in" />
+            </>
+        )
     }
 ]

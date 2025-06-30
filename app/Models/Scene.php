@@ -45,6 +45,11 @@ class Scene extends Model
         return $this->hasMany(SceneCharacter::class, 'scene_id', 'id');
     }
 
+    public function pics()
+    {
+        return $this->hasMany(ScenePic::class, 'scene_id', 'id');
+    }
+
     public function video()
     {
         return $this->hasOne(Video::class, 'id', 'video_id');

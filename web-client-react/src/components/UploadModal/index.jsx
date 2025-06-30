@@ -36,7 +36,6 @@ import { filterTypes } from "../../options/filters"
 import { accept } from "../../options/formUpload"
 import { appendClassName } from "../../utils/general"
 import axios from "axios"
-import AuthenticationForm from "../Authentication"
 import MapComponent from "../Map"
 import moment from "moment-timezone"
 import PropTypes from "prop-types"
@@ -112,7 +111,7 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
         })
     }
 
-    const submitQuiz = (bearer = null) => {
+    const submitQuiz = () => {
         let hint = ""
         if (hintRef.current) {
             hint = hintRef.current.inputRef.current.value
@@ -136,7 +135,7 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
         axios
             .post(`${apiBaseUrl}quiz/submit`, formData, {
                 headers: {
-                    Authorization: `Bearer ${bearer}`,
+                    Authorization: `Bearer ${localStorage.getItem("bearer")}`,
                     "Content-Type": "multipart/form-data",
                     enctype: "multipart/form-data"
                 }
@@ -212,7 +211,7 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
                     )}
                 </Segment>
             </div>
-            {!imgEmpty && (
+            {!imgEmpty ? (
                 <>
                     <div className="uploadAgain">
                         <span onClick={() => open()}>select another photo</span>
@@ -226,6 +225,11 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
                         size="large"
                     />
                 </>
+            ) : (
+                <div className="monroeText">
+                    <span>Marilyn Monroe at Lexington Avenue and 52nd Street circa 1955</span>
+                    <span>Credit: </span>
+                </div>
             )}
         </>
     )
