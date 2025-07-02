@@ -6,6 +6,7 @@
             "signIn": "Sign In",
             "newToThis": "New to this app?",
             "signUp": "Sign Up",
+            "signOut": "Sign Out",
             "forgotPassword": "Forgot password?",
             "username": "Username",
             "regsiterBtn": "Create an account",
@@ -52,7 +53,7 @@
                     "description": "Provide a hint to help solve",
                     "buttonText": "Submit",
                     "locationHeader": "Where is this located?",
-                    "hintHeader": "Provide a hint (optional)"
+                    "hintHeader": "Provide a hint"
                 }
             ]
         },

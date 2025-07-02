@@ -13,7 +13,7 @@ export const initialHomeState = {
         lng: null,
         hood: null,
         borough: null,
-        description: null
+        streets: []
     },
     leaderboard: {
         count: 0,

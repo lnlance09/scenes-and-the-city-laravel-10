@@ -1,188 +1,43 @@
 <?php
 
 namespace App\Geolocation;
-/*
- * (c) Patrick Hayes
- *
- * This code is open-source and licenced under the Modified BSD License.
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
-/**
- * GEOSWKBWriter class stub.
- *
- * These stubs are required for IDEs to provide autocompletion and static code analysis during development.
- * They are not required for production.
- *
- * @see https://github.com/libgeos/libgeos/blob/svn-trunk/php/geos.c
- */
-class GEOSWKBWriter
-{
-	/**
-	 * Constructor.
-	 */
-	public function __construct() {}
-
-	/**
-	 * Returns the output dimension.
-	 *
-	 * @return int 2 or 2D, 3 for 3D.
-	 */
-	public function getOutputDimension() {}
-
-	/**
-	 * Sets the output dimension.
-	 *
-	 * @param int $dim 2 or 2D, 3 for 3D.
-	 */
-	public function setOutputDimension(int $dim) {}
-
-	/**
-	 * Returns the output WKB byte order.
-	 *
-	 * @return int 0 for BIG endian, 1 for LITTLE endian.
-	 */
-	public function getByteOrder() {}
-
-	/**
-	 * Sets the output WKB byte order.
-	 *
-	 * @param int $byteOrder 0 for BIG endian, 1 for LITTLE endian.
-	 */
-	public function setByteOrder(int $byteOrder) {}
-
-	/**
-	 * Returns whether the output includes SRID.
-	 */
-	public function getIncludeSRID() {}
-
-	/**
-	 * Sets whether the output includes SRID.
-	 */
-	public function setIncludeSRID(bool $inc) {}
-
-	/**
-	 * Writes the given geometry as WKB.
-	 *
-	 * @since 3.5.0
-	 *
-	 * @throws \Exception If the geometry does not have a WKB representation, notably POINT EMPTY.
-	 */
-	public function write($geom) {}
-
-	/**
-	 * Writes the given geometry as hex-encoded WKB.
-	 *
-	 * @throws \Exception If the geometry does not have a WKB representation, notably POINT EMPTY.
-	 */
-	public function writeHEX($geom) {}
-}
+use Exception;
 
 // Adapters
-include_once(__DIR__ . "/Adapters/GeoAdapter.class.php"); // Abtract class
-include_once(__DIR__ . "/Adapters/GeoJSON.class.php");
-include_once(__DIR__ . "/Adapters/WKT.class.php");
-include_once(__DIR__ . "/Adapters/EWKT.class.php");
-include_once(__DIR__ . "/Adapters/WKB.class.php");
-include_once(__DIR__ . "/Adapters/EWKB.class.php");
-include_once(__DIR__ . "/Adapters/KML.class.php");
-include_once(__DIR__ . "/Adapters/GPX.class.php");
-include_once(__DIR__ . "/Adapters/GeoRSS.class.php");
-include_once(__DIR__ . "/Adapters/GoogleGeocode.class.php");
-include_once(__DIR__ . "/Adapters/GeoHash.class.php");
+include_once(__DIR__ . '/Adapters/GeoAdapter.php');
+include_once(__DIR__ . '/Adapters/GeoJSON.php');
+include_once(__DIR__ . '/Adapters/WKT.php');
+include_once(__DIR__ . '/Adapters/EWKT.php');
+include_once(__DIR__ . '/Adapters/WKB.php');
 
 // Geometries
-include_once(__DIR__ . "/Geometry/Geometry.class.php"); // Abtract class
-include_once(__DIR__ . "/Geometry/Point.class.php");
-include_once(__DIR__ . "/Geometry/Collection.class.php"); // Abtract class
-include_once(__DIR__ . "/Geometry/LineString.class.php");
-include_once(__DIR__ . "/Geometry/MultiPoint.class.php");
-include_once(__DIR__ . "/Geometry/Polygon.class.php");
-include_once(__DIR__ . "/Geometry/MultiLineString.class.php");
-include_once(__DIR__ . "/Geometry/MultiPolygon.class.php");
-include_once(__DIR__ . "/Geometry/GeometryCollection.class.php");
+include_once(__DIR__ . '/Geometry/Geometry.php');
+include_once(__DIR__ . '/Geometry/Point.php');
+include_once(__DIR__ . '/Geometry/Collection.php');
+include_once(__DIR__ . '/Geometry/LineString.php');
+include_once(__DIR__ . '/Geometry/MultiPoint.php');
+include_once(__DIR__ . '/Geometry/Polygon.php');
+include_once(__DIR__ . '/Geometry/MultiLineString.php');
+include_once(__DIR__ . '/Geometry/MultiPolygon.php');
+include_once(__DIR__ . '/Geometry/GeometryCollection.php');
 
 class geoPHP
 {
-
-	static function version()
-	{
-		return '1.2';
-	}
-
-	// geoPHP::load($data, $type, $other_args);
-	// if $data is an array, all passed in values will be combined into a single geometry
-	static function load()
-	{
-		$args = func_get_args();
-
-		$data = array_shift($args);
-		$type = array_shift($args);
-
-		$type_map = geoPHP::getAdapterMap();
-
-		// Auto-detect type if needed
-		if (!$type) {
-			// If the user is trying to load a Geometry from a Geometry... Just pass it back
-			if (is_object($data)) {
-				if ($data instanceof Geometry) return $data;
-			}
-
-			$detected = geoPHP::detectFormat($data);
-			if (!$detected) {
-				return FALSE;
-			}
-
-			$format = explode(':', $detected);
-			$type = array_shift($format);
-			$args = $format;
-		}
-
-		$processor_type = $type_map[$type];
-
-		if (!$processor_type) {
-			throw new exception('geoPHP could not find an adapter of type ' . htmlentities($type));
-		}
-
-		$processor = new $processor_type();
-
-		// Data is not an array, just pass it normally
-		if (!is_array($data)) {
-			$result = call_user_func_array(array($processor, "read"), array_merge(array($data), $args));
-		}
-		// Data is an array, combine all passed in items into a single geometry
-		else {
-			$geoms = array();
-			foreach ($data as $item) {
-				$geoms[] = call_user_func_array(array($processor, "read"), array_merge(array($item), $args));
-			}
-			$result = geoPHP::geometryReduce($geoms);
-		}
-
-		return $result;
-	}
-
 	static function getAdapterMap()
 	{
-		return array(
-			'wkt' =>  'WKT',
+		return [
+			'wkt' => 'WKT',
 			'ewkt' => 'EWKT',
-			'wkb' =>  'WKB',
-			'ewkb' => 'EWKB',
+			'wkb' => 'WKB',
 			'json' => 'GeoJSON',
-			'geojson' => 'GeoJSON',
-			'kml' =>  'KML',
-			'gpx' =>  'GPX',
-			'georss' => 'GeoRSS',
-			'google_geocode' => 'GoogleGeocode',
-			'geohash' => 'GeoHash',
-		);
+			'geojson' => 'GeoJSON'
+		];
 	}
 
 	static function geometryList()
 	{
-		return array(
+		return [
 			'point' => 'Point',
 			'linestring' => 'LineString',
 			'polygon' => 'Polygon',
@@ -190,28 +45,72 @@ class geoPHP
 			'multilinestring' => 'MultiLineString',
 			'multipolygon' => 'MultiPolygon',
 			'geometrycollection' => 'GeometryCollection',
-		);
+		];
 	}
 
-	static function geosInstalled($force = NULL)
+	static function load()
 	{
-		static $geos_installed = NULL;
-		if ($force !== NULL) $geos_installed = $force;
-		if ($geos_installed !== NULL) {
-			return $geos_installed;
+		$args = func_get_args();
+		$data = array_shift($args);
+		$type = array_shift($args);
+		$typeMap = geoPHP::getAdapterMap();
+
+		if (!$type) {
+			if (is_object($data)) {
+				if ($data instanceof Geometry) {
+					return $data;
+				}
+			}
+
+			$detected = geoPHP::detectFormat($data);
+			if (!$detected) {
+				return false;
+			}
+
+			$format = explode(':', $detected);
+			$type = array_shift($format);
+			$args = $format;
 		}
-		$geos_installed = class_exists('GEOSGeometry');
-		return $geos_installed;
+
+		$processorType = $typeMap[$type];
+		if (!$processorType) {
+			throw new Exception('geoPHP could not find an adapter of type ' . htmlentities($type));
+		}
+
+		$processor = new $processorType();
+		if (!is_array($data)) {
+			$result = call_user_func_array([$processor, 'read'], array_merge([$data], $args));
+		} else {
+			$geoms = [];
+			foreach ($data as $item) {
+				$geoms[] = call_user_func_array([$processor, 'read'], array_merge([$item], $args));
+			}
+			$result = geoPHP::geometryReduce($geoms);
+		}
+		return $result;
+	}
+
+	static function geosInstalled($force = null)
+	{
+		static $geosInstalled = null;
+		if ($force !== null) {
+			$geosInstalled = $force;
+		}
+		if ($geosInstalled !== null) {
+			return $geosInstalled;
+		}
+		$geosInstalled = class_exists('GEOSGeometry');
+		return $geosInstalled;
 	}
 
 	static function geosToGeometry($geos)
 	{
 		if (!geoPHP::geosInstalled()) {
-			return NULL;
+			return null;
 		}
-		$wkb_writer = new GEOSWKBWriter();
-		$wkb = $wkb_writer->writeHEX($geos);
-		$geometry = geoPHP::load($wkb, 'wkb', TRUE);
+		$wkbWriter = new GEOSWKBWriter();
+		$wkb = $wkbWriter->writeHEX($geos);
+		$geometry = geoPHP::load($wkb, 'wkb', true);
 		if ($geometry) {
 			$geometry->setGeos($geos);
 			return $geometry;
@@ -226,13 +125,17 @@ class geoPHP
 	{
 		// If it's an array of one, then just parse the one
 		if (is_array($geometry)) {
-			if (empty($geometry)) return FALSE;
-			if (count($geometry) == 1) return geoPHP::geometryReduce(array_shift($geometry));
+			if (empty($geometry)) {
+				return false;
+			}
+			if (count($geometry) == 1) {
+				return geoPHP::geometryReduce(array_shift($geometry));
+			}
 		}
 
 		// If the geometry cannot even theoretically be reduced more, then pass it back
 		if (gettype($geometry) == 'object') {
-			$passbacks = array('Point', 'LineString', 'Polygon');
+			$passbacks = ['Point', 'LineString', 'Polygon'];
 			if (in_array($geometry->geometryType(), $passbacks)) {
 				return $geometry;
 			}
@@ -241,83 +144,74 @@ class geoPHP
 		// If it is a mutlti-geometry, check to see if it just has one member
 		// If it does, then pass the member, if not, then just pass back the geometry
 		if (gettype($geometry) == 'object') {
-			$simple_collections = array('MultiPoint', 'MultiLineString', 'MultiPolygon');
 			if (in_array(get_class($geometry), $passbacks)) {
 				$components = $geometry->getComponents();
 				if (count($components) == 1) {
 					return $components[0];
-				} else {
-					return $geometry;
 				}
+				return $geometry;
 			}
 		}
 
 		// So now we either have an array of geometries, a GeometryCollection, or an array of GeometryCollections
 		if (!is_array($geometry)) {
-			$geometry = array($geometry);
+			$geometry = [$geometry];
 		}
 
-		$geometries = array();
-		$geom_types = array();
-
-		$collections = array('MultiPoint', 'MultiLineString', 'MultiPolygon', 'GeometryCollection');
+		$geometries = [];
+		$geomTypes = [];
+		$collections = ['MultiPoint', 'MultiLineString', 'MultiPolygon', 'GeometryCollection'];
 
 		foreach ($geometry as $item) {
 			if ($item) {
 				if (in_array(get_class($item), $collections)) {
 					foreach ($item->getComponents() as $component) {
 						$geometries[] = $component;
-						$geom_types[] = $component->geometryType();
+						$geomTypes[] = $component->geometryType();
 					}
 				} else {
 					$geometries[] = $item;
-					$geom_types[] = $item->geometryType();
+					$geomTypes[] = $item->geometryType();
 				}
 			}
 		}
 
-		$geom_types = array_unique($geom_types);
-
-		if (empty($geom_types)) {
-			return FALSE;
+		$geomTypes = array_unique($geomTypes);
+		if (empty($geomTypes)) {
+			return false;
 		}
 
-		if (count($geom_types) == 1) {
+		if (count($geomTypes) == 1) {
 			if (count($geometries) == 1) {
 				return $geometries[0];
-			} else {
-				$class = 'Multi' . $geom_types[0];
-				return new $class($geometries);
 			}
-		} else {
-			return new GeometryCollection($geometries);
+			$class = 'Multi' . $geomTypes[0];
+			return new $class($geometries);
 		}
+
+		return new GeometryCollection($geometries);
 	}
 
-	// Detect a format given a value. This function is meant to be SPEEDY.
-	// It could make a mistake in XML detection if you are mixing or using namespaces in weird ways (ie, KML inside an RSS feed)
 	static function detectFormat(&$input)
 	{
 		$mem = fopen('php://memory', 'r+');
 		fwrite($mem, $input, 11); // Write 11 bytes - we can detect the vast majority of formats in the first 11 bytes
 		fseek($mem, 0);
 
-		$bytes = unpack("c*", fread($mem, 11));
-
-		// If bytes is empty, then we were passed empty input
-		if (empty($bytes)) return FALSE;
+		$bytes = unpack('c*', fread($mem, 11));
+		if (empty($bytes)) {
+			return false;
+		}
 
 		// First char is a tab, space or carriage-return. trim it and try again
 		if ($bytes[1] == 9 || $bytes[1] == 10 || $bytes[1] == 32) {
-			$ltinput = ltrim($input);
-			return geoPHP::detectFormat($ltinput);
+			return geoPHP::detectFormat(ltrim($input));
 		}
 
 		// Detect WKB or EWKB -- first byte is 1 (little endian indicator)
 		if ($bytes[1] == 1) {
 			// If SRID byte is TRUE (1), it's EWKB
-			if ($bytes[5]) return 'ewkb';
-			else return 'wkb';
+			return $bytes[5] ? 'ewkb' : 'wkb';
 		}
 
 		// Detect HEX encoded WKB or EWKB (PostGIS format) -- first byte is 48, second byte is 49 (hex '01' => first-byte = 1)
@@ -325,7 +219,7 @@ class geoPHP
 			// The shortest possible WKB string (LINESTRING EMPTY) is 18 hex-chars (9 encoded bytes) long
 			// This differentiates it from a geohash, which is always shorter than 18 characters.
 			if (strlen($input) >= 18) {
-				//@@TODO: Differentiate between EWKB and WKB -- check hex-char 10 or 11 (SRID bool indicator at encoded byte 5)
+				// @@TODO: Differentiate between EWKB and WKB -- check hex-char 10 or 11 (SRID bool indicator at encoded byte 5)
 				return 'ewkb:1';
 			}
 		}
@@ -341,21 +235,32 @@ class geoPHP
 		}
 
 		// Detect WKT - first char starts with P (80), L (76), M (77), or G (71)
-		$wkt_chars = array(80, 76, 77, 71);
+		$wkt_chars = [80, 76, 77, 71];
 		if (in_array($bytes[1], $wkt_chars)) {
 			return 'wkt';
 		}
 
 		// Detect XML -- first char is <
 		if ($bytes[1] == 60) {
-			// grab the first 256 characters
 			$string = substr($input, 0, 256);
-			if (strpos($string, '<kml') !== FALSE)        return 'kml';
-			if (strpos($string, '<coordinate') !== FALSE) return 'kml';
-			if (strpos($string, '<gpx') !== FALSE)        return 'gpx';
-			if (strpos($string, '<georss') !== FALSE)     return 'georss';
-			if (strpos($string, '<rss') !== FALSE)        return 'georss';
-			if (strpos($string, '<feed') !== FALSE)       return 'georss';
+			if (strpos($string, '<kml') !== false) {
+				return 'kml';
+			}
+			if (strpos($string, '<coordinate') !== false) {
+				return 'kml';
+			}
+			if (strpos($string, '<gpx') !== false) {
+				return 'gpx';
+			}
+			if (strpos($string, '<georss') !== false) {
+				return 'georss';
+			}
+			if (strpos($string, '<rss') !== false) {
+				return 'georss';
+			}
+			if (strpos($string, '<feed') !== false) {
+				return 'georss';
+			}
 		}
 
 		// We need an 8 byte string for geohash and unpacked WKB / WKT
@@ -368,8 +273,6 @@ class geoPHP
 			return 'geohash';
 		}
 
-		// What do you get when you cross an elephant with a rhino?
-		// http://youtu.be/RCBn5J83Poc
-		return FALSE;
+		return false;
 	}
 }

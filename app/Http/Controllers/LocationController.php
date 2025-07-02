@@ -10,24 +10,23 @@ class LocationController extends Controller
 
     public function find(Request $request)
     {
+        ini_set('memory_limit', '2048M');
+        ini_set('max_execution_time', 250);
+
         $lng = $request->input('lng');
         $lat = $request->input('lat');
 
         $nyc = new NewYorkCity();
-        // $check = $nyc->checkBorough('110422539839', 'brooklyn');
-        // var_dump($check);
+        // echo $nyc->cleanUpData(1);
         // die;
-        // $data = $nyc->cleanData();
-        // echo json_encode($data);
-        // $filter = $nyc->filterStreetsByDirection();
-        $data = $nyc->deleteDuplicates();
-        // $details = $nyc->getLocationDetails($lng, $lat);
-        // $intersections = $nyc->getIntersections('manhattan');
-
-        echo '<pre>';
-        echo print_r($data);
-        echo '</pre>';
-        die;
+        // echo $nyc->removeDuplicateStreets('bronx');
+        // die;
+        $details = $nyc->getLocationDetails($lng, $lat);
+        if (!$details) {
+            return response([
+                'message' => "That location isn't in the five boroughs"
+            ], 404);
+        }
 
         return response([
             'data' => $details

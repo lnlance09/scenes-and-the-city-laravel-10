@@ -14,9 +14,9 @@ import {
 import { reducer } from "./reducer"
 import { initialAuthState } from "./initialState"
 import { toastConfig } from "../../options/toast"
-import { appendClassName } from "../../utils/general"
 import { toast } from "react-toastify"
 import axios from "axios"
+import classNames from "classnames"
 import PropTypes from "prop-types"
 import validator from "validator"
 import * as translations from "../../assets/translate.json"
@@ -57,18 +57,22 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
     const [regUsername, setRegUsername] = useState("")
     const [loadingRegistration, setLoadingRegistration] = useState(false)
 
-    const loginDisabled = !validator.isEmail(email) || password.length < 8
+    const loginDisabled = email.length < 4 || password.length < 8
 
     const submitLoginForm = () => {
         if (loginDisabled) {
             return
         }
         setLoadingLogin(true)
+        const payload = { password }
+        if (validator.isEmail(email)) {
+            payload.email = email
+        } else {
+            payload.username = email
+        }
+
         axios
-            .post(`${apiBaseUrl}users/login`, {
-                email,
-                password
-            })
+            .post(`${apiBaseUrl}users/login`, payload)
             .then(async (response) => {
                 const { data } = response
                 dispatch(setUserData({ data }))
@@ -77,7 +81,11 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
                 localStorage.setItem("user", JSON.stringify(data.user))
                 localStorage.setItem("verify", data.verify)
                 if (!data.verify) {
-                    navigate("/")
+                    closeModal()
+                    toast.success("You have been logged in!", {
+                        ...toastConfig,
+                        className: inverted ? "inverted" : null
+                    })
                     return
                 }
                 dispatch(setNeedToVerify())
@@ -165,6 +173,7 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
         if (verificationCode.length !== 4) {
             return
         }
+
         setLoadingVerify(true)
         axios
             .post(
@@ -217,6 +226,11 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
         </Header>
     )
 
+    const authSegmentClass = classNames({
+        authSegment: true,
+        inverted
+    })
+
     return (
         <div className="authComponent">
             <Header
@@ -226,7 +240,7 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
                 inverted={inverted}
                 textAlign="center"
             />
-            <div className={appendClassName("authSegment", inverted)}>
+            <div className={authSegmentClass}>
                 {!verify && (
                     <>
                         {login && (
@@ -251,9 +265,10 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
                                     </Form.Field>
                                     <Form.Field>
                                         <Button
-                                            color="black"
+                                            color={inverted ? "green" : "blue"}
                                             content="Sign in"
                                             fluid
+                                            inverted={inverted}
                                             loading={loadingLogin}
                                             onClick={submitLoginForm}
                                             size={size}
@@ -306,9 +321,10 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
                                 </Form>
                                 <Divider inverted={inverted} />
                                 <Button
-                                    color="black"
+                                    color={inverted ? "green" : "blue"}
                                     content="Create an account"
                                     fluid
+                                    inverted={inverted}
                                     loading={loadingRegistration}
                                     onClick={submitRegistrationForm}
                                     size={size}
@@ -331,10 +347,11 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
                                 />
                             </Form.Field>
                             <Button
-                                color="black"
+                                color={inverted ? "green" : "blue"}
                                 content="Send Instructions"
                                 disabled={!validator.isEmail(forgotEmail)}
                                 fluid
+                                inverted={inverted}
                                 loading={loadingForgot}
                                 size={size}
                                 type="submit"
@@ -374,10 +391,11 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
                             />
                         </Form.Field>
                         <Button
-                            color="blue"
+                            color={inverted ? "green" : "blue"}
                             content="Verify"
                             disabled={verificationCode.length !== 4}
                             fluid
+                            inverted={inverted}
                             loading={loadingVerify}
                             size={size}
                             type="submit"

@@ -1,5 +1,5 @@
 export const toastConfig = {
-    autoClose: 3500,
+    autoClose: 3000,
     closeOnClick: true,
     draggable: false,
     hideProgressBar: true,

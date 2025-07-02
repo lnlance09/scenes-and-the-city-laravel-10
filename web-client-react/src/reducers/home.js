@@ -14,7 +14,7 @@ const homeSlice = createSlice({
                 lng: action.payload.lng,
                 hood: action.payload.hood,
                 borough: action.payload.borough,
-                description: action.payload.description
+                streets: action.payload.streets
             }
         },
         setQuiz: (state, action) => {

@@ -22,6 +22,7 @@ import { setActions } from "../reducers/form"
 import { clearQuiz, setAnswer, setQuiz } from "../reducers/home"
 import { Typewriter } from "react-simple-typewriter"
 import { dateFormat, isSunday, isWeekend, nyc } from "../utils/date"
+import { capitalize } from "../utils/general"
 import { translateMonth, translateWeekday } from "../utils/translate"
 import { toast, ToastContainer } from "react-toastify"
 import { toastConfig } from "../options/toast"
@@ -39,9 +40,7 @@ import * as translations from "../assets/translate.json"
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
 const defaultDate = moment().tz(nyc).format(dateFormat)
 
-const timeout = (delay) => {
-    return new Promise((res) => setTimeout(res, delay))
-}
+const timeout = (delay) => new Promise((res) => setTimeout(res, delay))
 const duration = 400
 
 const HomepageLayout = () => {
@@ -54,6 +53,7 @@ const HomepageLayout = () => {
 
     const inverted = useSelector((state) => state.app.inverted)
     const isAuth = useSelector((state) => state.app.auth)
+    const verify = useSelector((state) => state.app.verify)
 
     const [date, setDate] = useState()
     const [loading, setLoading] = useState(true)
@@ -98,7 +98,6 @@ const HomepageLayout = () => {
                 setQuiz404(false)
                 setDate(quiz.createdAt)
                 dispatch(setQuiz({ quiz }))
-
                 if (isAuth) {
                     getAnswer(quiz.quizId)
                 }
@@ -114,7 +113,10 @@ const HomepageLayout = () => {
 
     const getAnswer = (quizId) => {
         axios({
-            url: `${apiBaseUrl}quiz/answer/${quizId}`
+            url: `${apiBaseUrl}quiz/answer/${quizId}`,
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("bearer")}`
+            }
         })
             .then((response) => {})
             .catch(() => {
@@ -206,14 +208,19 @@ const HomepageLayout = () => {
                     modal: modalClass
                 }}
                 center
-                onClose={() => toggleLoginModal(false)}
+                onClose={() => {
+                    if (verify) {
+                        return
+                    }
+                    toggleLoginModal(false)
+                }}
                 onOpen={() => toggleLoginModal(true)}
                 open={loginModal}
                 showCloseIcon={false}
             >
-                <AuthenticationForm closeModal={() => toggleLoginModal(false)} size="large" />
+                <AuthenticationForm closeModal={() => toggleLoginModal(false)} size="mediun" />
             </Modal>
-            <ToastContainer />
+            <ToastContainer className={inverted ? "inverted" : null} />
         </div>
     )
 }
@@ -279,7 +286,7 @@ const ImageComponent = ({
                             onError={(i) => (i.target.src = NotFoundSvg)}
                             rounded
                             style={{ height: "360px" }}
-                            src={quiz.img ? quiz.img : notFound}
+                            src={quiz.img === null || quiz404 ? notFound : quiz.img}
                         />
                     </div>
                 )}
@@ -364,7 +371,7 @@ const QuestionsComponent = ({ loading = true, quiz404 = false }) => {
                     className="questionHeader"
                     id="questionHeader"
                     inverted={inverted}
-                    size="large"
+                    size="huge"
                     textAlign="center"
                 >
                     {!loading && (
@@ -398,30 +405,24 @@ const HintsComponent = ({ callback = () => null, loading = true }) => {
 
     const getHint = (quizId) => {
         axios
-            .post(`${apiBaseUrl}quiz/hint/${quizId}`, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("bearer")}`
+            .post(
+                `${apiBaseUrl}quiz/hint/${quizId}`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("bearer")}`
+                    }
                 }
-            })
+            )
             .then(() => {
                 toast.success("First hint has been used!", toastConfig)
             })
             .catch((error) => {
-                let errorMsg = ""
-                const { status } = error.response
-                const { errors } = error.response.data
-                if (status === 401) {
-                    errorMsg = error.response.data.message
-                } else {
-                    if (typeof errors.code !== "undefined") {
-                        errorMsg = errors.code[0]
-                    }
-                }
-                toast.error(errorMsg, toastConfig)
+                toast.error(error.response.data.message, toastConfig)
             })
     }
 
-    const hintBox = (text, hint, visible, callback, loading) => (
+    const hintBox = (text, visible, callback, loading) => (
         <>
             <Header as="h2" content={text} inverted={inverted} />
             {loading ? (
@@ -466,6 +467,21 @@ const HintsComponent = ({ callback = () => null, loading = true }) => {
             )}
         </>
     )
+    const img = (loading) => (
+        <div className="charPic">
+            {loading ? (
+                <Placeholder inverted={inverted}>
+                    <Placeholder.Image style={{ borderRadius: "50%", height: 160, width: 160 }} />
+                </Placeholder>
+            ) : (
+                <Image
+                    circular
+                    size="small"
+                    src="https://i.scdn.co/image/ab67616d00001e021c29620d79497da6dc08f7da"
+                />
+            )}
+        </div>
+    )
 
     return (
         <>
@@ -473,9 +489,9 @@ const HintsComponent = ({ callback = () => null, loading = true }) => {
                 <Grid celled="internally" columns="equal" inverted={inverted} stackable>
                     <Grid.Row>
                         <Grid.Column>
+                            {img(loading)}
                             {hintBox(
                                 lang.answer.hintOne,
-                                "",
                                 hintOneVisible,
                                 () => {
                                     if (isAuth) {
@@ -489,12 +505,13 @@ const HintsComponent = ({ callback = () => null, loading = true }) => {
                             )}
                         </Grid.Column>
                         <Grid.Column>
+                            {img(loading)}
                             {hintBox(
                                 lang.answer.hintTwo,
-                                "",
                                 hintTwoVisible,
                                 () => {
                                     if (isAuth) {
+                                        getHint(quiz.quizId)
                                         setHintTwoVisible(true)
                                         return
                                     }
@@ -523,6 +540,8 @@ const AnswersComponent = ({
     const dispatch = useDispatch()
     const inverted = useSelector((state) => state.app.inverted)
     const language = useSelector((state) => state.app.language)
+    const quizId = useSelector((state) => state.home.quiz.quizId)
+    const isAuth = useSelector((state) => state.app.auth)
     const lang = translations[language]
     const expirationDate = moment(date).tz(nyc).add(1, "days").startOf("day").toDate()
     const canSubmit = moment(date).isSameOrAfter(moment().subtract(1, "days"))
@@ -530,11 +549,15 @@ const AnswersComponent = ({
 
     const submitAnswer = () => {
         axios
-            .post(`${apiBaseUrl}quiz/answer`, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("bearer")}`
+            .post(
+                `${apiBaseUrl}quiz/answer/${quizId}`,
+                { lat: answer.lat, lng: answer.lng },
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("bearer")}`
+                    }
                 }
-            })
+            )
             .then(() => {
                 toast.success("Your answer has been submitted!", toastConfig)
             })
@@ -560,7 +583,7 @@ const AnswersComponent = ({
                 lng: data.lng,
                 hood: data.hood,
                 borough: data.borough,
-                description: data.description
+                streets: data.streets
             })
         )
     }
@@ -569,7 +592,7 @@ const AnswersComponent = ({
         <Segment className="answersSegment" inverted={inverted} vertical>
             <Container text>
                 {canSubmit && (
-                    <Header as="h2" inverted={inverted} textAlign="center">
+                    <Header as="h2" inverted textAlign="center">
                         <Header.Content>{lang.answer.title}</Header.Content>
                         <Header.Subheader>
                             <Timer expiryTimestamp={expirationDate} inverted={inverted} />
@@ -578,9 +601,24 @@ const AnswersComponent = ({
                 )}
                 <MapComponent callback={(data) => showLocationDetails(data)} />
                 {answer.hood !== null && (
-                    <>
-                        <Header content={answer.hood} inverted={inverted} />
-                    </>
+                    <Segment inverted={inverted} raised>
+                        <Header inverted={inverted} size="large">
+                            <a href="#" onClick={(e) => e.preventDefault()}>
+                                {answer.streets[0]}
+                            </a>{" "}
+                            in between{" "}
+                            <a href="#" onClick={(e) => e.preventDefault()}>
+                                {answer.streets[1]}
+                            </a>{" "}
+                            and{" "}
+                            <a href="#" onClick={(e) => e.preventDefault()}>
+                                {answer.streets[2]}
+                            </a>
+                            <Header.Subheader>
+                                {`${answer.hood}, ${capitalize(answer.borough)}`}
+                            </Header.Subheader>
+                        </Header>
+                    </Segment>
                 )}
                 {canSubmit && (
                     <Button
@@ -589,7 +627,13 @@ const AnswersComponent = ({
                         content={lang.answer.submit}
                         fluid
                         inverted={inverted}
-                        onClick={() => submitAnswer()}
+                        onClick={() => {
+                            if (isAuth) {
+                                submitAnswer()
+                                return
+                            }
+                            callback()
+                        }}
                         size="big"
                     />
                 )}

@@ -6,8 +6,10 @@ import { useSelector, useDispatch } from "react-redux"
 import { MapContainer } from "react-leaflet"
 import { setLocation } from "../../reducers/form"
 import { mapTheme, invertedMapTheme } from "../../options/mapThemes"
-import { appendClassName } from "../../utils/general"
+import { toast } from "react-toastify"
+import { toastConfig } from "../../options/toast"
 import axios from "axios"
+import classNames from "classnames"
 import PropTypes from "prop-types"
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
@@ -15,27 +17,33 @@ const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
 const DraggableMarker = ({ callback = () => null, lat, lon }) => {
     const dispatch = useDispatch()
 
-    const getAreaName = (lat, lng) => {
-        axios({
-            url: `${apiBaseUrl}location?lat=${lat}&lng=${lng}`
-        }).then((response) => {
-            console.log("geo data", response.data)
-            const { data } = response.data
-            callback({
-                lat,
-                lng,
-                hood: data.hood,
-                borough: data.borough,
-                description: ""
-            })
-        })
-    }
-
     const markerRef = useRef(null)
+
     const [position, setPosition] = useState({
         lat,
         lon
     })
+
+    const getAreaName = (lat, lng) => {
+        axios({
+            url: `${apiBaseUrl}location?lat=${lat}&lng=${lng}`
+        })
+            .then((response) => {
+                const { data } = response.data
+                callback({
+                    lat,
+                    lng,
+                    hood: data.hood,
+                    borough: data.borough,
+                    streets: data.streets
+                })
+            })
+            .catch((error) => {
+                const errorMsg = error.response.data.message
+                toast.error(errorMsg, toastConfig)
+            })
+    }
+
     const eventHandlers = useMemo(
         () => ({
             dragend() {
@@ -60,6 +68,7 @@ const DraggableMarker = ({ callback = () => null, lat, lon }) => {
 
     return (
         <Marker
+            className="mapMarker"
             draggable={true}
             eventHandlers={eventHandlers}
             position={position}
@@ -104,13 +113,18 @@ const MapComponent = ({ callback = () => null, style }) => {
     const latitude = useSelector((state) => state.form.location.lat)
     const longitude = useSelector((state) => state.form.location.lng)
     // eslint-disable-next-line no-unused-vars
-    const [zoomLevel, setZoomLevel] = useState(14)
+    const [zoomLevel, setZoomLevel] = useState(13)
+
+    const mapClassName = classNames({
+        mapWrapper: true,
+        inverted
+    })
 
     return (
-        <div className={appendClassName("mapWrapper", inverted)} style={style}>
+        <div className={mapClassName} style={style}>
             <MapContainer
                 center={[latitude, longitude]}
-                style={{ height: "400px", width: "100%" }}
+                style={{ height: "525px", width: "100%" }}
                 zoom={zoomLevel}
             >
                 <MapLayers

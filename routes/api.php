@@ -30,8 +30,8 @@ Route::get('/quiz/{quizId}', [QuizController::class, 'show']); //
 Route::get('/quiz/show/date', [QuizController::class, 'showByDate']); //
 Route::post('/quiz/submit', [QuizController::class, 'create']); // 
 Route::post('/quiz/hint/{quizId}', [QuizController::class, 'hint'])->middleware(['auth:api', 'verified']);
-Route::post('/quiz/answer', [QuizController::class, 'answer'])->middleware(['auth:api', 'verified']);
-Route::get('/quiz/answer/{quizId}', [QuizController::class, 'getAnswer']);
+Route::post('/quiz/answer/{quizId}', [QuizController::class, 'answer'])->middleware(['auth:api', 'verified']);
+Route::get('/quiz/answer/{quizId}', [QuizController::class, 'getAnswer'])->middleware(['auth:api', 'verified']);
 Route::get('/quiz/leaderboard', [QuizController::class, 'leaderboard']);
 
 Route::get('/users/changePassword', [UserController::class, 'changePassword'])->middleware(['auth:api', 'verified']);

@@ -8,7 +8,7 @@ const appSlice = createSlice({
         logout: (state) => {
             state.auth = false
             state.bearer = null
-            state.user = {}
+            state.user = null
             state.verify = false
         },
         setLanguage: (state, action) => {

@@ -7,11 +7,11 @@
     overflow-x: hidden;
 
     .step > .content > .title {
-        font-family: fonts.$franklin700 !important;
+        font-family: fonts.$cheltenham700 !important;
     }
 
     .step > .content > .description {
-        font-family: fonts.$franklin500 !important;
+        font-family: fonts.$cheltenham400 !important;
     }
 
     .step.inverted {
@@ -83,7 +83,7 @@
 
     .ui.segment.noResults {
         .header {
-            font-family: fonts.$franklin600 !important;
+            font-family: fonts.$cheltenham400 !important;
         }
     }
 
@@ -118,7 +118,7 @@
                     cursor: pointer;
 
                     .header {
-                        font-family: fonts.$franklin600 !important;
+                        font-family: fonts.$cheltenham400 !important;
                     }
                 }
 
@@ -140,11 +140,11 @@
     }
 
     .ui.segment.activeCharSegment > .ui.header {
-        font-family: fonts.$franklin600 !important;
+        font-family: fonts.$cheltenham400 !important;
     }
 
     .ui.selection.dropdown {
-        font-family: fonts.$franklin600;
+        font-family: fonts.$cheltenham400 !important;
 
         .menu {
             width: 100%;
@@ -156,7 +156,7 @@
     }
 
     .actionHeader, .charHeader, .videoHeader, .videoItemHeader {
-        font-family: fonts.$franklin700 !important;
+        font-family: fonts.$cheltenham700 !important;
 
         &.inverted {
             a {
@@ -167,12 +167,12 @@
 
     .ui.active.visible.fluid.search.selection.dropdown.inverted {
         input::placeholder {
-            font-family: fonts.$franklin600 !important;
+            font-family: fonts.$cheltenham400 !important;
         }
     }
 
 	.ui.radio {
-		font-family: fonts.$franklin600;
+		font-family: fonts.$imperial400;
 		margin-left: 0.75em;
 	}
 

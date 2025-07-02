@@ -8,3 +8,5 @@ export const isSunday = (d = null) =>
 
 export const isWeekend = (d = null) =>
     isSunday(d) || (d ? moment(d).tz(nyc).day() === 6 : moment().tz(nyc).day() === 6)
+
+export const isValidDate = (date) => moment(date, "YYYY-MM-DD HH:mm:ss", true).isValid()

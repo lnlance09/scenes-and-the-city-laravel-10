@@ -3,7 +3,8 @@ import { Container, Header, List, Segment } from "semantic-ui-react"
 import { Modal } from "react-responsive-modal"
 import { useState } from "react"
 import { useSelector } from "react-redux"
-import { appendClassName, capitalize } from "../../utils/general"
+import { capitalize } from "../../utils/general"
+import classNames from "classnames"
 import * as translations from "../../assets/translate.json"
 
 const items = ["about", "privacy", "rules"]
@@ -15,11 +16,22 @@ const FooterComponent = () => {
     const [activeItem, setActiveItem] = useState(null)
     const [modalOpen, setModalOpen] = useState(false)
 
+    const modalClass = classNames({
+        footerModal: true,
+        simpleModal: true,
+        inverted
+    })
+    const modalOverlayClass = classNames({
+        footerModalOverlay: true,
+        simpleModalOverlay: true,
+        inverted
+    })
+
     return (
         <>
             <Segment className="footerSegment" inverted={inverted} vertical>
                 <Container textAlign="center">
-                    <List horizontal inverted={inverted}>
+                    <List horizontal inverted={inverted} size="large">
                         {items.map((item) => (
                             <List.Item
                                 key={item}
@@ -43,8 +55,8 @@ const FooterComponent = () => {
             {activeItem && (
                 <Modal
                     classNames={{
-                        overlay: appendClassName("footerModalOverlay simpleModalOverlay", inverted),
-                        modal: appendClassName("footerModal simpleModal", inverted)
+                        overlay: modalOverlayClass,
+                        modal: modalClass
                     }}
                     onClose={() => setModalOpen(false)}
                     onOpen={() => setModalOpen(true)}

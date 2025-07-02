@@ -22,8 +22,6 @@ class QuizController extends Controller
 {
     const OFFICIAL_USER_ID = 1;
 
-    private $realQuizId;
-
     /**
      * Display the specified resource.
      *
@@ -165,38 +163,47 @@ class QuizController extends Controller
     private function validateQuiz(Request $request, String $quizId)
     {
         $userId = $request->user()->id;
-        $quiz = Quiz::where('quizId', $quizId)->first();
+        $quiz = Quiz::where('quiz_id', $quizId)->first();
         if (!$quiz) {
-            return response([
-                'message' => 'The quiz does not exist'
-            ], 400);
+            return [
+                'message' => 'The quiz does not exist',
+                'error' => true,
+                'code' => 404
+            ];
         }
-
         if ($quiz->user_id == $userId) {
-            return response([
-                'message' => 'You cannot answer your own quiz'
-            ], 400);
+            return [
+                'message' => 'You cannot answer your own quiz',
+                'error' => true,
+                'code' => 422
+            ];
         }
-
-        $this->realQuizId = $quiz->id;
+        return [
+            'id' => $quiz->id,
+            'error' => false
+        ];
     }
 
     public function answer(Request $request, String $quizId)
     {
         $userId = $request->user()->id;
-        $this->validateQuiz($request, $quizId);
+        $valid = $this->validateQuiz($request, $quizId);
+        if ($valid['error']) {
+            return response([
+                'message' => $valid['message']
+            ], $valid['code']);
+        }
 
         $lat = $request->input('lat');
         $lng = $request->input('lng');
-        $answerText = $request->input('answer');
 
         Answer::updateOrCreate([
-            'quiz_id' => $this->realQuizId,
+            'quiz_id' => $valid['id'],
             'user_id' => $userId
         ], [
             'lat' => $lat,
             'lng' => $lng,
-            'answer' => $answerText
+            'answer' => ''
         ]);
 
         return response([
@@ -207,10 +214,15 @@ class QuizController extends Controller
     public function hint(Request $request, String $quizId)
     {
         $userId = $request->user()->id;
-        $this->validateQuiz($request, $quizId);
+        $valid = $this->validateQuiz($request, $quizId);
+        if ($valid['error']) {
+            return response([
+                'message' => $valid['message']
+            ], $valid['code']);
+        }
 
         $where = [
-            'quiz_id' => $this->realQuizId,
+            'quiz_id' => $valid['id'],
             'user_id' => $userId,
         ];
         $answer = Answer::where($where)->first();

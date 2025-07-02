@@ -12,12 +12,13 @@ import {
     Segment,
     Sidebar
 } from "semantic-ui-react"
-import { useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
-import { setLanguage, toggleInverted } from "../../reducers/app"
+import { logout, setLanguage, toggleInverted } from "../../reducers/app"
 import { languages } from "../../options/languages"
 import { options } from "../../options/options"
+import { toast } from "react-toastify"
+import { toastConfig } from "../../options/toast"
 import { dateFormat, isSunday, nyc } from "../../utils/date"
 import classNames from "classnames"
 import moment from "moment-timezone"
@@ -34,14 +35,12 @@ const HeaderComponent = ({
     toggleLoginModal = () => null,
     showDates = true
 }) => {
-    const navigate = useNavigate()
     const dispatch = useDispatch()
     const isAuth = useSelector((state) => state.app.auth)
     const inverted = useSelector((state) => state.app.inverted)
     const language = useSelector((state) => state.app.language)
     const lang = translations[language]
     let translatedOptions = options(language)
-    const optCount = translatedOptions.length
 
     const [uploadModalOpen, setUploadModalOpen] = useState(false)
     const [sidebarVisible, setSidebarVisible] = useState(false)
@@ -51,7 +50,8 @@ const HeaderComponent = ({
     const [historyVisible, setHistoryVisible] = useState(false)
     const [settingsVisible, setSettingsVisible] = useState(false)
 
-    const [dropdownVal, setDropdownVal] = useState(translatedOptions[optCount - 1].value)
+    const [dropdownVal, setDropdownVal] = useState(translatedOptions[0].value)
+    const [dropdownOpts, setDropdownOpts] = useState(translatedOptions)
 
     const days = lang.days
     const lastIndex = days.length - 1
@@ -65,10 +65,30 @@ const HeaderComponent = ({
     const btnColor = inverted ? "green" : "black"
 
     useEffect(() => {
-        if (isAuth) {
-            translatedOptions.pop()
-            translatedOptions.push({})
+        console.log("is auth", isAuth)
+        let dropdownItem = {
+            key: "signout",
+            text: "Sign Out",
+            value: "signout",
+            content: (
+                <>
+                    {translations[language].auth.signOut} <Icon name="sign out" />
+                </>
+            )
         }
+        if (!isAuth) {
+            dropdownItem = {
+                key: "signin",
+                text: "Sign In",
+                value: "signin",
+                content: (
+                    <>
+                        {translations[language].auth.signIn} <Icon name="sign in" />
+                    </>
+                )
+            }
+        }
+        setDropdownOpts([...translatedOptions.slice(0, -1), dropdownItem])
     }, [isAuth])
 
     const modalClass = classNames({
@@ -95,7 +115,7 @@ const HeaderComponent = ({
                 open={settingsVisible}
                 showCloseIcon={false}
             >
-                <Header content="Settings" inverted={inverted} />
+                <Header content="Settings" inverted={inverted} size="large" />
             </Modal>
         )
     }
@@ -113,7 +133,7 @@ const HeaderComponent = ({
                 open={statsVisible}
                 showCloseIcon={false}
             >
-                <Header content="Stats" inverted={inverted} />
+                <Header content="Stats" inverted={inverted} size="large" />
             </Modal>
         )
     }
@@ -131,7 +151,7 @@ const HeaderComponent = ({
                 open={historyVisible}
                 showCloseIcon={false}
             >
-                <Header content="History" inverted={inverted} />
+                <Header content="History" inverted={inverted} size="large" />
             </Modal>
         )
     }
@@ -149,7 +169,7 @@ const HeaderComponent = ({
                 open={leaderboardVisible}
                 showCloseIcon={false}
             >
-                <Header content="LeaderBoard" inverted={inverted} />
+                <Header content="LeaderBoard" inverted={inverted} size="large" />
             </Modal>
         )
     }
@@ -208,22 +228,35 @@ const HeaderComponent = ({
                                 onChange={(e, { value }) => {
                                     if (value === "settings") {
                                         setSettingsVisible(true)
+                                        setDropdownVal(translatedOptions[0].value)
                                     }
                                     if (value === "stats") {
                                         setStatsVisible(true)
+                                        setDropdownVal(translatedOptions[1].value)
                                     }
                                     if (value === "history") {
                                         setHistoryVisible(true)
+                                        setDropdownVal(translatedOptions[2].value)
                                     }
                                     if (value === "leaderboard") {
                                         setLeaderboardVisible(true)
+                                        setDropdownVal(translatedOptions[3].value)
                                     }
                                     if (value === "signin") {
                                         toggleLoginModal()
                                         setDropdownVal(translatedOptions[0].value)
                                     }
+                                    if (value === "signout") {
+                                        localStorage.setItem("auth", false)
+                                        localStorage.setItem("bearer", null)
+                                        localStorage.setItem("user", null)
+                                        localStorage.setItem("verify", false)
+                                        dispatch(logout())
+                                        toast.success("You have been logged out!", toastConfig)
+                                        setDropdownVal(translatedOptions[0].value)
+                                    }
                                 }}
-                                options={translatedOptions}
+                                options={dropdownOpts}
                                 pointing
                                 trigger={
                                     <Icon color={btnColor} inverted={inverted} name="options" />
@@ -298,19 +331,19 @@ const HeaderComponent = ({
                 visible={sidebarVisible}
             >
                 <Menu.Item as="a" onClick={() => {}}>
+                    History
+                </Menu.Item>
+                <Menu.Item as="a" onClick={() => {}}>
                     Stats
                 </Menu.Item>
                 <Menu.Item as="a" onClick={() => {}}>
                     Settings
                 </Menu.Item>
                 <Menu.Item as="a" onClick={() => {}}>
-                    History
-                </Menu.Item>
-                <Menu.Item as="a" onClick={() => {}}>
                     Leader Board
                 </Menu.Item>
                 <Menu.Item as="a" onClick={() => {}}>
-                    Make a Quiz
+                    Make a Scene
                 </Menu.Item>
                 {isAuth ? (
                     <Menu.Item as="a" onClick={() => {}}>

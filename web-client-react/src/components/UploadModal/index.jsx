@@ -13,6 +13,7 @@ import {
     Segment,
     Step,
     Table,
+    TextArea,
     Transition
 } from "semantic-ui-react"
 import { Modal } from "react-responsive-modal"
@@ -27,15 +28,19 @@ import {
     setVideo,
     setVideos
 } from "../../reducers/form"
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useSelector, useStore, useDispatch } from "react-redux"
 import { useDropzone } from "react-dropzone"
 import { DebounceInput } from "react-debounce-input"
 import { filterTypes } from "../../options/filters"
 import { accept } from "../../options/formUpload"
-import { appendClassName } from "../../utils/general"
+import { isValidDate } from "../../utils/date"
+import { toastConfig } from "../../options/toast"
+import { toast } from "react-toastify"
 import axios from "axios"
+import classNames from "classnames"
+import confetti from "canvas-confetti"
 import MapComponent from "../Map"
 import moment from "moment-timezone"
 import PropTypes from "prop-types"
@@ -43,7 +48,16 @@ import * as translations from "../../assets/translate.json"
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
 const animation = "fade"
-const duration = 400
+const duration = 600
+
+const defaults = {
+    spread: 360,
+    ticks: 50,
+    gravity: 0,
+    decay: 0.94,
+    startVelocity: 30,
+    colors: ["FFE400", "FFBD00", "E89400", "FFCA6C", "FDFFB8"]
+}
 
 const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
     const navigate = useNavigate()
@@ -52,10 +66,10 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
     const dispatch = useDispatch()
     const { location } = state.form
 
+    const inverted = useSelector((state) => state.app.inverted)
     const language = useSelector((state) => state.app.language)
     const lang = translations[language]
 
-    const inverted = useSelector((state) => state.app.inverted)
     const action = useSelector((state) => state.form.action)
     const actions = useSelector((state) => state.form.actions)
     const img = useSelector((state) => state.form.img)
@@ -63,8 +77,6 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
     const chars = useSelector((state) => state.form.chars)
     const video = useSelector((state) => state.form.video)
     const videos = useSelector((state) => state.form.videos)
-
-    const hintRef = useRef(null)
 
     const [pageNum, setPageNum] = useState(1)
     const [videoType, setVideoType] = useState(1)
@@ -75,6 +87,8 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
     const [imgFile, setImgFile] = useState("")
     const [charIsSelf, setCharIsSelf] = useState(false)
     const [actorName, setActorName] = useState("")
+    const [hintVal, setHintVal] = useState("")
+    const [formLoading, setFormLoading] = useState(false)
 
     const imgEmpty = img.path === null
     const videoEmpty = video.id === null
@@ -89,6 +103,21 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
             backgroundImage: `url(${img.src})`,
             height: `${img.height / 1.5}px`
         }
+    }
+
+    const showConfetti = () => {
+        confetti({
+            ...defaults,
+            particleCount: 40,
+            scalar: 1.2,
+            shapes: ["star"]
+        })
+        confetti({
+            ...defaults,
+            particleCount: 10,
+            scalar: 0.75,
+            shapes: ["circle"]
+        })
     }
 
     const getVideos = (q, type = 5) => {
@@ -112,17 +141,14 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
     }
 
     const submitQuiz = () => {
-        let hint = ""
-        if (hintRef.current) {
-            hint = hintRef.current.inputRef.current.value
-        }
+        setFormLoading(true)
         const formData = new FormData()
         formData.set("file", imgFile)
         formData.set("videoId", video.id)
         formData.set("charId", char.id)
         formData.set("lat", location.lat)
         formData.set("lng", location.lng)
-        formData.set("hintOne", hint)
+        formData.set("hintOne", hintVal)
 
         if (action.id !== 0) {
             formData.set("actionId", action.id)
@@ -149,10 +175,15 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
                 setVideosVisible(false)
                 setCharsVisible(false)
                 setActionsVisible(false)
+                setFormLoading(false)
                 navigate(`/${quizId}`)
             })
             .catch((error) => {
-                console.error(error)
+                toast.error(error.response.data.message, {
+                    ...toastConfig,
+                    className: inverted ? "inverted" : null
+                })
+                setFormLoading(false)
             })
     }
 
@@ -160,8 +191,10 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
         if (files.length !== 1) {
             return
         }
+
         const file = files[0]
         setImgFile(file)
+
         const reader = new FileReader()
         reader.onabort = () => console.error("file reading was aborted")
         reader.onerror = () => console.error("file reading has failed")
@@ -272,14 +305,17 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
                     ))}
                 </div>
                 {!videoEmpty && (
-                    <Header className="videoItemHeader" inverted={inverted} size="small">
-                        <Image alt={video.title} rounded src={video.img} />
-                        <Header.Content>
-                            {video.title}
-                            <Header.Subheader>{video.year}</Header.Subheader>
-                        </Header.Content>
-                    </Header>
+                    <>
+                        <Header className="videoItemHeader" inverted={inverted} size="small">
+                            <Image alt={video.title} rounded src={video.img} />
+                            <Header.Content>
+                                {video.title}
+                                <Header.Subheader>{video.year}</Header.Subheader>
+                            </Header.Content>
+                        </Header>
+                    </>
                 )}
+                {!videoEmpty && videosVisible && <Divider inverted={inverted} />}
                 {/* Video Drop Down */}
                 <Transition
                     animation={animation}
@@ -314,7 +350,7 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
                                                     <Header.Content>
                                                         {v.title}
                                                         <Header.Subheader>
-                                                            {`${v.year} • ${moment(v.releaseDate).fromNow()}`}
+                                                            {`${v.year}${isValidDate(v.releaseDate) ? ` • ${moment(v.releaseDate).fromNow()}` : ""}`}
                                                         </Header.Subheader>
                                                     </Header.Content>
                                                 </Header>
@@ -510,27 +546,33 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
         <>
             <Grid columns="equal" inverted={inverted} stackable>
                 <Grid.Row>
-                    <Divider vertical />
                     <Grid.Column>
-                        <Input
-                            fluid
-                            icon="map marker"
-                            iconPosition="left"
+                        <Header
+                            content="Where is this scene located?"
                             inverted={inverted}
-                            placeholder={lang.form.steps[2].locationHeader}
                             size="large"
-                            type="text"
                         />
-                        <MapComponent style={{ marginTop: "0.75em" }} />
                     </Grid.Column>
                     <Grid.Column>
-                        <Input
-                            fluid
+                        <Header
+                            content={lang.form.steps[2].hintHeader}
                             inverted={inverted}
-                            placeholder={lang.form.steps[2].hintHeader}
-                            ref={hintRef}
                             size="large"
                         />
+                    </Grid.Column>
+                </Grid.Row>
+                <Grid.Row>
+                    <Grid.Column>
+                        <MapComponent />
+                    </Grid.Column>
+                    <Grid.Column>
+                        <Form>
+                            <TextArea
+                                inverted={inverted}
+                                onChange={(e, { value }) => setHintVal(value)}
+                                placeholder={""}
+                            />
+                        </Form>
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
@@ -539,8 +581,10 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
                 <Button
                     color={inverted ? "green" : "blue"}
                     content="Submit"
+                    // disabled={}
                     fluid
                     inverted={inverted}
+                    loading={formLoading}
                     onClick={() => {
                         submitQuiz()
                     }}
@@ -550,11 +594,22 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
         </>
     )
 
+    const modalClass = classNames({
+        submitSceneModal: true,
+        simpleModal: true,
+        inverted
+    })
+    const modalOverlayClass = classNames({
+        submitSceneModalOverlay: true,
+        simpleModalOverlay: true,
+        inverted
+    })
+
     return (
         <Modal
             classNames={{
-                overlay: appendClassName("submitSceneModalOverlay simpleModalOverlay", inverted),
-                modal: appendClassName("submitSceneModal simpleModal", inverted)
+                overlay: modalOverlayClass,
+                modal: modalClass
             }}
             onClose={() => setModalOpen(false)}
             onOpen={() => setModalOpen(true)}

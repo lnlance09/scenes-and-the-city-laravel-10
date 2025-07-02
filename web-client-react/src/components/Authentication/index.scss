@@ -43,18 +43,24 @@
                 }
             }
         }
-    }
 
-    .footerText {
-        font-size: 16px !important;
-        font-weight: normal;
-        margin-bottom: 11px;
-        margin-top: 9px;
+        .footerText {
+            font-size: 16px !important;
+            font-weight: normal;
+            margin-bottom: 11px;
+            margin-top: 9px;
 
-        .footerLink {
-            border-bottom: solid 1px colors.$blue;
-            cursor: pointer;
-            padding-bottom: 3px;
+            .footerLink {
+                border-bottom: solid 1px colors.$blue;
+                cursor: pointer;
+                padding-bottom: 3px;
+            }
+        }
+
+        &.inverted {
+            .footerText .footerLink {
+                border-bottom: solid 1px colors.$terminalGreen;
+            }
         }
     }
 

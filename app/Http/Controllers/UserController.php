@@ -90,13 +90,22 @@ class UserController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'bail|required|email',
-            'password' => 'required',
+            'email' => 'bail|email',
+            'username' => 'bail|min:3|alpha_dash',
+            'password' => ['bail', 'required', Password::min(5)],
         ]);
-        $user = User::where([
-            'email' => $request->input('email'),
-            'password' => sha1($request->input('password'))
-        ])->first();
+
+        $password = sha1($request->input('password'));
+
+        $user = User::where(function ($query) use ($request, $password) {
+            $query->where(function ($query) use ($request, $password) {
+                $query->where('email', '=', $request->input('email'));
+                $query->where('password', '=', $password);
+            })->orWhere(function ($query) use ($request, $password) {
+                $query->where('username', '=', $request->input('username'));
+                $query->where('password', '=', $password);
+            });
+        })->first();
         if (!$user) {
             return response([
                 'message' => 'Incorrect password'
