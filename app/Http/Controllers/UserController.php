@@ -129,7 +129,7 @@ class UserController extends Controller
         $request->validate([
             'email' => 'bail|required|email|unique:users',
             'password' => ['bail', 'required', Password::min(8)],
-            'username' => 'bail|required|max:20|unique:users,username|alpha_dash'
+            'username' => 'bail|required|max:20|min:3|unique:users,username|alpha_dash'
         ]);
 
         $email = $request->input('email');
@@ -209,11 +209,15 @@ class UserController extends Controller
     public function forgot(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'email' => 'bail|email',
+            'username' => 'bail|max:20|min:3|alpha_dash'
         ]);
         $email = $request->input('email');
-        $user = User::where('email', $email)->first();
+        $username = $request->input('username');
 
+        $user = User::where('email', $email)
+            ->orWhere('username', $username)
+            ->first();
         if (empty($user)) {
             return response([
                 'message' => 'No user found'

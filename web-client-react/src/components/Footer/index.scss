@@ -1,34 +1,41 @@
 @use "../../scss/colors.scss";
 @use "../../scss/fonts.scss";
 
-.footerSegment {
-	background: colors.$offWhite !important;
+.footerComponent {
+	.footerSegment {
+		background: colors.$offWhite !important;
 
-	.ui.list > .item {
-		cursor: pointer;
-		font-family: fonts.$cheltenham700 !important;
-	}
+		.ui.list {
+			margin-bottom: 0.25em;
 
-	p {
-		font-family: fonts.$imperial400 !important;
-		margin-top: 0.5em !important;
-	}
-
-	&.inverted {
-		background: colors.$blackBackgroundNormal !important;
+			> .item {
+				cursor: pointer;
+				font-family: fonts.$franklin600 !important;
+			}
+		}
 
 		p {
-			color: #aaa !important;
+			font-family: fonts.$cheltenham400 !important;
+			margin-top: 0.5em !important;
+		}
+
+		&.inverted {
+			background: colors.$blackBackgroundNormal !important;
+			border-top: none !important;
+
+			p {
+				color: #aaa !important;
+			}
 		}
 	}
-}
 
-.footerModal {
-	h2.ui.header {
-		font-family: fonts.$cheltenham700 !important;
-	}
+	.footerModal {
+		h2.ui.header {
+			font-family: fonts.$cheltenham700 !important;
+		}
 
-	p.ui.header.small {
-		font-family: fonts.$imperial400 !important;
+		p.ui.header.small {
+			font-family: fonts.$imperial400 !important;
+		}
 	}
 }

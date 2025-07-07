@@ -10,17 +10,14 @@ class LocationController extends Controller
 
     public function find(Request $request)
     {
-        ini_set('memory_limit', '2048M');
-        ini_set('max_execution_time', 250);
-
+        $request->validate([
+            'lat' => 'required|numeric|between:40.4989,40.9130',
+            'lng' => 'required|numeric|between:-74.2527,-73.70165',
+        ]);
         $lng = $request->input('lng');
         $lat = $request->input('lat');
 
         $nyc = new NewYorkCity();
-        // echo $nyc->cleanUpData(1);
-        // die;
-        // echo $nyc->removeDuplicateStreets('bronx');
-        // die;
         $details = $nyc->getLocationDetails($lng, $lat);
         if (!$details) {
             return response([

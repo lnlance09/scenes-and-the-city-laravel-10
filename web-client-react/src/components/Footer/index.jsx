@@ -28,14 +28,14 @@ const FooterComponent = () => {
     })
 
     return (
-        <>
+        <div className="footerComponent">
             <Segment className="footerSegment" inverted={inverted} vertical>
                 <Container textAlign="center">
                     <List horizontal inverted={inverted} size="large">
                         {items.map((item) => (
                             <List.Item
                                 key={item}
-                                onClick={() => {
+                                onClick={async () => {
                                     setActiveItem(item)
                                     setModalOpen(true)
                                 }}
@@ -52,6 +52,7 @@ const FooterComponent = () => {
                     />
                 </Container>
             </Segment>
+
             {activeItem && (
                 <Modal
                     classNames={{
@@ -174,7 +175,7 @@ const FooterComponent = () => {
                     )}
                 </Modal>
             )}
-        </>
+        </div>
     )
 }
 

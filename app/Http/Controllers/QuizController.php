@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\Answer as AnswerResource;
 use App\Http\Resources\Quiz as QuizResource;
 use App\Models\Action;
 use App\Models\Answer;
 use App\Models\Character;
+use App\Models\NewYorkCity;
 use App\Models\Quiz;
 use App\Models\Scene;
 use App\Models\ScenePic;
@@ -30,13 +32,15 @@ class QuizController extends Controller
      */
     public function show(Request $request, String $quizId)
     {
+        $user = $request->user('api');
         $quiz = Quiz::where('quiz_id', $quizId)->first();
         if (empty($quiz)) {
             return response([
                 'message' => 'That quiz does not exist'
             ], 404);
         }
-        return new QuizResource($quiz);
+
+        return $this->formatResponse($quiz, $user);
     }
 
     /**
@@ -47,6 +51,7 @@ class QuizController extends Controller
      */
     public function showByDate(Request $request)
     {
+        $user = $request->user('api');
         $request->validate([
             'date' => 'required|date_format:n-j-y',
         ]);
@@ -62,7 +67,61 @@ class QuizController extends Controller
                 'message' => 'That quiz does not exist'
             ], 404);
         }
-        return new QuizResource($quiz);
+
+        return $this->formatResponse($quiz, $user);
+    }
+
+    public function formatResponse($quiz, $user)
+    {
+        $text = $quiz->generateQuestion();
+        $response = [
+            'quiz' => [
+                'quizId' => $quiz->quiz_id,
+                'img' => env('AWS_URL', 'https://blather-new.s3.us-west-2.amazonaws.com/') . $quiz->scene->pics[0]->s3_url,
+                'username' => $quiz->user->username,
+                'text' => $text,
+                'createdAt' => $quiz->created_at
+            ],
+        ];
+
+        if ($user) {
+            $answer = Answer::where([
+                'user_id' => $user->id,
+                'quiz_id' => $quiz->id
+            ])->first();
+            $response['answer'] = null;
+
+            if (!empty($answer)) {
+                $geoData = [
+                    'borough' => null,
+                    'hood' => null,
+                    'streets' => []
+                ];
+                if (!is_null($answer->lng) && !is_null($answer->lat)) {
+                    $nyc = new NewYorkCity();
+                    $geoData = $nyc->getLocationDetails($answer->lng, $answer->lat);
+                }
+
+                $geoData['lat'] = is_null($answer->lat) ? 40.758896 : $answer->lat;
+                $geoData['lng'] = is_null($answer->lng) ? -73.98513 : $answer->lng;
+                $geoData['hintsUsed'] = $answer->hints_used;
+                $response['answer'] = $geoData;
+
+                if ($answer->hints_used >= 1) {
+                    $nyc = new NewYorkCity();
+                    $details = $nyc->getLocationDetails($quiz->lng, $quiz->lat);
+                    $response['quiz']['hintOne'] = $details['hood'];
+                    return response($response);
+                }
+
+                if ($answer->hints_used == 2) {
+                    $response['quiz']['hintTwo'] = $quiz->hint_one;
+                    return response($response);
+                }
+            }
+        }
+
+        return response($response);
     }
 
     private function uploadToS3(Request $request, $quizId)
@@ -75,7 +134,7 @@ class QuizController extends Controller
         $img = $manager->read($file);
         $img->resize(320, 320);
         $img->save($file);
-        $s3Url = "quizzes/{quizId}.jpg";
+        $s3Url = "quizzes/" . $quizId . ".jpg";
         Storage::disk('s3')->put($s3Url, file_get_contents($file));
         return $s3Url;
     }
@@ -91,20 +150,19 @@ class QuizController extends Controller
         $request->validate([
             'videoId' => 'bail|required|exists:videos,id',
             'charId' => 'bail|required|exists:characters,id',
-            'action' => 'bail|unique:actions,name|max:20',
+            'action' => 'bail|unique:actions,name|max:30',
             'actionId' => 'bail|exists:actions,id',
-            'hintOne' => 'bail|required|min:3|max:20'
+            'hint' => 'bail|required|min:3|max:20'
         ]);
 
-        // $userId = $request->user()->id;
-        $userId = 1;
+        $userId = $request->user()->id;
         $videoId = $request->input('videoId');
         $charId = $request->input('charId');
         $actionId = $request->input('actionId', false);
         $action = $request->input('action', null);
         $lat = $request->input('lat', null);
         $lng = $request->input('lng', null);
-        $hintOne = $request->input('hintOne');
+        $hint = $request->input('hint');
         $quizId = Str::random(8);
 
         // Make sure that the character belongs to the specified video
@@ -150,7 +208,7 @@ class QuizController extends Controller
             'user_id' => $userId,
             'quiz_id' => $quizId,
             'img' => $s3Url,
-            'hint_one' => $hintOne,
+            'hint_one' => $hint,
             'hint_two' => '',
             'lat' => $lat,
             'lng' => $lng
@@ -208,7 +266,7 @@ class QuizController extends Controller
 
         return response([
             'message' => 'Success'
-        ], 200);
+        ]);
     }
 
     public function hint(Request $request, String $quizId)
@@ -221,6 +279,7 @@ class QuizController extends Controller
             ], $valid['code']);
         }
 
+        $number = $request->input('number', null);
         $where = [
             'quiz_id' => $valid['id'],
             'user_id' => $userId,
@@ -241,29 +300,26 @@ class QuizController extends Controller
         $answer->hints_used = $hintsUsed + 1;
         $answer->save();
 
-        return response([
-            'message' => 'Success'
-        ], 200);
-    }
+        $quiz = Quiz::find($valid['id'])->first();
 
-    public function leaderboard(Request $request) {}
-
-    public function getAnswer(Request $request, String $quizId)
-    {
-        $userId = $request->user()->id;
-        $where = [
-            'quiz_id' => $quizId,
-            'user_id' => $userId,
-        ];
-        $answer = Answer::where($where)->first();
-        if ($answer) {
+        if ($number == 1) {
+            $nyc = new NewYorkCity();
+            $details = $nyc->getLocationDetails($quiz->lng, $quiz->lat);
             return response([
-                'message' => "You haven't submitted an answer"
-            ], 404);
+                'hint' => $details['hood']
+            ]);
+        }
+
+        if ($number == 2) {
+            return response([
+                'hint' => $quiz->hint_one
+            ]);
         }
 
         return response([
-            'answer' => $answer
-        ]);
+            'message' => 'Unknown hint number'
+        ], 404);
     }
+
+    public function leaderboard(Request $request) {}
 }

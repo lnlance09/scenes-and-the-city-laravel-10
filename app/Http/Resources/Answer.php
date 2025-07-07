@@ -14,6 +14,11 @@ class Answer extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'createdAt' => $this->created_at,
+            'hintsUsed' => $this->hints_used,
+            'lat' => (float)$this->lat,
+            'lng' => (float)$this->lng
+        ];
     }
 }

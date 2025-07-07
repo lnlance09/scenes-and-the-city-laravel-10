@@ -4,7 +4,7 @@
             "emailOrUsername": "Email or Username",
             "password": "Password",
             "signIn": "Sign In",
-            "newToThis": "New to this app?",
+            "newToThis": "New to this game?",
             "signUp": "Sign Up",
             "signOut": "Sign Out",
             "forgotPassword": "Forgot password?",
@@ -35,7 +35,11 @@
                     "description": "From a movie, TV show, or music video",
                     "addPicture": "Add Picture",
                     "header": "A picture is worth a thousand words...",
-                    "buttonText": "Next"
+                    "buttonText": "Next",
+                    "selectAnother": "select another photo",
+                    "submitBtn": "Next",
+                    "placeholderInfo": "Marilyn Monroe at Lexington Avenue and 52nd Street circa 1955",
+                    "placeholderCredit": "Credit: "
                 },
                 {
                     "name": "Information",
@@ -45,15 +49,19 @@
                     "headerTwo": "Who is in this pic?",
                     "seeFullCast": "see full cast",
                     "headerThree": "What is {name} doing?",
-                    "formThreePlaceholder": "eg: walking his dog, eating pizza, smoking a blunt, etc...",
-                    "noResults": "no results"
+                    "formThreePlaceholder": "eg: walking his dog, eating pizza, etc...",
+                    "noResults": "no results",
+                    "filters": ["movie", "tv show", "music video", "all"]
                 },
                 {
                     "name": "Answer & Hint",
                     "description": "Provide a hint to help solve",
                     "buttonText": "Submit",
                     "locationHeader": "Where is this located?",
-                    "hintHeader": "Provide a hint"
+                    "locationSubHeader": "Anywhere in NYC",
+                    "hintHeader": "Provide a hint",
+                    "hintPlaceholder": "Say something creative",
+                    "submitBtn": "Submit"
                 }
             ]
         },
@@ -77,27 +85,31 @@
         "main": {
             "seeLastWeek": "see last week",
             "seeToday": "see today",
-            "weekendOf": "Weekend of"
+            "weekendOf": "Weekend of",
+            "errorMessage": "There was en error fetching this quiz.",
+            "seeStreetView": "see street view",
+            "toastErrorMessage": "Error fetching quiz"
         },
         "months": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
     },
     "es": {
         "auth": {
-            "emailOrUsername": "",
-            "password": "",
-            "signIn": "",
-            "newToThis": "",
-            "signUp": "",
-            "forgotPassword": "",
-            "username": "",
-            "regsiterBtn": "",
-            "alreadyAccount": "",
-            "enterYourEmail": "",
-            "sendInstructions": "",
-            "backToLogin": "",
-            "emailSentToYou": "",
-            "verificationCode": "",
-            "verify": ""
+            "emailOrUsername": "Email o nombre de usuario",
+            "password": "Contraseña",
+            "signIn": "Iniciar sesión",
+            "newToThis": "¿Eres nuevo en este juego?",
+            "signUp": "Inscribirse",
+            "signOut": "Desconectar",
+            "forgotPassword": "¿Has olvidado tu contraseña?",
+            "username": "Nombre de usuario",
+            "regsiterBtn": "Crea una cuenta",
+            "alreadyAccount": "¿Ya tienes una cuenta?",
+            "enterYourEmail": "Introduce tu correo electrónico",
+            "sendInstructions": "Enviar instrucciones",
+            "backToLogin": "Volver a iniciar sesión",
+            "emailSentToYou": "Se le ha enviado un correo electrónico",
+            "verificationCode": "Código de verificación",
+            "verify": "Verificar"
         },
         "answer": {
             "hintOne": "Pista Número Uno",
@@ -112,29 +124,37 @@
         "form": {
             "steps": [
                 {
-                    "name": "",
-                    "description": "",
-                    "addPicture": "",
-                    "header": "",
-                    "buttonText": ""
+                    "name": "Imagen",
+                    "description": "De una película, un programa de televisión o un vídeo musical",
+                    "addPicture": "Agregar imagen",
+                    "header": "Una imagen vale más que mil palabras...",
+                    "buttonText": "Próximo",
+                    "selectAnother": "seleccione otra foto",
+                    "submitBtn": "Próximo",
+                    "placeholderInfo": "Marilyn Monroe en Lexington Avenue y 52nd Street alrededor de 1955",
+                    "placeholderCredit": "Credit: "
                 },
                 {
-                    "name": "",
-                    "description": "",
-                    "headerOne": "",
-                    "formOnePlaceholder": "",
-                    "headerTwo": "",
-                    "seeFullCast": "",
-                    "headerThree": "",
-                    "formThreePlaceholder": "",
-                    "noResults": ""
+                    "name": "Información",
+                    "description": "¿De dónde es esto? ¿Quién está ahí?",
+                    "headerOne": "¿De donde es esto?",
+                    "formOnePlaceholder": "Buscar películas, programas de TV y videos musicales",
+                    "headerTwo": "¿Quién está en esta foto?",
+                    "seeFullCast": "ver reparto completo",
+                    "headerThree": "¿Qué está haciendo {name}?",
+                    "formThreePlaceholder": "por ejemplo: pasear a su perro, comer pizza, etc...",
+                    "noResults": "sin resultados",
+                    "filters": ["película", "programa de televisión", "vídeo musical", "todo"]
                 },
                 {
-                    "name": "",
-                    "description": "",
-                    "buttonText": "",
-                    "locationHeader": "",
-                    "hintHeader": ""
+                    "name": "Respuesta y pista",
+                    "description": "Proporciona una pista para ayudar a resolver",
+                    "buttonText": "Entregar",
+                    "locationHeader": "¿Donde está ubicado esto?",
+                    "locationSubHeader": "En cualquier lugar de Nueva York",
+                    "hintHeader": "Proporcionar una pista",
+                    "hintPlaceholder": "Di algo creativo",
+                    "submitBtn": "Entregar"
                 }
             ]
         },
@@ -158,27 +178,31 @@
         "main": {
             "seeLastWeek": "ver la semana pasada",
             "seeToday": "ver hoy",
-            "weekendOf": "Fin de semana de"
+            "weekendOf": "Fin de semana de",
+            "errorMessage": "Hubo un error al obtener este cuestionario.",
+            "seeStreetView": "ver vista de la calle",
+            "toastErrorMessage": "Error al obtener el cuestionario"
         },
         "months": ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
     },
     "cn": {
         "auth": {
-            "emailOrUsername": "",
-            "password": "",
-            "signIn": "",
-            "newToThis": "",
-            "signUp": "",
-            "forgotPassword": "",
-            "username": "",
-            "regsiterBtn": "",
-            "alreadyAccount": "",
-            "enterYourEmail": "",
-            "sendInstructions": "",
-            "backToLogin": "",
-            "emailSentToYou": "",
-            "verificationCode": "",
-            "verify": ""
+            "emailOrUsername": "电子邮件或用户名",
+            "password": "密码",
+            "signIn": "登入",
+            "newToThis": "第一次玩这个游戏吗?",
+            "signUp": "报名",
+            "signOut": "登出",
+            "forgotPassword": "忘记密码?",
+            "username": "用户名",
+            "regsiterBtn": "创建一个帐户",
+            "alreadyAccount": "已有账户?",
+            "enterYourEmail": "输入您的电子邮件",
+            "sendInstructions": "发送指令",
+            "backToLogin": "返回登录",
+            "emailSentToYou": "已向您发送电子邮件",
+            "verificationCode": "验证码",
+            "verify": "核实"
         },
         "answer": {
             "hintOne": "提示一",
@@ -193,36 +217,44 @@
         "form": {
             "steps": [
                 {
-                    "name": "",
-                    "description": "",
-                    "addPicture": "",
-                    "header": "",
-                    "buttonText": ""
+                    "name": "图片",
+                    "description": "来自电影、电视节目或音乐视频",
+                    "addPicture": "添加图片",
+                    "header": "一张图片胜过千言万语…",
+                    "buttonText": "下一个",
+                    "selectAnother": "选择另一张照片",
+                    "submitBtn": "下一个",
+                    "placeholderInfo": "玛丽莲·梦露于 1955 年在莱克星顿大道和第 52 街",
+                    "placeholderCredit": "Credit: "
                 },
                 {
-                    "name": "",
-                    "description": "",
-                    "headerOne": "",
-                    "formOnePlaceholder": "",
-                    "headerTwo": "",
-                    "seeFullCast": "",
-                    "headerThree": "",
-                    "formThreePlaceholder": "",
-                    "noResults": ""
+                    "name": "信息",
+                    "description": "这是什么？里面都有谁?",
+                    "headerOne": "这是从哪里来的?",
+                    "formOnePlaceholder": "搜索电影、电视节目和音乐视频",
+                    "headerTwo": "这张照片上的人是谁?",
+                    "seeFullCast": "查看完整演员表",
+                    "headerThree": "{name}在做什么？",
+                    "formThreePlaceholder": "例如：遛狗、吃披萨等…",
+                    "noResults": "没有结果",
+                    "filters": ["电影", "电视节目", "音乐录影带", "全部"]
                 },
                 {
-                    "name": "",
-                    "description": "",
-                    "buttonText": "",
-                    "locationHeader": "",
-                    "hintHeader": ""
+                    "name": "答案和提示",
+                    "description": "提供提示以帮助解决",
+                    "buttonText": "提交",
+                    "locationHeader": "它位于哪里?",
+                    "locationSubHeader": "纽约市的任何地方",
+                    "hintHeader": "提供提示",
+                    "hintPlaceholder": "说点有创意的话",
+                    "submitBtn": "提交"
                 }
             ]
         },
         "time": {
-            "hour": "",
-            "minute": "",
-            "second": ""
+            "hour": "小时",
+            "minute": "分钟",
+            "second": "第二"
         },
         "footer": {
             "about": "关于",
@@ -239,7 +271,10 @@
         "main": {
             "seeLastWeek": "见上周",
             "seeToday": "今天见",
-            "weekendOf": "周末"
+            "weekendOf": "周末",
+            "errorMessage": "获取此测验时出错",
+            "toastErrorMessage": "获取测验时出错",
+            "seeStreetView": "查看街景"
         },
         "months": ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"]
     }

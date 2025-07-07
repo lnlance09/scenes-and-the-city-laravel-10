@@ -1,4 +1,5 @@
 @use "sass:color";
+
 @use "../../scss/fonts.scss";
 @use "../../scss/colors.scss";
 
@@ -6,27 +7,28 @@
 	position: relative;
 
 	.menu.pointing.secondary.headerMenu {
-		background: colors.$offWhite;
+		background-image: linear-gradient(#1f1f1f 25%, colors.$blackBackgroundNormal 50%, #1f1f1f 75%);
 		height: 65px;
 		margin-bottom: 0;
 
 		.floatedRight {
 			float: right;
+
+			@media only screen and (min-width: 320px) and (max-width: 767px) {
+				display: none;
+			}
 		}
 
 		.ui.container {
 			display: block;
 		}
 
-		.item {
+		.item.menuItem {
 			display: inline-block;
+			margin-left: 0.75em;
 
-			&.active, &:active {
-				border: none;
-			}
-
-			@media only screen and (min-width: 320px) and (max-width: 767px) {
-				display: none;
+			.ui.image.avatar {
+				cursor: pointer;
 			}
 		}
 
@@ -54,24 +56,42 @@
 				cursor: pointer;
 				height: 60px;
 				position: relative;
-				top: 0.25em;
-				width: 225px;
+				width: 250px;
 			}
 		}
 
 		.visible.menu.transition {
 			border-radius: 0.25em !important;
+			font-family: fonts.$franklin600 !important;
 			left: auto;
+			position: absolute;
 			right: -5em;
 			width: 13em;
+			z-index: 99999;
 
-			&:last-of-type {
-				border-radius: 0.25em !important;
+			.item {
+				&:nth-of-type(even) {
+					background: colors.$offWhite !important;
+				}
+
+				&:last-of-type, &:first-of-type {
+					border-radius: 0.25em !important;
+				}
+
+				&.active, &:active {
+					background: inherit !important;
+					border: none;
+					font-family: fonts.$franklin700 !important;
+				}
 			}
 
 			.icon, .flag {
 				float: right;
 				margin-right: 0 !important;
+			}
+
+			@media only screen and (min-width: 320px) and (max-width: 767px) {
+				display: none;
 			}
 		}
 	
@@ -124,21 +144,17 @@
 			.column {
 				background: colors.$whiteBackgroundDark;
 				border-bottom: solid 1px #ddd;
+				border-top: solid 1px #ddd;
 				cursor: pointer;
-				font-family: fonts.$cheltenham400 !important;
+				font-family: fonts.$cheltenham700 !important;
 
 				p {
-					font-family: fonts.$cheltenham300 !important;
+					font-family: fonts.$cheltenham400 !important;
 				}
 
 				&.active {
 					background: colors.$whiteBackgroundNormal;
 					border-bottom: none;
-					font-family: fonts.$cheltenham400 !important;
-
-					p {
-						font-family: fonts.$cheltenham300 !important;
-					}
 				}
 			}
 		}

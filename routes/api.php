@@ -24,19 +24,18 @@ Route::get('/actions', [ActionController::class, 'index']); //
 Route::get('/videos', [VideoController::class, 'index']); // 
 Route::get('/chars/{videoId}', [CharacterController::class, 'index']); //
 
-Route::get('/location', [LocationController::class, 'find']);
+Route::get('/location', [LocationController::class, 'find']); //
 
 Route::get('/quiz/{quizId}', [QuizController::class, 'show']); //
 Route::get('/quiz/show/date', [QuizController::class, 'showByDate']); //
-Route::post('/quiz/submit', [QuizController::class, 'create']); // 
-Route::post('/quiz/hint/{quizId}', [QuizController::class, 'hint'])->middleware(['auth:api', 'verified']);
-Route::post('/quiz/answer/{quizId}', [QuizController::class, 'answer'])->middleware(['auth:api', 'verified']);
-Route::get('/quiz/answer/{quizId}', [QuizController::class, 'getAnswer'])->middleware(['auth:api', 'verified']);
+Route::post('/quiz/submit', [QuizController::class, 'create'])->middleware(['auth:api', 'verified']); // 
+Route::post('/quiz/hint/{quizId}', [QuizController::class, 'hint'])->middleware(['auth:api', 'verified']); // 
+Route::post('/quiz/answer/{quizId}', [QuizController::class, 'answer'])->middleware(['auth:api', 'verified']); //
 Route::get('/quiz/leaderboard', [QuizController::class, 'leaderboard']);
 
 Route::get('/users/changePassword', [UserController::class, 'changePassword'])->middleware(['auth:api', 'verified']);
 Route::get('/users/changeUsername', [UserController::class, 'changeUsername'])->middleware(['auth:api', 'verified']);
-Route::get('/users/checkUsername', [UserController::class, 'checkUsername']);
+Route::get('/users/checkUsername', [UserController::class, 'checkUsername'])->middleware(['auth:api', 'verified']);
 Route::post('/users/login', [UserController::class, 'login']); // 
 Route::post('/users/register', [UserController::class, 'register']); // 
 Route::post('/users/forgot', [UserController::class, 'forgot']); // 

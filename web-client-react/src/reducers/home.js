@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { defaultQuiz, initialHomeState } from "../states/home"
+import { defaultAnswer, defaultQuiz, initialHomeState } from "../states/home"
 
 const homeSlice = createSlice({
     name: "home",
@@ -10,6 +10,7 @@ const homeSlice = createSlice({
         },
         setAnswer: (state, action) => {
             state.answer = {
+                ...state.answer,
                 lat: action.payload.lat,
                 lng: action.payload.lng,
                 hood: action.payload.hood,
@@ -17,12 +18,41 @@ const homeSlice = createSlice({
                 streets: action.payload.streets
             }
         },
+        setHasAnswered: (state, action) => {
+            state.hasAnswered = action.payload.hasAnswered
+        },
+        setHintOne: (state, action) => {
+            state.quiz.hintOne = action.payload.hint
+        },
+        setHintTwo: (state, action) => {
+            state.quiz.hintTwo = action.payload.hint
+        },
+        clearAnswer: (state) => {
+            state.answer = {
+                ...defaultAnswer,
+                lat: 40.758896,
+                lng: -73.98513
+            }
+            state.hasAnswered = false
+        },
+        setHintsUsed: (state, action) => {
+            state.answer.hintsUsed = action.payload.amount
+        },
         setQuiz: (state, action) => {
             state.quiz = action.payload.quiz
         }
     }
 })
 
-export const { clearQuiz, setAnswer, setQuiz } = homeSlice.actions
+export const {
+    clearAnswer,
+    clearQuiz,
+    setAnswer,
+    setHasAnswered,
+    setHintOne,
+    setHintTwo,
+    setHintsUsed,
+    setQuiz
+} = homeSlice.actions
 
 export default homeSlice.reducer

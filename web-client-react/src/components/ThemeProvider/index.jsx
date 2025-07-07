@@ -13,7 +13,8 @@ const logger = createLogger({
 
 const store = configureStore({
     reducer: rootReducer,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware({ thunk }).concat(logger),
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({ thunk, serializableCheck: false }).concat(logger),
     devTools: import.meta.env.VITE_API_NODE_ENV === "development"
 })
 

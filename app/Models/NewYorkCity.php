@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Geolocation\geoPHP;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Number;
+use Illuminate\Support\Str;
 
 class NewYorkCity extends Model
 {
@@ -127,7 +129,7 @@ class NewYorkCity extends Model
         return false;
     }
 
-    public function removeDuplicateStreets($borough = 'manhattan')
+    public static function removeDuplicateStreets($borough = 'manhattan')
     {
         $streets = File::json(resource_path('geoJSON/boroughs/streets/' . $borough . '.geojson'));
         $newFile = [
@@ -138,7 +140,7 @@ class NewYorkCity extends Model
             $item = $streets['features'][$i];
             $props = $item['properties'];
             $name = $props['FULLNAME'];
-            $parsedName = $this->parseStreetName($name);
+            $parsedName = NewYorkCity::parseStreetName($name);
             $coords = $item['geometry']['coordinates'];
 
             // Search the newly constructed array for duplicate values
@@ -151,7 +153,7 @@ class NewYorkCity extends Model
         return json_encode($newFile);
     }
 
-    public function cleanUpData($boroughNum)
+    public static function cleanUpData($boroughNum)
     {
         $boros = File::json(resource_path('geoJSON/nyc-boroughs.geojson'));
         $streets = File::json(resource_path('geoJSON/nyc-streets.geojson'));
@@ -177,7 +179,7 @@ class NewYorkCity extends Model
             $item = $features[$i];
             $props = $item['properties'];
             $name = $props['FULLNAME'];
-            $parsedName = $this->parseStreetName($name);
+            $parsedName = NewYorkCity::parseStreetName($name);
             $coords1 = $item['geometry']['coordinates'];
             $coordsEqual = $this->compareCoords($coords, $coords1);
             if ($parsedName == $streetName && $coordsEqual) {
@@ -187,57 +189,27 @@ class NewYorkCity extends Model
         return false;
     }
 
-    // possibly move to a helper class?
-    private function parseStreetName($name)
+    public static function parseStreetName($name)
     {
-        $exp = explode(" ", $name);
-        $count = count($exp);
-        if ($count == 1) {
+        if (!Str::contains($name, ' ')) {
             return $name;
         }
 
-        $endings = ["st", "nd", "rd", "th"];
+        $exp = explode(' ', $name);
+        $count = count($exp);
         $word = $exp[$count - 2];
-        $newWord = $word;
-
-        foreach ($endings as $ending) {
-            $endingExp = explode($ending, $word);
-            if (count($endingExp) > 1) {
-                continue;
-            }
-            if (!is_numeric($endingExp[0])) {
-                continue;
-            }
-
-            $num = $endingExp[0];
-            if ($num < 10 || $num > 20) {
-                switch (substr($num, -1)) {
-                    case 1:
-                        $newWord = $num . "st";
-                        break;
-                    case 2:
-                        $newWord = $num . "nd";
-                        break;
-                    case 3:
-                        $newWord = $num . "rd";
-                        break;
-                    default:
-                        $newWord = $num . "th";
-                }
-            } else {
-                $newWord = $num . "th";
-            }
+        if (!is_numeric($word)) {
+            return $name;
         }
 
-        $exp[$count - 2] = $newWord;
+        $exp[$count - 2] = Number::ordinal($word);
         return join(" ", $exp);
     }
 
     private function getOppositeStreet($street)
     {
-        $firstChar = substr($street, 0, 2);
-        if ($firstChar == 'W ' || $firstChar == 'E ') {
-            return ($firstChar == 'W ' ? 'E ' : 'W ') . substr($street, 2);
+        if (Str::startsWith($street, ['W ', 'E '])) {
+            return (Str::charAt($street, 0) == 'W' ? 'E' : 'W') . substr($street, 1);
         }
         return false;
     }
@@ -252,10 +224,11 @@ class NewYorkCity extends Model
 
     private function compareCoords($coords1, $coords2)
     {
-        if (count($coords1) != count($coords2)) {
+        $count = count($coords1);
+        if ($count !== count($coords2)) {
             return false;
         }
-        for ($i = 0; $i < count($coords1); $i++) {
+        for ($i = 0; $i < $count; $i++) {
             if ($coords1[$i][0] != $coords2[$i][0] || $coords1[$i][1] != $coords2[$i][1]) {
                 return false;
             }
@@ -275,10 +248,14 @@ class NewYorkCity extends Model
         return false;
     }
 
-    public function prettyPrint($data)
+    public function getLocationByDistance($dx, $dy, $lat, $lng)
     {
-        echo '<pre>';
-        echo print_r($data);
-        echo '</pre>';
+        $rEarth = 6378; // in kilometers
+        $newLat  = $lat  + ($dy / $rEarth) * (180 / pi());
+        $newLng = $lng + ($dx / $rEarth) * (180 / pi()) / cos($lat * pi() / 180);
+        return [
+            $newLat,
+            $newLng
+        ];
     }
 }

@@ -10,10 +10,6 @@
         margin-bottom: 0;
     }
 
-    p.header {
-        font-family: fonts.$imperial400 !important;
-    }
-
     @media only screen and (max-width: 1025px) {
         width: 100%;
 
@@ -45,6 +41,7 @@
         }
 
         .footerText {
+            font-family: fonts.$franklin600 !important;
             font-size: 16px !important;
             font-weight: normal;
             margin-bottom: 11px;
@@ -66,6 +63,7 @@
 
     .forgotText {
         cursor: pointer;
+        font-family: fonts.$franklin500 !important;
         font-size: 14px !important;
         font-weight: normal !important;
 

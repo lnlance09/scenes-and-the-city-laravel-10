@@ -35,7 +35,10 @@ export const defaultVideo = {
 
 export const defaultLocation = {
     lat: 40.758896,
-    lng: -73.98513
+    lng: -73.98513,
+    hood: "Theater District",
+    borough: "Manhattan",
+    streets: ["Broadway", "7th Ave", "W 46th St"]
 }
 
 export const initialFormState = {
@@ -43,6 +46,8 @@ export const initialFormState = {
     actions: [],
     char: defaultChar,
     chars: [],
+    file: null,
+    hint: "",
     img: defaultImg,
     location: defaultLocation,
     video: defaultVideo,

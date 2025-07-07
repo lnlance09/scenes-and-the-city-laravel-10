@@ -12,8 +12,14 @@ const formSlice = createSlice({
     name: "form",
     initialState: initialFormState,
     reducers: {
+        setHint: (state, action) => {
+            state.hint = action.payload.hint
+        },
         setImg: (state, action) => {
             state.img = action.payload.data
+        },
+        setFile: (state, action) => {
+            state.file = action.payload.file
         },
         setVideo: (state, action) => {
             state.video = action.payload.video
@@ -49,12 +55,20 @@ const formSlice = createSlice({
             state.actions = [...state.actions, action.payload.action]
         },
         setLocation: (state, action) => {
-            state.location = action.payload.location
+            state.location = {
+                lat: action.payload.lat,
+                lng: action.payload.lng,
+                hood: action.payload.hood,
+                borough: action.payload.borough,
+                streets: action.payload.streets
+            }
         },
         clearForm: (state) => {
             state.action = defaultAction
             state.char = defaultChar
             state.chars = []
+            state.file = null
+            state.hint = ""
             state.img = defaultImg
             state.location = defaultLocation
             state.video = defaultVideo
@@ -71,6 +85,8 @@ export const {
     clearChar,
     setChar,
     setChars,
+    setFile,
+    setHint,
     setImg,
     setLocation,
     setVideo,

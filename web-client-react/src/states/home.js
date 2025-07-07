@@ -3,18 +3,24 @@ export const defaultQuiz = {
     quizId: null,
     img: null,
     text: null,
-    username: null
+    username: null,
+    hintOne: null,
+    hintTwo: null
+}
+
+export const defaultAnswer = {
+    lat: null,
+    lng: null,
+    hood: "Theater District",
+    borough: "Manhattan",
+    streets: ["Broadway", "7th Ave", "W 46th St"],
+    hintsUsed: 0
 }
 
 export const initialHomeState = {
     quiz: defaultQuiz,
-    answer: {
-        lat: null,
-        lng: null,
-        hood: null,
-        borough: null,
-        streets: []
-    },
+    answer: defaultAnswer,
+    hasAnswered: false,
     leaderboard: {
         count: 0,
         data: [{}, {}, {}, {}],

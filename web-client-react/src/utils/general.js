@@ -7,3 +7,5 @@ export const formatPlural = (count, term) => {
     }
     return parseInt(count, 10) === 1 ? term : `${term}s`
 }
+
+export const timeout = (delay) => new Promise((res) => setTimeout(res, delay))

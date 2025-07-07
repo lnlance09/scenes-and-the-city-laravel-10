@@ -3,7 +3,6 @@ import { Button, Divider, Form, Header, Icon, Input, Segment, Transition } from 
 import { setUserData, setNeedToVerify, verifyEmail } from "../../reducers/app"
 import { useEffect, useReducer, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { useNavigate } from "react-router-dom"
 import {
     PASSWORD_RECOVERY_SENT,
     SET_FORGOT,
@@ -24,11 +23,11 @@ import * as translations from "../../assets/translate.json"
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
 
 const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size }) => {
-    const navigate = useNavigate()
     const dispatch = useDispatch()
+    const verify = useSelector((state) => state.app.verify)
     const inverted = useSelector((state) => state.app.inverted)
     const language = useSelector((state) => state.app.language)
-    const verify = useSelector((state) => state.app.verify)
+    const lang = translations[language]
 
     const [internalState, dispatchInternal] = useReducer(reducer, initialAuthState)
     const { forgot, headerText, login, passwordReset, register } = internalState
@@ -63,7 +62,9 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
         if (loginDisabled) {
             return
         }
+
         setLoadingLogin(true)
+
         const payload = { password }
         if (validator.isEmail(email)) {
             payload.email = email
@@ -86,6 +87,7 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
                         ...toastConfig,
                         className: inverted ? "inverted" : null
                     })
+                    window.location.reload()
                     return
                 }
                 dispatch(setNeedToVerify())
@@ -153,20 +155,24 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
             })
     }
 
-    const submitForgotPassword = () => {
+    const submitForgotPassword = async () => {
         setLoadingForgot(true)
-        axios
-            .post(`${apiBaseUrl}users/forgot`, {
-                email: forgotEmail
-            })
-            .then(async () => {
+        const payload = {}
+        if (validator.isEmail(forgotEmail)) {
+            payload.email = forgotEmail
+        } else {
+            payload.username = forgotEmail
+        }
+
+        await axios
+            .post(`${apiBaseUrl}users/forgot`, payload)
+            .then(() => {
                 dispatchInternal({ type: PASSWORD_RECOVERY_SENT })
-                setLoadingForgot(false)
             })
             .catch((error) => {
-                setLoadingForgot(false)
                 toast.error(error.response.data.message, toastConfig)
             })
+        setLoadingForgot(false)
     }
 
     const submitVerificationForm = () => {
@@ -250,7 +256,7 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
                                         <Input
                                             inverted={inverted}
                                             onChange={(e, { value }) => setEmail(value)}
-                                            placeholder="Email or username"
+                                            placeholder={lang.auth.emailOrUsername}
                                             value={email}
                                         />
                                     </Form.Field>
@@ -258,7 +264,7 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
                                         <Input
                                             inverted={inverted}
                                             onChange={(e, { value }) => setPassword(value)}
-                                            placeholder="Password"
+                                            placeholder={lang.auth.password}
                                             type="password"
                                             value={password}
                                         />
@@ -266,7 +272,7 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
                                     <Form.Field>
                                         <Button
                                             color={inverted ? "green" : "blue"}
-                                            content="Sign in"
+                                            content={lang.auth.signIn}
                                             fluid
                                             inverted={inverted}
                                             loading={loadingLogin}
@@ -276,7 +282,7 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
                                         />
                                     </Form.Field>
                                 </Form>
-                                {authFooter("New to this site?", "Sign Up")}
+                                {authFooter(lang.auth.newToThis, lang.auth.signUp)}
                                 <Header
                                     as="p"
                                     className="forgotText"
@@ -285,7 +291,7 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
                                     size="small"
                                     textAlign="center"
                                 >
-                                    Forgot password?
+                                    {lang.auth.forgotPassword}
                                 </Header>
                             </>
                         )}
@@ -297,7 +303,7 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
                                         <Input
                                             inverted={inverted}
                                             onChange={(e, { value }) => setRegEmail(value)}
-                                            placeholder="Email"
+                                            placeholder={lang.auth.email}
                                             value={regEmail}
                                         />
                                     </Form.Field>
@@ -305,7 +311,7 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
                                         <Input
                                             inverted={inverted}
                                             onChange={(e, { value }) => setRegPassword(value)}
-                                            placeholder="Password"
+                                            placeholder={lang.auth.password}
                                             value={regPassword}
                                             type="password"
                                         />
@@ -314,7 +320,7 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
                                         <Input
                                             inverted={inverted}
                                             onChange={(e, { value }) => setRegUsername(value)}
-                                            placeholder="Username"
+                                            placeholder={lang.auth.username}
                                             value={regUsername}
                                         />
                                     </Form.Field>
@@ -322,14 +328,14 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
                                 <Divider inverted={inverted} />
                                 <Button
                                     color={inverted ? "green" : "blue"}
-                                    content="Create an account"
+                                    content={lang.auth.regsiterBtn}
                                     fluid
                                     inverted={inverted}
                                     loading={loadingRegistration}
                                     onClick={submitRegistrationForm}
                                     size={size}
                                 />
-                                {authFooter("Already have an account?", "Sign In")}
+                                {authFooter(lang.auth.alreadyAccount, lang.auth.signIn)}
                             </>
                         )}
                     </>
@@ -342,14 +348,14 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
                                 <Input
                                     inverted={inverted}
                                     onChange={(e, { value }) => setForgotEmail(value)}
-                                    placeholder="Enter your email"
+                                    placeholder={lang.auth.enterYourEmail}
                                     value={forgotEmail}
                                 />
                             </Form.Field>
                             <Button
                                 color={inverted ? "green" : "blue"}
-                                content="Send Instructions"
-                                disabled={!validator.isEmail(forgotEmail)}
+                                content={lang.auth.sendIntructions}
+                                disabled={forgotEmail.length < 5}
                                 fluid
                                 inverted={inverted}
                                 loading={loadingForgot}
@@ -365,7 +371,7 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
                             size="small"
                             textAlign="center"
                         >
-                            <Icon name="arrow left" /> Back to login
+                            <Icon name="arrow left" /> {lang.auth.backToLogin}
                         </Header>
                     </>
                 )}
@@ -373,8 +379,8 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
                 <Transition animation="scale" duration={500} visible={passwordReset}>
                     <Header inverted={inverted} size="large" textAlign="center">
                         <Header.Content>
-                            <Icon color="green" inverted={inverted} name="checkmark" /> An email has
-                            been sent to you
+                            <Icon color="green" inverted={inverted} name="checkmark" />{" "}
+                            {lang.auth.emailSentToYou}
                         </Header.Content>
                     </Header>
                 </Transition>
@@ -386,13 +392,13 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
                                 inverted={inverted}
                                 maxLength={4}
                                 onChange={(e, { value }) => setVerificationCode(value)}
-                                placeholder="Verification code"
+                                placeholder={lang.auth.verificationCode}
                                 value={verificationCode}
                             />
                         </Form.Field>
                         <Button
                             color={inverted ? "green" : "blue"}
-                            content="Verify"
+                            content={lang.auth.verify}
                             disabled={verificationCode.length !== 4}
                             fluid
                             inverted={inverted}

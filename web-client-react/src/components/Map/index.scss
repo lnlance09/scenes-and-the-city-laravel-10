@@ -1,0 +1,26 @@
+@use "sass:color";
+
+@use "../../scss/fonts.scss";
+@use "../../scss/colors.scss";
+
+.ui.segment.locationInfoSegment {
+	.header {
+		font-family: fonts.$franklin700 !important;
+		margin-top: 0;
+
+		a {
+			color: colors.$blue !important;
+			cursor: default;
+		}
+
+		a.streetViewLink {
+			cursor: pointer;
+		}
+
+		&.inverted {
+			a {
+				color: colors.$terminalGreen !important;
+			}
+		}
+	}
+}

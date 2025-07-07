@@ -8,6 +8,7 @@ import {
     Grid,
     Header,
     Icon,
+    Image,
     Menu,
     Segment,
     Sidebar
@@ -15,11 +16,13 @@ import {
 import { useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { logout, setLanguage, toggleInverted } from "../../reducers/app"
+import { setHasAnswered } from "../../reducers/home"
 import { languages } from "../../options/languages"
 import { options } from "../../options/options"
 import { toast } from "react-toastify"
 import { toastConfig } from "../../options/toast"
 import { dateFormat, isSunday, nyc } from "../../utils/date"
+import avatarPic from "../../images/avatar/small/zoe.jpg"
 import classNames from "classnames"
 import moment from "moment-timezone"
 import PropTypes from "prop-types"
@@ -52,6 +55,7 @@ const HeaderComponent = ({
 
     const [dropdownVal, setDropdownVal] = useState(translatedOptions[0].value)
     const [dropdownOpts, setDropdownOpts] = useState(translatedOptions)
+    const [dropdownVisible, setDropdownVisible] = useState(false)
 
     const days = lang.days
     const lastIndex = days.length - 1
@@ -62,10 +66,9 @@ const HeaderComponent = ({
     const sat = moment(startWeek, dateFormat).add(5, "days")
     const sun = moment(startWeek, dateFormat).add(6, "days")
 
-    const btnColor = inverted ? "green" : "black"
+    const btnColor = inverted ? "green" : "blue"
 
     useEffect(() => {
-        console.log("is auth", isAuth)
         let dropdownItem = {
             key: "signout",
             text: "Sign Out",
@@ -92,7 +95,6 @@ const HeaderComponent = ({
     }, [isAuth])
 
     const modalClass = classNames({
-        loginModal: true,
         simpleModal: true,
         inverted
     })
@@ -134,6 +136,18 @@ const HeaderComponent = ({
                 showCloseIcon={false}
             >
                 <Header content="Stats" inverted={inverted} size="large" />
+                <Grid>
+                    <Grid.Row widths="equal">
+                        <Grid.Column></Grid.Column>
+                        <Grid.Column></Grid.Column>
+                        <Grid.Column></Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row widths="equal">
+                        <Grid.Column></Grid.Column>
+                        <Grid.Column></Grid.Column>
+                        <Grid.Column></Grid.Column>
+                    </Grid.Row>
+                </Grid>
             </Modal>
         )
     }
@@ -174,8 +188,13 @@ const HeaderComponent = ({
         )
     }
 
+    const headerClass = classNames({
+        headerComponent: true,
+        bordered: !showDates
+    })
+
     return (
-        <div className={`headerComponent ${!showDates ? "bordered" : ""}`}>
+        <div className={headerClass}>
             <Menu className="headerMenu" inverted={inverted} pointing secondary>
                 <Container>
                     <div className="brandName">
@@ -186,14 +205,14 @@ const HeaderComponent = ({
                             src={inverted ? WordsLogoInverted : WordsLogo}
                         />
                         <Icon
-                            color={btnColor}
+                            color={inverted ? "green" : "white"}
                             inverted={inverted}
                             name="options"
                             onClick={() => setSidebarVisible(true)}
                         />
                     </div>
                     <div className="floatedRight">
-                        <Menu.Item>
+                        <Menu.Item className="menuItem">
                             <Dropdown
                                 className="inverted"
                                 defaultValue={language}
@@ -209,62 +228,91 @@ const HeaderComponent = ({
                             />
                         </Menu.Item>
                         <Menu.Item
+                            className="menuItem"
                             onClick={() => {
                                 dispatch(toggleInverted())
                                 localStorage.setItem("inverted", !inverted)
                             }}
                         >
                             <Icon
-                                color={btnColor}
-                                inverted={inverted}
+                                color={inverted ? "green" : ""}
+                                inverted
                                 name={inverted ? "sun" : "moon"}
                             />
                         </Menu.Item>
-                        <Menu.Item>
-                            <Dropdown
-                                fluid
-                                icon={null}
-                                item
-                                onChange={(e, { value }) => {
-                                    if (value === "settings") {
-                                        setSettingsVisible(true)
-                                        setDropdownVal(translatedOptions[0].value)
-                                    }
-                                    if (value === "stats") {
-                                        setStatsVisible(true)
-                                        setDropdownVal(translatedOptions[1].value)
-                                    }
-                                    if (value === "history") {
-                                        setHistoryVisible(true)
-                                        setDropdownVal(translatedOptions[2].value)
-                                    }
-                                    if (value === "leaderboard") {
-                                        setLeaderboardVisible(true)
-                                        setDropdownVal(translatedOptions[3].value)
-                                    }
-                                    if (value === "signin") {
-                                        toggleLoginModal()
-                                        setDropdownVal(translatedOptions[0].value)
-                                    }
-                                    if (value === "signout") {
-                                        localStorage.setItem("auth", false)
-                                        localStorage.setItem("bearer", null)
-                                        localStorage.setItem("user", null)
-                                        localStorage.setItem("verify", false)
-                                        dispatch(logout())
-                                        toast.success("You have been logged out!", toastConfig)
-                                        setDropdownVal(translatedOptions[0].value)
-                                    }
-                                }}
-                                options={dropdownOpts}
-                                pointing
-                                trigger={
-                                    <Icon color={btnColor} inverted={inverted} name="options" />
-                                }
-                                value={dropdownVal}
-                            />
+                        <Menu.Item className="menuItem">
+                            {isAuth ? (
+                                <Image
+                                    avatar
+                                    src={avatarPic}
+                                    onClick={() => setDropdownVisible(!dropdownVisible)}
+                                />
+                            ) : (
+                                <Icon
+                                    color={inverted ? "green" : ""}
+                                    inverted
+                                    name="options"
+                                    onClick={() => setDropdownVisible(!dropdownVisible)}
+                                />
+                            )}
+                            {dropdownVisible && (
+                                <div
+                                    style={{
+                                        position: "absolute",
+                                        top: "1.4em",
+                                        left: "2em",
+                                        zIndex: 999
+                                    }}
+                                >
+                                    <Dropdown
+                                        fluid
+                                        icon={null}
+                                        item
+                                        onChange={(e, { value }) => {
+                                            if (value === "settings") {
+                                                setSettingsVisible(true)
+                                                setDropdownVal(translatedOptions[0].value)
+                                            }
+                                            if (value === "stats") {
+                                                setStatsVisible(true)
+                                                setDropdownVal(translatedOptions[1].value)
+                                            }
+                                            if (value === "history") {
+                                                setHistoryVisible(true)
+                                                setDropdownVal(translatedOptions[2].value)
+                                            }
+                                            if (value === "leaderboard") {
+                                                setLeaderboardVisible(true)
+                                                setDropdownVal(translatedOptions[3].value)
+                                            }
+                                            if (value === "signin") {
+                                                toggleLoginModal()
+                                                setDropdownVal(translatedOptions[0].value)
+                                            }
+                                            if (value === "signout") {
+                                                localStorage.setItem("auth", false)
+                                                localStorage.setItem("bearer", null)
+                                                localStorage.setItem("user", null)
+                                                localStorage.setItem("verify", false)
+                                                dispatch(logout())
+                                                dispatch(setHasAnswered({ hasAnswered: false }))
+                                                toast.success(
+                                                    "You have been logged out!",
+                                                    toastConfig
+                                                )
+                                                setDropdownVal(translatedOptions[0].value)
+                                            }
+                                        }}
+                                        open={true}
+                                        options={dropdownOpts}
+                                        pointing
+                                        trigger={() => null}
+                                        value={dropdownVal}
+                                    />
+                                </div>
+                            )}
                         </Menu.Item>
-                        <Menu.Item>
+                        <Menu.Item className="menuItem">
                             <Button
                                 color={btnColor}
                                 content={lang.header.makeAQuiz}

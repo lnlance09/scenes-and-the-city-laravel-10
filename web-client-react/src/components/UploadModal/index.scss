@@ -7,11 +7,15 @@
     overflow-x: hidden;
 
     .step > .content > .title {
-        font-family: fonts.$cheltenham700 !important;
+        font-family: fonts.$franklin600 !important;
     }
 
     .step > .content > .description {
-        font-family: fonts.$cheltenham400 !important;
+        font-family: fonts.$franklin500 !important;
+    }
+
+    .step.active .title {
+        color: colors.$blue !important;
     }
 
     .step.inverted {
@@ -38,8 +42,8 @@
                 color: colors.$white;
             }
 
-            .content > .title {
-                color: colors.$terminalGreen;
+            .title {
+                color: colors.$terminalGreen !important;
             }
 
             &:after {
@@ -83,31 +87,32 @@
 
     .ui.segment.noResults {
         .header {
-            font-family: fonts.$cheltenham400 !important;
+            font-family: fonts.$franklin600 !important;
         }
     }
 
     div.uploadAgain, div.monroeText {
-        margin: 0.5em !important;
+        margin: 0.75em 0.25em !important;
+
+        &.inverted > span {
+            color: colors.$white !important;
+        }
 
         span {
             cursor: pointer;
             font-family: fonts.$imperial400 !important;
-            text-decoration: underline;
         }
     }
 
-    div.monroeText {
-        span {
-            cursor: default;
-            display: block;
-            font-family: fonts.$cheltenham300 !important;
-            line-height: 1.3;
-            text-decoration: none;
+    div.monroeText > span {
+        cursor: default;
+        display: block;
+        font-family: fonts.$cheltenham300 !important;
+        line-height: 1.3;
+        text-decoration: none;
 
-            &:first-of-type {
-                font-family: fonts.$cheltenham400 !important;
-            }
+        &:first-of-type {
+            font-family: fonts.$cheltenham400 !important;
         }
     }
 
@@ -118,7 +123,7 @@
                     cursor: pointer;
 
                     .header {
-                        font-family: fonts.$cheltenham400 !important;
+                        font-family: fonts.$franklin600 !important;
                     }
                 }
 
@@ -139,12 +144,18 @@
         }
     }
 
-    .ui.segment.activeCharSegment > .ui.header {
-        font-family: fonts.$cheltenham400 !important;
+    .ui.segment.activeCharSegment {
+        &.inverted {
+            background: colors.$terminalGreen !important;
+        }
+
+        > .ui.header {
+            font-family: fonts.$franklin600 !important;
+        }
     }
 
     .ui.selection.dropdown {
-        font-family: fonts.$cheltenham400 !important;
+        font-family: fonts.$franklin600 !important;
 
         .menu {
             width: 100%;
@@ -155,19 +166,49 @@
         margin: 0.5em 0;
     }
 
-    .actionHeader, .charHeader, .videoHeader, .videoItemHeader {
-        font-family: fonts.$cheltenham700 !important;
+    .actionHeader, .charHeader, .videoHeader, .videoItemHeader, .locationHeader, .hintHeader {
+        font-family: fonts.$franklin600 !important;
 
         &.inverted {
             a {
-                color: colors.$terminalGreen;
+                color: colors.$terminalGreen !important;
+            }
+        }
+    }
+
+    .ui.hintHeader {
+        span.hintLength {
+            &.warning {
+                color: colors.$green !important;
+
+                &.inverted {
+                    color: colors.$terminalGreen !important;
+                }
+            }
+
+            &.error {
+                color: colors.$red !important;
+
+                &.inverted {
+                    color: colors.$lightRed !important;
+                }
+            }
+        }
+    
+        span.hintMaxLimit {
+            &.warning {
+                color: colors.$red !important;
+            }
+
+             &.inverted {
+                color: colors.$lightRed !important;
             }
         }
     }
 
     .ui.active.visible.fluid.search.selection.dropdown.inverted {
         input::placeholder {
-            font-family: fonts.$cheltenham400 !important;
+            font-family: fonts.$franklin600 !important;
         }
     }
 
@@ -176,11 +217,13 @@
 		margin-left: 0.75em;
 	}
 
+    .answerGrid {
+        .row:first-of-type {
+            padding-bottom: 0 !important;
+        }
+    }
+
     &.inverted {
         background: transparent;
-
-        div.uploadAgain {
-            color: colors.$white;
-        }
     }
 }
