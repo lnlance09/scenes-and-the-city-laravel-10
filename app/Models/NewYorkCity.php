@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Geolocation\geoPHP;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Number;
 use Illuminate\Support\Str;
 
@@ -65,7 +66,7 @@ class NewYorkCity extends Model
             $streetGeo = geoPHP::load(json_encode($street), 'json');
             $distance = $location->distance($streetGeo);
 
-            if ($i == 0) {
+            if ($i === 0) {
                 $shortestDistance = $distance;
                 continue;
             }
@@ -106,7 +107,6 @@ class NewYorkCity extends Model
             if ($opposite1) {
                 $ignore[] = $opposite1;
             }
-
             $opposite2 = $this->getOppositeStreet($streetName2);
             if ($opposite2) {
                 $ignore[] = $opposite2;
@@ -114,6 +114,62 @@ class NewYorkCity extends Model
 
             $street3 = $this->getClosestStreet($lng, $lat, $borough, $ignore, $streetGeo);
             $streetName3 = $street3['properties']['FULLNAME'];
+
+            $streetNum = $this->getStreetNumber($streetName1);
+            $hasNumber = $streetName1 != $streetNum;
+
+            // Since broadway curves, we have to ignore it in the mid 50's range
+            if (
+                $borough === 'manhattan' &&
+                ($streetName3 === 'Broadway') &&
+                $hasNumber && $streetNum > 49 && $streetNum < 60
+            ) {
+                $closest2 = $this->findClosestPoint($street2['geometry']['coordinates'], $lat, $lng);
+                $closest3 = $this->findClosestPoint($street3['geometry']['coordinates'], $lat, $lng);
+                $x2 = $this->locationToObject('Point', (float)$closest2[0], (float)$closest2[1])->x();
+                $x3 = $this->locationToObject('Point', (float)$closest3[0], (float)$closest3[1])->x();
+
+                if ($x3 > $x2) {
+                    $ignore[] = $streetName3;
+                    $street3 = $this->getClosestStreet($lng, $lat, $borough, $ignore, $streetGeo);
+                    $streetName3 = $street3['properties']['FULLNAME'];
+                }
+            }
+
+            if (
+                $borough === 'manhattan' &&
+                $streetName2 === 'Broadway' &&
+                ($streetName3 === 'Columbus Ave' || $streetName3 === 'Central Park W') &&
+                $hasNumber && $streetNum > 60 && $streetNum < 69
+            ) {
+                $closest2 = $this->findClosestPoint($street2['geometry']['coordinates'], $lat, $lng);
+                $closest3 = $this->findClosestPoint($street3['geometry']['coordinates'], $lat, $lng);
+                $x2 = $this->locationToObject('Point', (float)$closest2[0], (float)$closest2[1])->x();
+                $x3 = $this->locationToObject('Point', (float)$closest3[0], (float)$closest3[1])->x();
+
+                $switch = ($closest3 === 'Columbus Ave' && $x3 < $x2) || ($closest3 === 'Central Park W' && $x3 > $x2);
+
+                if ($switch) {
+                    $ignore[] = $streetName3;
+                    $street3 = $this->getClosestStreet($lng, $lat, $borough, $ignore, $streetGeo);
+                    $streetName3 = $street3['properties']['FULLNAME'];
+                }
+            }
+
+            if (
+                $borough === 'manhattan' &&
+                $streetName2 === 'Broadway' &&
+                $streetName3 === '7th Ave' &&
+                $hasNumber && $streetNum > 40 && $streetNum < 50
+            ) {
+                $ignore[] = $streetName2;
+                $street2 = $this->getClosestStreet($lng, $lat, $borough, $ignore, $streetGeo);
+                $streetName2 = $street2['properties']['FULLNAME'];
+
+                $ignore[] = $streetName2;
+                $street3 = $this->getClosestStreet($lng, $lat, $borough, $ignore, $streetGeo);
+                $streetName3 = $street3['properties']['FULLNAME'];
+            }
 
             return [
                 'borough' => $borough,
@@ -144,7 +200,7 @@ class NewYorkCity extends Model
             $coords = $item['geometry']['coordinates'];
 
             // Search the newly constructed array for duplicate values
-            $index = $this->searchFeatures($newFile['features'], $parsedName, $coords);
+            $index = NewYorkCity::searchFeatures($newFile['features'], $parsedName, $coords);
             if (!$index) {
                 $item['properties']['FULLNAME'] = $parsedName;
                 $newFile['features'][] = $item;
@@ -189,6 +245,31 @@ class NewYorkCity extends Model
         return false;
     }
 
+    private function findClosestPoint($coords, $lat, $lng)
+    {
+        $location1 = $this->locationToObject('Point', $lng, $lat);
+        $shortestDistance = 0;
+        $index = 0;
+
+        for ($i = 0; $i < count($coords); $i++) {
+            $item = $coords[$i];
+            $location2 = $this->locationToObject('Point', (float)$item[0], (float)$item[1]);
+            $distance = $location1->distance($location2);
+
+            if ($i === 0) {
+                $shortestDistance = $distance;
+                continue;
+            }
+
+            if ($distance < $shortestDistance) {
+                $shortestDistance = $distance;
+                $index = $i;
+            }
+        }
+
+        return $coords[$index];
+    }
+
     public static function parseStreetName($name)
     {
         if (!Str::contains($name, ' ')) {
@@ -206,6 +287,15 @@ class NewYorkCity extends Model
         return join(" ", $exp);
     }
 
+    private function getStreetNumber($name)
+    {
+        $exp = explode(' ', $name);
+        if (count($exp) === 1) {
+            return $name;
+        }
+        return (int) preg_replace('/(st|nd|rd|th)$/', '', $exp[1]);
+    }
+
     private function getOppositeStreet($street)
     {
         if (Str::startsWith($street, ['W ', 'E '])) {
@@ -214,7 +304,7 @@ class NewYorkCity extends Model
         return false;
     }
 
-    private function locationToObject($type = 'Point', $lng = -73.926186, $lat = 40.829659)
+    public function locationToObject($type = 'Point', $lng = -73.926186, $lat = 40.829659)
     {
         return geoPHP::load(json_encode([
             'type' => $type,

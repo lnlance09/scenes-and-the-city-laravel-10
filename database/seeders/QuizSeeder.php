@@ -2,13 +2,14 @@
 
 namespace Database\Seeders;
 
+use App\Models\Action;
 use App\Models\Quiz;
 use App\Models\Scene;
 use App\Models\SceneAction;
 use App\Models\ScenePic;
 use App\Models\SceneCharacter;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -19,54 +20,57 @@ class QuizSeeder extends Seeder
      */
     public function run(): void
     {
-        $files = scandir(__DIR__ . '/pics/');
-        array_shift($files);
-        array_shift($files);
-
-        $scenes = Scene::factory()->count(10)->create();
-        $i = 0;
-        foreach ($scenes as $scene) {
-            $quizId = Str::random(8);
-            $file = __DIR__ . '/pics/' . $files[mt_rand(0, count($files) - 1)];
-            $this->createQuiz($quizId, $scene->id, $file);
-
-            $day = $this->getDateFromDay(2025, date('z') - $i)->format('Y-m-d H:i:s');
-            $quizId = Str::random(8);
-            $this->createQuiz($quizId, $scene->id, $file, 1, $day);
-
-            $i++;
+        $quizzes = File::json(resource_path('json/quizzes.json'));
+        for ($i = 0; $i < count($quizzes['data']); $i++) {
+            $q = $quizzes['data'][$i];
+            $q['file'] = __DIR__ . '/pics/' . $q['file'];
+            $q['quiz_id'] = Str::random(8);
+            $q['user_id'] = 1;
+            $q['created_at'] = $this->getDateFromDay(2025, date('z') - $i)->format('Y-m-d H:i:s');
+            $this->createQuiz($q);
         }
+    }
+
+    private function createQuiz($data)
+    {
+        $scene = Scene::factory()->create([
+            'video_id' => $data['videoId']
+        ]);
+
+        $img = 'quizzes/' . $data['quiz_id'] . '.jpg';
+        Storage::disk('s3')->put($img, file_get_contents($data['file']));
+
+        $picData = [];
+        $picData['s3_url'] = $img;
+        $picData['scene_id'] = $scene->id;
+        $picData['user_id'] = $data['user_id'];
+        ScenePic::factory()->create($picData);
+
+        $action = Action::factory()->create([
+            'name' => $data['action']
+        ]);
+        SceneAction::factory()->create([
+            'action_id' => $action->id,
+            'scene_id' => $scene->id
+        ]);
+        SceneCharacter::factory()->create([
+            'character_id' => $data['charId'],
+            'scene_id' => $scene->id
+        ]);
+        Quiz::factory()->create([
+            'scene_id' => $scene->id,
+            'user_id' => $data['user_id'],
+            'quiz_id' => $data['quiz_id'],
+            'hint_one' => $data['hint'],
+            'hint_two' => '',
+            'lat' => $data['lat'],
+            'lng' => $data['lng'],
+            'created_at' => $data['created_at']
+        ]);
     }
 
     private function getDateFromDay(int $year, int $dayOfYear): \DateTime
     {
-        $date = \DateTime::createFromFormat('Y z', strval($year) . ' ' . strval($dayOfYear - 1));
-        return $date;
-    }
-
-    private function createQuiz($quizId, $sceneId, $file, $userId = null, $createdAt = null)
-    {
-        $img = 'quizzes/' . $quizId . '.jpg';
-        Storage::disk('s3')->put($img, file_get_contents($file));
-
-        $data['scene_id'] = $sceneId;
-        if ($createdAt) {
-            $data['created_at'] = $createdAt;
-        }
-
-        $picData = $data;
-        $picData['s3_url'] = $img;
-        if ($userId) {
-            $picData['user_id'] = $userId;
-        }
-        $pic = ScenePic::factory()->create($picData);
-
-        SceneAction::factory()->create($data);
-        SceneCharacter::factory()->create($data);
-
-        if ($userId) {
-            $data['user_id'] = $userId;
-        }
-        Quiz::factory()->create($data);
+        return \DateTime::createFromFormat('Y z', strval($year) . ' ' . strval($dayOfYear - 1));
     }
 }

@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
             VideoSeeder::class,
             ActorSeeder::class,
             CharacterSeeder::class,
-            ActionSeeder::class,
+            // ActionSeeder::class,
             // SceneSeeder::class,
             // ScenePicSeeder::class,
             // SceneCharacterSeeder::class,

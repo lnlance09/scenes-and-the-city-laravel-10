@@ -153,7 +153,7 @@ const InfoSegment = ({
                     visible={videosVisible}
                 >
                     <div>
-                        {videos.length > 0 ? (
+                        {videos.length > 0 && (
                             <Table celled inverted={inverted} selectable striped>
                                 <Table.Body>
                                     {videos.map((v) => (
@@ -194,7 +194,9 @@ const InfoSegment = ({
                                     ))}
                                 </Table.Body>
                             </Table>
-                        ) : (
+                        )}
+
+                        {videos.length === 0 && videosVisible && (
                             <Segment
                                 basic
                                 className="noResults"

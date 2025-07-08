@@ -1,0 +1,94 @@
+{
+    "data": [
+        {
+            "file": "goodfellas.jpg",
+            "videoId": 30,
+            "charId": 524,
+            "lat": 40.76760667519342,
+            "lng": -73.89932167478828,
+            "hint": "Near the airport",
+            "action": "waiting outside of a diner"
+        },
+        {
+            "file": "american-psycho-two-bridges.png",
+            "videoId": 98,
+            "charId": 1738,
+            "lat": 40.71319139560073,
+            "lng": -73.9921714887329,
+            "hint": "I'm trying to listen to the new Robert Palmer tape...",
+            "action": "riding in a limousine"
+        },
+        {
+            "file": "die-hard-72nd-street.png",
+            "videoId": 326,
+            "charId": 5828,
+            "lat": 40.778624126917016,
+            "lng": -73.98184899082287,
+            "hint": "hot dogs and juice",
+            "action": "talking to Simon Gruber on a payphone"
+        },
+        {
+            "file": "simon-gruber-fed-reserve.png",
+            "videoId": 326,
+            "charId": 5829,
+            "lat": 40.707807603285566,
+            "lng": -74.00819840164804,
+            "hint": "fort knox",
+            "action": "talking to the police"
+        },
+        {
+            "file": "taxi-driver-58th-street.png",
+            "videoId": 105,
+            "charId": 1864,
+            "lat": 40.767249146157575,
+            "lng": -73.98283282186999,
+            "hint": "hot dogs and juice",
+            "action": "on a date with Betsy"
+        },
+        {
+            "file": "taxi-driver-uws.png",
+            "videoId": 105,
+            "charId": 1864,
+            "lat": 40.767249146157575,
+            "lng": -73.98283282186999,
+            "hint": "Triple A",
+            "action": "getting angry over being rejected by Betsy"
+        },
+        {
+            "file": "vanilla-sky-times-square.png",
+            "videoId": 77,
+            "charId": 1366,
+            "lat": 40.767249146157575,
+            "lng": -73.98283282186999,
+            "hint": "crossroads of the world!",
+            "action": "running near a Kodak store"
+        },
+        {
+            "file": "vanilla-sky.png",
+            "videoId": 77,
+            "charId": 1366,
+            "lat": 40.767249146157575,
+            "lng": -73.98283282186999,
+            "hint": "crossroads of the world!",
+            "action": "running near a Kodak store"
+        },
+        {
+            "file": "wall-street-midtown.png",
+            "videoId": 420,
+            "charId": 7502,
+            "lat": 40.7603907168784,
+            "lng": -73.97777075788012,
+            "hint": "near trump tower",
+            "action": "riding in limousine"
+        },
+        {
+            "file": "wall-street-uws.png",
+            "videoId": 420,
+            "charId": 7501,
+            "lat": 40.77920907327457,
+            "lng": -73.97706271404867,
+            "hint": "museum of natural history",
+            "action": "getting into a limousine with Lisa"
+        }
+    ]
+}

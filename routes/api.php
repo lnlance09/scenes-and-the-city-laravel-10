@@ -36,6 +36,9 @@ Route::get('/quiz/leaderboard', [QuizController::class, 'leaderboard']);
 Route::get('/users/changePassword', [UserController::class, 'changePassword'])->middleware(['auth:api', 'verified']);
 Route::get('/users/changeUsername', [UserController::class, 'changeUsername'])->middleware(['auth:api', 'verified']);
 Route::get('/users/checkUsername', [UserController::class, 'checkUsername'])->middleware(['auth:api', 'verified']);
+Route::get('/users/history', [UserController::class, 'getHistory'])->middleware(['auth:api', 'verified']);
+Route::get('/users/stats', [UserController::class, 'getStats'])->middleware(['auth:api', 'verified']);
+Route::post('/users/settings', [UserController::class, 'updateSettings'])->middleware(['auth:api', 'verified']);
 Route::post('/users/login', [UserController::class, 'login']); // 
 Route::post('/users/register', [UserController::class, 'register']); // 
 Route::post('/users/forgot', [UserController::class, 'forgot']); // 

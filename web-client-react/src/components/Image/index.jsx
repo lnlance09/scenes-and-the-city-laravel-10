@@ -8,7 +8,7 @@ import {
     Transition,
     Placeholder
 } from "semantic-ui-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
 import { dateFormat, isSunday, nyc } from "../../utils/date"
 import { translateMonth, translateWeekday } from "../../utils/translate"
@@ -37,6 +37,11 @@ const ImageSection = ({
     const lang = translations[language]
 
     const [modalOpen, setModalOpen] = useState(false)
+    const [notFound, setNotFound] = useState(NotFoundSvg)
+
+    useEffect(() => {
+        setNotFound(inverted ? NotFoundSvgInverted : NotFoundSvg)
+    }, [inverted])
 
     const nycDate = moment(date).tz(nyc)
     const minusOneDay = moment(date).tz(nyc).subtract(1, "days")
@@ -59,8 +64,7 @@ const ImageSection = ({
 
     const olderThanWeek = isSunday()
         ? moment().subtract(1, "days").week() - moment(date).subtract(1, "days").week() > 0
-        : moment().week() - moment(date).week()
-    const notFound = inverted ? NotFoundSvgInverted : NotFoundSvg
+        : moment().week() - moment(date).week() > 0
 
     const quizImg = () => (
         <>
@@ -81,7 +85,7 @@ const ImageSection = ({
                         }}
                         onError={(i) => (i.target.src = notFound)}
                         rounded
-                        style={{ height: "360px" }}
+                        style={{ minHeight: "360px" }}
                         src={quiz.img === null || quiz404 ? notFound : quiz.img}
                     />
                 </div>

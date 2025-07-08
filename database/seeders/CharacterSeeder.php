@@ -13,7 +13,7 @@ class CharacterSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::unprepared(file_get_contents(__DIR__ . '/imports/characters.sql'));
+        DB::unprepared(file_get_contents(__DIR__ . '/imports/characters-full.sql'));
         return;
     }
 }

@@ -14,20 +14,12 @@ class Quiz extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $scene = $this->scene;
-        $video = $scene->video;
-        $action = $scene->action;
-        $character = $scene->characters[0]->character;
-        $charName = "{$character->first_name} {$character->last_name}";
-        $year = $video->year;
-        $actionName = $action->action->name;
-        $text = "It's {$year} and {$charName} is seen here {$actionName}";
-
         return [
             'quizId' => $this->quiz_id,
-            'img' => env('AWS_URL', 'https://blather-new.s3.us-west-2.amazonaws.com/') . $scene->pics[0]->s3_url,
+            'img' => env('AWS_URL', 'https://blather-new.s3.us-west-2.amazonaws.com/') . $this->scene->pics[0]->s3_url,
             'username' => $this->user->username,
-            'text' => $text,
+            'lat' => $this->lat,
+            'lng' => $this->lng,
             'createdAt' => $this->created_at
         ];
     }

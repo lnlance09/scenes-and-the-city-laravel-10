@@ -37,7 +37,7 @@ class Quiz extends Model
         $video = $scene->video;
         $action = $scene->action;
         $character = $scene->characters[0]->character;
-        $charName = "{$character->first_name} {$character->last_name}";
+        $charName = $character->first_name . " " . $character->last_name;
         $year = $video->year;
         $actionName = $action->action->name;
         $text = "It's " . $year . " and " . $charName . " is seen here " . $actionName;

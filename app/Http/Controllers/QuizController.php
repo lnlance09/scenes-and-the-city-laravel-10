@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\Answer as AnswerResource;
-use App\Http\Resources\Quiz as QuizResource;
 use App\Models\Action;
 use App\Models\Answer;
 use App\Models\Character;
@@ -13,8 +11,10 @@ use App\Models\Scene;
 use App\Models\ScenePic;
 use App\Models\SceneAction;
 use App\Models\SceneCharacter;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManager;
@@ -27,8 +27,9 @@ class QuizController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  String  $slug
-     * @return QuizResource
+     * @param Request $request
+     * @param  String  $quizId
+     * @return Response
      */
     public function show(Request $request, String $quizId)
     {
@@ -46,8 +47,8 @@ class QuizController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  String  $slug
-     * @return QuizResource
+     * @param  Request  $request
+     * @return Response
      */
     public function showByDate(Request $request)
     {
@@ -71,6 +72,11 @@ class QuizController extends Controller
         return $this->formatResponse($quiz, $user);
     }
 
+    /**
+     * @param Quiz
+     * @param User
+     * @return Response
+     */
     public function formatResponse($quiz, $user)
     {
         $text = $quiz->generateQuestion();
@@ -106,6 +112,7 @@ class QuizController extends Controller
                 $geoData['lng'] = is_null($answer->lng) ? -73.98513 : $answer->lng;
                 $geoData['hintsUsed'] = $answer->hints_used;
                 $response['answer'] = $geoData;
+                $response['answer']['correct'] = $answer->correct;
 
                 if ($answer->hints_used >= 1) {
                     $nyc = new NewYorkCity();
@@ -124,7 +131,12 @@ class QuizController extends Controller
         return response($response);
     }
 
-    private function uploadToS3(Request $request, $quizId)
+    /**
+     * @param Request $request
+     * @param String $quizId
+     * @return String $s3Url
+     */
+    private function uploadToS3(Request $request, String $quizId)
     {
         $request->validate([
             'file' => 'required|image|mimes:jpg,jpeg,png,gif',
@@ -142,17 +154,17 @@ class QuizController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return PredictionResource
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
+     * @return Response
      */
     public function create(Request $request)
     {
         $request->validate([
             'videoId' => 'bail|required|exists:videos,id',
             'charId' => 'bail|required|exists:characters,id',
-            'action' => 'bail|unique:actions,name|max:30',
+            'action' => 'bail|unique:actions,name|max:50',
             'actionId' => 'bail|exists:actions,id',
-            'hint' => 'bail|required|min:3|max:20'
+            'hint' => 'bail|required|min:3|max:50'
         ]);
 
         $userId = $request->user()->id;
@@ -242,6 +254,12 @@ class QuizController extends Controller
         ];
     }
 
+    /**
+     * 
+     * @param Request $request
+     * @param String $quizId
+     * @return Response
+     */
     public function answer(Request $request, String $quizId)
     {
         $userId = $request->user()->id;
@@ -269,6 +287,12 @@ class QuizController extends Controller
         ]);
     }
 
+    /**
+     * 
+     * @param Request $request
+     * @param String $quizId
+     * @return Response
+     */
     public function hint(Request $request, String $quizId)
     {
         $userId = $request->user()->id;
@@ -321,5 +345,9 @@ class QuizController extends Controller
         ], 404);
     }
 
+    /**
+     * 
+     * @param Request $request
+     */
     public function leaderboard(Request $request) {}
 }

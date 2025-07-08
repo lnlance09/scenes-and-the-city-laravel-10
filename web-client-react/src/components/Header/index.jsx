@@ -5,23 +5,35 @@ import {
     Container,
     Dropdown,
     Flag,
+    Form,
     Grid,
     Header,
     Icon,
     Image,
+    List,
     Menu,
+    Radio,
     Segment,
+    Select,
     Sidebar
 } from "semantic-ui-react"
 import { useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
-import { logout, setLanguage, toggleInverted } from "../../reducers/app"
+import {
+    logout,
+    setDarkMode,
+    setHardMode,
+    setLanguage,
+    setReveal,
+    setUnits
+} from "../../reducers/app"
 import { setHasAnswered } from "../../reducers/home"
 import { languages } from "../../options/languages"
 import { options } from "../../options/options"
 import { toast } from "react-toastify"
 import { toastConfig } from "../../options/toast"
 import { dateFormat, isSunday, nyc } from "../../utils/date"
+import axios from "axios"
 import avatarPic from "../../images/avatar/small/zoe.jpg"
 import classNames from "classnames"
 import moment from "moment-timezone"
@@ -30,6 +42,8 @@ import UploadModal from "../UploadModal/"
 import WordsLogo from "../../images/logo.svg"
 import WordsLogoInverted from "../../images/logo-inverted.svg"
 import * as translations from "../../assets/translate.json"
+
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
 
 const HeaderComponent = ({
     date,
@@ -40,6 +54,9 @@ const HeaderComponent = ({
 }) => {
     const dispatch = useDispatch()
     const isAuth = useSelector((state) => state.app.auth)
+    const hardMode = useSelector((state) => state.app.hardMode)
+    const reveal = useSelector((state) => state.app.reveal)
+    const units = useSelector((state) => state.app.units)
     const inverted = useSelector((state) => state.app.inverted)
     const language = useSelector((state) => state.app.language)
     const lang = translations[language]
@@ -56,6 +73,12 @@ const HeaderComponent = ({
     const [dropdownVal, setDropdownVal] = useState(translatedOptions[0].value)
     const [dropdownOpts, setDropdownOpts] = useState(translatedOptions)
     const [dropdownVisible, setDropdownVisible] = useState(false)
+
+    const [totalAnswers, setTotalAnswers] = useState(null)
+    const [correctAnswers, setCorrectAnswers] = useState(null)
+    const [accuracy, setAccuracy] = useState(null)
+    const [currentStreak, setCurrentStreak] = useState(null)
+    const [marginOfError, setMarginOfError] = useState(null)
 
     const days = lang.days
     const lastIndex = days.length - 1
@@ -92,14 +115,54 @@ const HeaderComponent = ({
             }
         }
         setDropdownOpts([...translatedOptions.slice(0, -1), dropdownItem])
-    }, [isAuth])
+    }, [isAuth, language])
+
+    const updateSettings = (payload) => {
+        axios
+            .post(`${apiBaseUrl}users/settings`, payload, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("bearer")}`
+                }
+            })
+            .then(() => {
+                console.log("Updated settings")
+            })
+            .catch((error) => {
+                console.error(error.response.data.message)
+            })
+    }
+
+    const getStats = () => {
+        axios({
+            url: `${apiBaseUrl}users/stats`,
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("bearer")}`
+            }
+        }).then((response) => {
+            setTotalAnswers(response.data.totalAnswers)
+            setCorrectAnswers(response.data.correctAnswers)
+            setAccuracy(response.data.accuracy)
+            setCurrentStreak(response.data.currentStreak)
+            setMarginOfError(response.data.margin)
+        })
+    }
+
+    const getHistory = () => {
+        axios({
+            url: `${apiBaseUrl}users/history`,
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("bearer")}`
+            }
+        }).then((response) => {
+            console.log("history", response)
+        })
+    }
 
     const modalClass = classNames({
         simpleModal: true,
         inverted
     })
     const modalOverlayClass = classNames({
-        loginModalOverlay: true,
         simpleModalOverlay: true,
         inverted
     })
@@ -112,12 +175,65 @@ const HeaderComponent = ({
                     modal: modalClass
                 }}
                 center
-                onClose={() => setSettingsVisible(false)}
-                onOpen={() => setSettingsVisible(true)}
+                onClose={() => {
+                    setSettingsVisible(false)
+                    setDropdownVisible(false)
+                }}
                 open={settingsVisible}
                 showCloseIcon={false}
             >
                 <Header content="Settings" inverted={inverted} size="large" />
+                <List inverted={inverted} size="big">
+                    <List.Item>
+                        <List.Content floated="right">
+                            <Radio
+                                checked={hardMode}
+                                onChange={(e, data) => {
+                                    updateSettings({ hardMode: data.checked ? 1 : 0 })
+                                    dispatch(setHardMode({ hardMode: data.checked }))
+                                }}
+                                toggle
+                            />
+                        </List.Content>
+                        <List.Content>Hard Mode</List.Content>
+                    </List.Item>
+                    <List.Item>
+                        <List.Content floated="right">
+                            <Radio
+                                checked={reveal}
+                                onChange={(e, data) => {
+                                    updateSettings({ reveal: data.checked ? 1 : 0 })
+                                    dispatch(setReveal({ reveal: data.checked }))
+                                }}
+                                toggle
+                            />
+                        </List.Content>
+                        <List.Content>Reveal answers after quizzes have expired</List.Content>
+                    </List.Item>
+                    <List.Item>
+                        <List.Content floated="right">
+                            <Form inverted={inverted} size="small">
+                                <Select
+                                    placeholder="Select units"
+                                    onChange={(e, { value }) => {
+                                        updateSettings({ units: value })
+                                        dispatch(setUnits({ units: value }))
+                                    }}
+                                    options={[
+                                        { key: "miles", value: "miles", text: "miles" },
+                                        {
+                                            key: "kilometers",
+                                            value: "kilometers",
+                                            text: "kilometers"
+                                        }
+                                    ]}
+                                    value={units}
+                                />
+                            </Form>
+                        </List.Content>
+                        <List.Content>Measure distance in</List.Content>
+                    </List.Item>
+                </List>
             </Modal>
         )
     }
@@ -130,22 +246,93 @@ const HeaderComponent = ({
                     modal: modalClass
                 }}
                 center
-                onClose={() => setStatsVisible(false)}
-                onOpen={() => setStatsVisible(true)}
+                onClose={() => {
+                    setStatsVisible(false)
+                    setDropdownVisible(false)
+                }}
                 open={statsVisible}
                 showCloseIcon={false}
             >
                 <Header content="Stats" inverted={inverted} size="large" />
-                <Grid>
-                    <Grid.Row widths="equal">
-                        <Grid.Column></Grid.Column>
-                        <Grid.Column></Grid.Column>
-                        <Grid.Column></Grid.Column>
+                <Grid celled="internally" columns="equal" inverted={inverted} stackable>
+                    <Grid.Row>
+                        <Grid.Column>
+                            <Header
+                                className="statNumber"
+                                content={totalAnswers}
+                                inverted={inverted}
+                                size="huge"
+                                textAlign="center"
+                            />
+                            <Header
+                                content={lang.stats.totalAnswers}
+                                inverted={inverted}
+                                size="medium"
+                                textAlign="center"
+                            />
+                        </Grid.Column>
+                        <Grid.Column>
+                            <Header
+                                className="statNumber"
+                                content={correctAnswers}
+                                inverted={inverted}
+                                size="huge"
+                                textAlign="center"
+                            />
+                            <Header
+                                content={lang.stats.correctAnswers}
+                                inverted={inverted}
+                                size="medium"
+                                textAlign="center"
+                            />
+                        </Grid.Column>
+                        <Grid.Column>
+                            <Header
+                                className="statNumber"
+                                content={accuracy}
+                                inverted={inverted}
+                                size="huge"
+                                textAlign="center"
+                            />
+                            <Header
+                                content={lang.stats.accuracy}
+                                inverted={inverted}
+                                size="medium"
+                                textAlign="center"
+                            />
+                        </Grid.Column>
                     </Grid.Row>
-                    <Grid.Row widths="equal">
-                        <Grid.Column></Grid.Column>
-                        <Grid.Column></Grid.Column>
-                        <Grid.Column></Grid.Column>
+                    <Grid.Row>
+                        <Grid.Column>
+                            <Header
+                                className="statNumber"
+                                content={currentStreak}
+                                inverted={inverted}
+                                size="huge"
+                                textAlign="center"
+                            />
+                            <Header
+                                content={lang.stats.currentStreak}
+                                inverted={inverted}
+                                size="medium"
+                                textAlign="center"
+                            />
+                        </Grid.Column>
+                        <Grid.Column>
+                            <Header
+                                className="statNumber"
+                                content={marginOfError}
+                                inverted={inverted}
+                                size="huge"
+                                textAlign="center"
+                            />
+                            <Header
+                                content={lang.stats.marginOfError}
+                                inverted={inverted}
+                                size="medium"
+                                textAlign="center"
+                            />
+                        </Grid.Column>
                     </Grid.Row>
                 </Grid>
             </Modal>
@@ -160,8 +347,10 @@ const HeaderComponent = ({
                     modal: modalClass
                 }}
                 center
-                onClose={() => setHistoryVisible(false)}
-                onOpen={() => setHistoryVisible(true)}
+                onClose={() => {
+                    setHistoryVisible(false)
+                    setDropdownVisible(false)
+                }}
                 open={historyVisible}
                 showCloseIcon={false}
             >
@@ -178,8 +367,10 @@ const HeaderComponent = ({
                     modal: modalClass
                 }}
                 center
-                onClose={() => setLeaderboardVisible(false)}
-                onOpen={() => setLeaderboardVisible(true)}
+                onClose={() => {
+                    setLeaderboardVisible(false)
+                    setDropdownVisible(false)
+                }}
                 open={leaderboardVisible}
                 showCloseIcon={false}
             >
@@ -219,8 +410,11 @@ const HeaderComponent = ({
                                 icon={null}
                                 item
                                 onChange={(e, { value }) => {
+                                    if (isAuth) {
+                                        updateSettings({ lang: value })
+                                    }
                                     dispatch(setLanguage({ language: value }))
-                                    localStorage.setItem("language", value)
+                                    localStorage.setItem("lang", value)
                                 }}
                                 options={languages}
                                 pointing
@@ -230,8 +424,11 @@ const HeaderComponent = ({
                         <Menu.Item
                             className="menuItem"
                             onClick={() => {
-                                dispatch(toggleInverted())
-                                localStorage.setItem("inverted", !inverted)
+                                if (isAuth) {
+                                    updateSettings({ darkMode: !inverted ? 1 : 0 })
+                                }
+                                dispatch(setDarkMode({ darkMode: !inverted }))
+                                localStorage.setItem("inverted", !inverted ? 1 : 0)
                             }}
                         >
                             <Icon
@@ -261,6 +458,7 @@ const HeaderComponent = ({
                                         position: "absolute",
                                         top: "1.4em",
                                         left: "2em",
+                                        visibility: "hidden",
                                         zIndex: 999
                                     }}
                                 >
@@ -274,10 +472,16 @@ const HeaderComponent = ({
                                                 setDropdownVal(translatedOptions[0].value)
                                             }
                                             if (value === "stats") {
+                                                if (isAuth) {
+                                                    getStats()
+                                                }
                                                 setStatsVisible(true)
                                                 setDropdownVal(translatedOptions[1].value)
                                             }
                                             if (value === "history") {
+                                                if (isAuth) {
+                                                    getHistory()
+                                                }
                                                 setHistoryVisible(true)
                                                 setDropdownVal(translatedOptions[2].value)
                                             }
@@ -287,19 +491,21 @@ const HeaderComponent = ({
                                             }
                                             if (value === "signin") {
                                                 toggleLoginModal()
+                                                setDropdownVisible(false)
                                                 setDropdownVal(translatedOptions[0].value)
                                             }
                                             if (value === "signout") {
-                                                localStorage.setItem("auth", false)
+                                                localStorage.setItem("auth", 0)
                                                 localStorage.setItem("bearer", null)
                                                 localStorage.setItem("user", null)
-                                                localStorage.setItem("verify", false)
+                                                localStorage.setItem("verify", 0)
                                                 dispatch(logout())
                                                 dispatch(setHasAnswered({ hasAnswered: false }))
                                                 toast.success(
                                                     "You have been logged out!",
                                                     toastConfig
                                                 )
+                                                setDropdownVisible(false)
                                                 setDropdownVal(translatedOptions[0].value)
                                             }
                                         }}
@@ -307,7 +513,7 @@ const HeaderComponent = ({
                                         options={dropdownOpts}
                                         pointing
                                         trigger={() => null}
-                                        value={dropdownVal}
+                                        // value={dropdownVal}
                                     />
                                 </div>
                             )}

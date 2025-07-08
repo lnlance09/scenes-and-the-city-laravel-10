@@ -17,8 +17,10 @@ class Answer extends JsonResource
         return [
             'createdAt' => $this->created_at,
             'hintsUsed' => $this->hints_used,
+            'correct' => $this->correct,
             'lat' => (float)$this->lat,
-            'lng' => (float)$this->lng
+            'lng' => (float)$this->lng,
+            'quiz' => new Quiz($this->quiz)
         ];
     }
 }

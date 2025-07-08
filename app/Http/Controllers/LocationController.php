@@ -4,10 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\NewYorkCity;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class LocationController extends Controller
 {
-
+    /**
+     * @param Request $request
+     * @return Response
+     */
     public function find(Request $request)
     {
         $request->validate([

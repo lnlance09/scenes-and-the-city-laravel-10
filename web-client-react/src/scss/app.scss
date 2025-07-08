@@ -13,7 +13,7 @@ body {
 	}
 }
 
-input, textarea {
+input, textarea, .ui.dropdown {
 	font-family: fonts.$franklin600 !important;
 }
 
@@ -62,8 +62,33 @@ button {
 	min-height: 360px;
 	min-width: 500px;
 
+	.ui.header.statNumber {
+		font-size: 48px;
+		margin-bottom: 0 !important;
+
+		+ .ui.header {
+			margin-top: 0;
+		}
+	}
+
+	.ui.list {
+		.item > .content {
+			font-family: fonts.$cheltenham400 !important;
+
+			.ui.selection.active.dropdown .menu {
+				width: 100% !important;
+			}
+		}
+	}
+
     &.inverted {
         background: transparent;
+
+		.ui.list {
+			.item > .content {
+				color: colors.$white !important;
+			}
+		}
     }
 
 	&:not(.submitSceneModal, .loginModal) {
@@ -75,10 +100,12 @@ button {
 
 .Toastify__toast-container.Toastify__toast-container--top-center {
 	.Toastify__toast {
-		display: inline-block;
+		display: inline;
 		font-family: fonts.$franklin600;
 		font-size: 18px;
-		min-width: 360px;
+		margin: auto;
+		line-height: 1.5;
+		min-width: 400px;
 		text-align: center;
 
 		&.Toastify__toast--error {

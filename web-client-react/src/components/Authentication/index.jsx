@@ -1,6 +1,16 @@
 import "./index.scss"
 import { Button, Divider, Form, Header, Icon, Input, Segment, Transition } from "semantic-ui-react"
-import { setUserData, setNeedToVerify, verifyEmail } from "../../reducers/app"
+import {
+    setUserData,
+    setNeedToVerify,
+    verifyEmail,
+    setBearer,
+    setHardMode,
+    setDarkMode,
+    setLanguage,
+    setReveal,
+    setUnits
+} from "../../reducers/app"
 import { useEffect, useReducer, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import {
@@ -76,18 +86,33 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
             .post(`${apiBaseUrl}users/login`, payload)
             .then(async (response) => {
                 const { data } = response
-                dispatch(setUserData({ data }))
-                localStorage.setItem("auth", true)
-                localStorage.setItem("bearer", data.bearer)
+                dispatch(setUserData({ user: data.user }))
+
+                const { bearer, settings, verified } = data.user
+                localStorage.setItem("auth", 1)
+                localStorage.setItem("bearer", bearer)
+                localStorage.setItem("hardMode", settings.hardMode)
+                localStorage.setItem("inverted", settings.darkMode)
+                localStorage.setItem("lang", settings.lang)
+                localStorage.setItem("reveal", settings.revealAnswers)
+                localStorage.setItem("units", settings.measureUnits)
                 localStorage.setItem("user", JSON.stringify(data.user))
-                localStorage.setItem("verify", data.verify)
-                if (!data.verify) {
+                localStorage.setItem("verify", verified ? 1 : 0)
+
+                dispatch(setBearer({ bearer }))
+                dispatch(setHardMode({ hardMode: settings.hardMode === 1 }))
+                dispatch(setDarkMode({ darkMode: settings.darkMode === 1 }))
+                dispatch(setLanguage({ language: settings.lang }))
+                dispatch(setReveal({ reveal: settings.revealAnswers === 1 }))
+                dispatch(setUnits({ units: settings.measureUnits }))
+
+                if (!verified) {
                     closeModal()
                     toast.success("You have been logged in!", {
                         ...toastConfig,
                         className: inverted ? "inverted" : null
                     })
-                    window.location.reload()
+                    // window.location.reload()
                     return
                 }
                 dispatch(setNeedToVerify())
@@ -122,13 +147,20 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
             })
             .then(async (response) => {
                 const { data } = response
-                dispatch(setUserData({ data }))
+                dispatch(setUserData({ user: data.user }))
                 dispatch(setNeedToVerify())
-                localStorage.setItem("auth", true)
-                localStorage.setItem("bearer", data.bearer)
-                localStorage.setItem("user", JSON.stringify(data.user))
-                localStorage.setItem("verify", true)
                 dispatchInternal({ type: SET_VERIFY })
+
+                const { bearer, settings } = data.user
+                localStorage.setItem("auth", 1)
+                localStorage.setItem("bearer", bearer)
+                localStorage.setItem("hardMode", settings.hardMode)
+                localStorage.setItem("inverted", settings.darkMode)
+                localStorage.setItem("lang", settings.lang)
+                localStorage.setItem("reveal", settings.revealAnswers)
+                localStorage.setItem("units", settings.measureUnits)
+                localStorage.setItem("user", JSON.stringify(data.user))
+                localStorage.setItem("verify", 1)
             })
             .catch((error) => {
                 let errorMsg = ""

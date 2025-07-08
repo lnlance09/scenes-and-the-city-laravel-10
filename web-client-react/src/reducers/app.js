@@ -8,8 +8,18 @@ const appSlice = createSlice({
         logout: (state) => {
             state.auth = false
             state.bearer = null
+            state.hardMode = false
             state.user = null
             state.verify = false
+        },
+        setBearer: (state, action) => {
+            state.bearer = action.payload.bearer
+        },
+        setHardMode: (state, action) => {
+            state.hardMode = action.payload.hardMode
+        },
+        setDarkMode: (state, action) => {
+            state.inverted = action.payload.darkMode
         },
         setLanguage: (state, action) => {
             state.language = action.payload.language
@@ -17,19 +27,36 @@ const appSlice = createSlice({
         setNeedToVerify: (state) => {
             state.verify = true
         },
+        setReveal: (state, action) => {
+            state.reveal = action.payload.reveal
+        },
+        setUnits: (state, action) => {
+            state.units = action.payload.units
+        },
+        setUserData: (state, action) => {
+            state.auth = true
+            state.user = action.payload.user
+        },
         toggleInverted: (state) => {
             state.inverted = !state.inverted
         },
         verifyEmail: (state) => {
             state.verify = false
-        },
-        setUserData: (state, action) => {
-            state.auth = true
-            state.user = action.payload.data
         }
     }
 })
 
-export const { logout, setUserData, toggleInverted, setLanguage, setNeedToVerify, verifyEmail } =
-    appSlice.actions
+export const {
+    logout,
+    setBearer,
+    setDarkMode,
+    setHardMode,
+    setLanguage,
+    setReveal,
+    setUnits,
+    setUserData,
+    setNeedToVerify,
+    toggleInverted,
+    verifyEmail
+} = appSlice.actions
 export default appSlice.reducer

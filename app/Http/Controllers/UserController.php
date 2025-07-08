@@ -3,12 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AnswerCollection;
 use App\Http\Resources\User as UserResource;
 use App\Http\Resources\UserCollection as UserCollection;
 use App\Mail\ForgotPassword;
 use App\Mail\VerificationCode;
+use App\Models\Answer;
+use App\Models\Setting;
 use App\Models\User;
+use App\Http\Resources\Setting as SettingResource;
+use App\Models\NewYorkCity;
 use App\Rules\MatchOldPassword;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -52,7 +58,7 @@ class UserController extends Controller
         }
         $user->fill($input)->save();
 
-        return response()->json([
+        return response([
             'success' => true
         ]);
     }
@@ -76,7 +82,7 @@ class UserController extends Controller
         $request->validate([
             'username' => 'bail|required|max:20|unique:users,username|alpha_dash'
         ]);
-        return response()->json([
+        return response([
             'available' => true
         ]);
     }
@@ -94,7 +100,6 @@ class UserController extends Controller
             'username' => 'bail|min:3|alpha_dash',
             'password' => ['bail', 'required', Password::min(5)],
         ]);
-
         $password = sha1($request->input('password'));
 
         $user = User::where(function ($query) use ($request, $password) {
@@ -105,16 +110,19 @@ class UserController extends Controller
                 $query->where('username', '=', $request->input('username'));
                 $query->where('password', '=', $password);
             });
-        })->first();
+        })->with(['setting'])->first();
         if (!$user) {
             return response([
                 'message' => 'Incorrect password'
             ], 401);
         }
-        return response()->json([
-            'bearer' => $user->api_token,
-            'user' => new UserResource($user),
-            'verify' => $user->email_verified_at === null
+        return response([
+            'user' => [
+                'bearer' => $user->api_token,
+                'username' => $user->username,
+                'verified' => $user->email_verified_at === null,
+                'settings' => new SettingResource($user->setting)
+            ]
         ]);
     }
 
@@ -156,10 +164,15 @@ class UserController extends Controller
         ]);
         $user->refresh();
 
+        $setting = Setting::create([
+            'user_id' => 1
+        ]);
+        $setting->refresh();
+
         /*
         try {
             Mail::to($email)->send(new VerificationCode($user));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error($e);
             return response([
                 'message' => 'Error sending confirmation email'
@@ -167,9 +180,11 @@ class UserController extends Controller
         }
         */
 
-        return response()->json([
-            'bearer' => $user->api_token,
-            'user' => new UserResource($user)
+        return response([
+            'user' => [
+                'username' => $user->username,
+                'settings' => new SettingResource($setting)
+            ]
         ]);
     }
 
@@ -195,7 +210,7 @@ class UserController extends Controller
         $user->email_verified_at = now();
         $user->save();
 
-        return response()->json([
+        return response([
             'verify' => false
         ]);
     }
@@ -231,7 +246,7 @@ class UserController extends Controller
 
         try {
             Mail::to($email)->send(new ForgotPassword($user));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response([
                 'message' => 'Error sending recovery email'
             ], 401);
@@ -271,7 +286,7 @@ class UserController extends Controller
         $user->save();
         $user->refresh();
 
-        return response()->json([
+        return response([
             'success' => true
         ]);
     }
@@ -296,8 +311,129 @@ class UserController extends Controller
         $user->save();
         $user->refresh();
 
-        return response()->json([
+        return response([
             'success' => true
         ]);
+    }
+
+    /**
+     * Update settings
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Http\Response
+     */
+    public function updateSettings(Request $request)
+    {
+        $request->validate([
+            'darkMode' => 'bail|integer|min:0|max:1',
+            'hardMode' => 'bail|integer|min:0|max:1',
+            'reveal' => 'bail|integer|min:0|max:1',
+        ]);
+
+        $darkMode = $request->input('darkMode', null);
+        $hardMode = $request->input('hardMode', null);
+        $lang = $request->input('lang', null);
+        $reveal = $request->input('reveal', null);
+        $units = $request->input('units', null);
+
+        $userId = $request->user()->id;
+        $setting = Setting::where('user_id', $userId)->first();
+
+        if ($darkMode !== null) {
+            $setting->dark_mode = $darkMode;
+        }
+        if ($hardMode !== null) {
+            $setting->hard_mode = $hardMode;
+        }
+        if (in_array($lang, ['en', 'es', 'cn'])) {
+            $setting->lang = $lang;
+        }
+        if ($reveal !== null) {
+            $setting->reveal_answers = $reveal;
+        }
+        if (in_array($units, ['miles', 'kilometers'])) {
+            $setting->measure_units_in = $units;
+        }
+        $setting->save();
+
+        return response([
+            'success' => true
+        ]);
+    }
+
+    /**
+     * Update settings
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Http\Response
+     */
+    public function getStats(Request $request)
+    {
+        $userId = $request->user()->id;
+
+        $correctAnswers = Answer::where(
+            [
+                'user_id' => $userId,
+                'correct' => 1
+            ]
+        )->count();
+        $incorrectAnswers = Answer::where(
+            [
+                'user_id' => $userId,
+                'correct' => 0
+            ]
+        )->count();
+        $totalAnswers = $incorrectAnswers + $correctAnswers;
+        $accuracy = $totalAnswers === 0 ? 0 : $correctAnswers / $totalAnswers;
+
+        $allAnswers = Answer::where('user_id', $userId)->get();
+        $currentStreak = 0;
+        for ($i = 0; $i < count($allAnswers); $i++) {
+            if ($allAnswers[$i]->correct === 0) {
+                break;
+            }
+            if ($allAnswers[$i]->correct === 1) {
+                $currentStreak++;
+            }
+        }
+
+        $answers = Answer::where('user_id', $userId)->with(['quiz'])->get();
+        $nyc = new NewYorkCity();
+        $margin = 0;
+        $count = count($answers);
+        for ($i = 0; $i < $count; $i++) {
+            $a = $answers[$i];
+            $answerLocation = $nyc->locationToObject('Point', $a->lng, $a->lat);
+            $quizLocation = $nyc->locationToObject('Point', $a->quiz->lng, $a->quiz->lat);
+            $margin += $quizLocation->distance($answerLocation);
+        }
+        $marginOfError = $count === 0 ? $margin : $margin / $count;
+
+        return response([
+            'totalAnswers' => $totalAnswers,
+            'correctAnswers' => $correctAnswers,
+            'accuracy' => $accuracy,
+            'currentStreak' => $currentStreak,
+            'maxStreak' => '',
+            'margin' => $marginOfError
+        ]);
+    }
+
+    /**
+     * Update settings
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Http\Response
+     */
+    public function getHistory(Request $request)
+    {
+        $userId = $request->user()->id;
+        $answers = Answer::where('user_id', $userId)
+            ->with(['quiz'])
+            ->get();
+        return new AnswerCollection($answers);
     }
 }

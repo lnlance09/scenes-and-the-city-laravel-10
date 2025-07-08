@@ -20,7 +20,8 @@ class Answer extends Model
         'answer',
         'lat',
         'lng',
-        'hints_used'
+        'hints_used',
+        'correct'
     ];
 
     /**
@@ -39,7 +40,7 @@ class Answer extends Model
 
     public function quiz()
     {
-        return $this->hasOne(Quiz::class);
+        return $this->hasOne(Quiz::class, 'id', 'quiz_id');
     }
 
     public function user()

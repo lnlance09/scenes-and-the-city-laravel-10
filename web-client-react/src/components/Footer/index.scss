@@ -21,7 +21,7 @@
 
 		&.inverted {
 			background: colors.$blackBackgroundNormal !important;
-			border-top: none !important;
+			border-top: colors.$invertedBorder !important;
 
 			p {
 				color: #aaa !important;

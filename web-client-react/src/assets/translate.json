@@ -82,6 +82,13 @@
             "settings": "Settings",
             "stats": "Stats"
         },
+        "stats": {
+            "totalAnswers": "Total Answers",
+            "correctAnswers": "Correct Answers",
+            "accuracy": "Accuracy",
+            "currentStreak": "Current Streak",
+            "marginOfError": "Margin of Error"
+        },
         "main": {
             "seeLastWeek": "see last week",
             "seeToday": "see today",
@@ -175,6 +182,13 @@
             "settings": "Ajustes",
             "stats": "Estadísticas"
         },
+        "stats": {
+            "totalAnswers": "Respuestas Totales",
+            "correctAnswers": "Respuestas correctas",
+            "accuracy": "Exactitud",
+            "currentStreak": "Racha actual",
+            "marginOfError": "Margen de Error"
+        },
         "main": {
             "seeLastWeek": "ver la semana pasada",
             "seeToday": "ver hoy",
@@ -267,6 +281,13 @@
             "makeAQuiz": "做一个测验",
             "settings": "设置",
             "stats": "统计数据"
+        },
+        "stats": {
+            "totalAnswers": "总答案",
+            "correctAnswers": "正确答案",
+            "accuracy": "准确性",
+            "currentStreak": "当前连胜",
+            "marginOfError": "误差幅度"
         },
         "main": {
             "seeLastWeek": "见上周",

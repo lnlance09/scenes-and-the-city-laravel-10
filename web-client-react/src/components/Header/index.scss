@@ -30,6 +30,10 @@
 			.ui.image.avatar {
 				cursor: pointer;
 			}
+
+			.flag {
+				margin-right: 0;
+			}
 		}
 
 		.brandName {
@@ -66,6 +70,7 @@
 			left: auto;
 			position: absolute;
 			right: -5em;
+			top: 2em;
 			width: 13em;
 			z-index: 99999;
 

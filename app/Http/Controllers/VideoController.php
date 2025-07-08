@@ -5,13 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Video;
 use App\Http\Resources\VideoCollection as VideoCollection;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class VideoController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return Response
      */
     public function index(Request $request)
     {
