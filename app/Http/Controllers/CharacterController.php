@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Character;
-use App\Http\Resources\CharacterCollection as CharacterCollection;
+use App\Http\Resources\CharacterCollection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 

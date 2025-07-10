@@ -14,10 +14,10 @@
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
-        "league/flysystem-aws-s3-v3": "^3.0",
-        "phayes/geophp": "^1.2"
+        "league/flysystem-aws-s3-v3": "^3.0"
     },
     "require-dev": {
+        "beyondcode/laravel-er-diagram-generator": "^5.0",
         "fakerphp/faker": "^1.9.1",
         "laravel/pint": "^1.0",
         "laravel/sail": "^1.18",

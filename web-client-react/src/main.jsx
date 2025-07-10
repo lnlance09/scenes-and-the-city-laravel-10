@@ -1,5 +1,4 @@
 import "semantic-ui-less/semantic.less"
-import "react-responsive-modal/styles.css"
 import "./scss/app.scss"
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import ReactDOM from "react-dom/client"

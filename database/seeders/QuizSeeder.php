@@ -26,7 +26,7 @@ class QuizSeeder extends Seeder
             $q['file'] = __DIR__ . '/pics/' . $q['file'];
             $q['quiz_id'] = Str::random(8);
             $q['user_id'] = 1;
-            $q['created_at'] = $this->getDateFromDay(2025, date('z') - $i)->format('Y-m-d H:i:s');
+            $q['created_at'] = $this->getDateFromDay(2025, (date('z') + 1) - $i)->format('Y-m-d H:i:s');
             $this->createQuiz($q);
         }
     }

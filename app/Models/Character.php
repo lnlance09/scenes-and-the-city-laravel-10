@@ -40,7 +40,7 @@ class Character extends Model
         return $this->hasOne(Actor::class, 'id', 'actor_id');
     }
 
-    public function pic()
+    public function pics()
     {
         return $this->hasMany(CharacterPic::class, 'character_id', 'id');
     }

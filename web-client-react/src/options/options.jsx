@@ -33,6 +33,7 @@ export const options = (language) => [
             </>
         )
     },
+    /*
     {
         key: "leaderboard",
         text: "Leader Board",
@@ -43,6 +44,7 @@ export const options = (language) => [
             </>
         )
     },
+    */
     {
         key: "signin",
         text: "Sign In",

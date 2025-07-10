@@ -31,18 +31,6 @@ class Quiz extends Model
      */
     protected $hidden = [];
 
-    public function generateQuestion()
-    {
-        $scene = $this->scene;
-        $video = $scene->video;
-        $action = $scene->action;
-        $character = $scene->characters[0]->character;
-        $charName = $character->first_name . " " . $character->last_name;
-        $year = $video->year;
-        $actionName = $action->action->name;
-        $text = "It's " . $year . " and " . $charName . " is seen here " . $actionName;
-        return $text;
-    }
     /**
      * The attributes that should be cast to native types.
      *

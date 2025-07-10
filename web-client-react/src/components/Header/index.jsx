@@ -1,32 +1,19 @@
 import "./index.scss"
-import { Modal } from "react-responsive-modal"
 import {
     Button,
     Container,
     Dropdown,
     Flag,
-    Form,
     Grid,
-    Header,
     Icon,
     Image,
-    List,
     Menu,
-    Radio,
     Segment,
-    Select,
     Sidebar
 } from "semantic-ui-react"
 import { useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
-import {
-    logout,
-    setDarkMode,
-    setHardMode,
-    setLanguage,
-    setReveal,
-    setUnits
-} from "../../reducers/app"
+import { logout, setDarkMode, setLanguage } from "../../reducers/app"
 import { setHasAnswered } from "../../reducers/home"
 import { languages } from "../../options/languages"
 import { options } from "../../options/options"
@@ -35,6 +22,9 @@ import { toastConfig } from "../../options/toast"
 import { dateFormat, isSunday, nyc } from "../../utils/date"
 import axios from "axios"
 import avatarPic from "../../images/avatar/small/zoe.jpg"
+import HistoryModal from "./modals/historyModal"
+import SettingsModal from "./modals/settingsModal"
+import StatsModal from "./modals/statsModal"
 import classNames from "classnames"
 import moment from "moment-timezone"
 import PropTypes from "prop-types"
@@ -54,9 +44,6 @@ const HeaderComponent = ({
 }) => {
     const dispatch = useDispatch()
     const isAuth = useSelector((state) => state.app.auth)
-    const hardMode = useSelector((state) => state.app.hardMode)
-    const reveal = useSelector((state) => state.app.reveal)
-    const units = useSelector((state) => state.app.units)
     const inverted = useSelector((state) => state.app.inverted)
     const language = useSelector((state) => state.app.language)
     const lang = translations[language]
@@ -73,12 +60,6 @@ const HeaderComponent = ({
     const [dropdownVal, setDropdownVal] = useState(translatedOptions[0].value)
     const [dropdownOpts, setDropdownOpts] = useState(translatedOptions)
     const [dropdownVisible, setDropdownVisible] = useState(false)
-
-    const [totalAnswers, setTotalAnswers] = useState(null)
-    const [correctAnswers, setCorrectAnswers] = useState(null)
-    const [accuracy, setAccuracy] = useState(null)
-    const [currentStreak, setCurrentStreak] = useState(null)
-    const [marginOfError, setMarginOfError] = useState(null)
 
     const days = lang.days
     const lastIndex = days.length - 1
@@ -132,256 +113,8 @@ const HeaderComponent = ({
             })
     }
 
-    const getStats = () => {
-        axios({
-            url: `${apiBaseUrl}users/stats`,
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("bearer")}`
-            }
-        }).then((response) => {
-            setTotalAnswers(response.data.totalAnswers)
-            setCorrectAnswers(response.data.correctAnswers)
-            setAccuracy(response.data.accuracy)
-            setCurrentStreak(response.data.currentStreak)
-            setMarginOfError(response.data.margin)
-        })
-    }
-
-    const getHistory = () => {
-        axios({
-            url: `${apiBaseUrl}users/history`,
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("bearer")}`
-            }
-        }).then((response) => {
-            console.log("history", response)
-        })
-    }
-
-    const modalClass = classNames({
-        simpleModal: true,
-        inverted
-    })
-    const modalOverlayClass = classNames({
-        simpleModalOverlay: true,
-        inverted
-    })
-
-    const settingsModal = () => {
-        return (
-            <Modal
-                classNames={{
-                    overlay: modalOverlayClass,
-                    modal: modalClass
-                }}
-                center
-                onClose={() => {
-                    setSettingsVisible(false)
-                    setDropdownVisible(false)
-                }}
-                open={settingsVisible}
-                showCloseIcon={false}
-            >
-                <Header content="Settings" inverted={inverted} size="large" />
-                <List inverted={inverted} size="big">
-                    <List.Item>
-                        <List.Content floated="right">
-                            <Radio
-                                checked={hardMode}
-                                onChange={(e, data) => {
-                                    updateSettings({ hardMode: data.checked ? 1 : 0 })
-                                    dispatch(setHardMode({ hardMode: data.checked }))
-                                }}
-                                toggle
-                            />
-                        </List.Content>
-                        <List.Content>Hard Mode</List.Content>
-                    </List.Item>
-                    <List.Item>
-                        <List.Content floated="right">
-                            <Radio
-                                checked={reveal}
-                                onChange={(e, data) => {
-                                    updateSettings({ reveal: data.checked ? 1 : 0 })
-                                    dispatch(setReveal({ reveal: data.checked }))
-                                }}
-                                toggle
-                            />
-                        </List.Content>
-                        <List.Content>Reveal answers after quizzes have expired</List.Content>
-                    </List.Item>
-                    <List.Item>
-                        <List.Content floated="right">
-                            <Form inverted={inverted} size="small">
-                                <Select
-                                    placeholder="Select units"
-                                    onChange={(e, { value }) => {
-                                        updateSettings({ units: value })
-                                        dispatch(setUnits({ units: value }))
-                                    }}
-                                    options={[
-                                        { key: "miles", value: "miles", text: "miles" },
-                                        {
-                                            key: "kilometers",
-                                            value: "kilometers",
-                                            text: "kilometers"
-                                        }
-                                    ]}
-                                    value={units}
-                                />
-                            </Form>
-                        </List.Content>
-                        <List.Content>Measure distance in</List.Content>
-                    </List.Item>
-                </List>
-            </Modal>
-        )
-    }
-
-    const statsModal = () => {
-        return (
-            <Modal
-                classNames={{
-                    overlay: modalOverlayClass,
-                    modal: modalClass
-                }}
-                center
-                onClose={() => {
-                    setStatsVisible(false)
-                    setDropdownVisible(false)
-                }}
-                open={statsVisible}
-                showCloseIcon={false}
-            >
-                <Header content="Stats" inverted={inverted} size="large" />
-                <Grid celled="internally" columns="equal" inverted={inverted} stackable>
-                    <Grid.Row>
-                        <Grid.Column>
-                            <Header
-                                className="statNumber"
-                                content={totalAnswers}
-                                inverted={inverted}
-                                size="huge"
-                                textAlign="center"
-                            />
-                            <Header
-                                content={lang.stats.totalAnswers}
-                                inverted={inverted}
-                                size="medium"
-                                textAlign="center"
-                            />
-                        </Grid.Column>
-                        <Grid.Column>
-                            <Header
-                                className="statNumber"
-                                content={correctAnswers}
-                                inverted={inverted}
-                                size="huge"
-                                textAlign="center"
-                            />
-                            <Header
-                                content={lang.stats.correctAnswers}
-                                inverted={inverted}
-                                size="medium"
-                                textAlign="center"
-                            />
-                        </Grid.Column>
-                        <Grid.Column>
-                            <Header
-                                className="statNumber"
-                                content={accuracy}
-                                inverted={inverted}
-                                size="huge"
-                                textAlign="center"
-                            />
-                            <Header
-                                content={lang.stats.accuracy}
-                                inverted={inverted}
-                                size="medium"
-                                textAlign="center"
-                            />
-                        </Grid.Column>
-                    </Grid.Row>
-                    <Grid.Row>
-                        <Grid.Column>
-                            <Header
-                                className="statNumber"
-                                content={currentStreak}
-                                inverted={inverted}
-                                size="huge"
-                                textAlign="center"
-                            />
-                            <Header
-                                content={lang.stats.currentStreak}
-                                inverted={inverted}
-                                size="medium"
-                                textAlign="center"
-                            />
-                        </Grid.Column>
-                        <Grid.Column>
-                            <Header
-                                className="statNumber"
-                                content={marginOfError}
-                                inverted={inverted}
-                                size="huge"
-                                textAlign="center"
-                            />
-                            <Header
-                                content={lang.stats.marginOfError}
-                                inverted={inverted}
-                                size="medium"
-                                textAlign="center"
-                            />
-                        </Grid.Column>
-                    </Grid.Row>
-                </Grid>
-            </Modal>
-        )
-    }
-
-    const historyModal = () => {
-        return (
-            <Modal
-                classNames={{
-                    overlay: modalOverlayClass,
-                    modal: modalClass
-                }}
-                center
-                onClose={() => {
-                    setHistoryVisible(false)
-                    setDropdownVisible(false)
-                }}
-                open={historyVisible}
-                showCloseIcon={false}
-            >
-                <Header content="History" inverted={inverted} size="large" />
-            </Modal>
-        )
-    }
-
-    const leaderBoardModal = () => {
-        return (
-            <Modal
-                classNames={{
-                    overlay: modalOverlayClass,
-                    modal: modalClass
-                }}
-                center
-                onClose={() => {
-                    setLeaderboardVisible(false)
-                    setDropdownVisible(false)
-                }}
-                open={leaderboardVisible}
-                showCloseIcon={false}
-            >
-                <Header content="LeaderBoard" inverted={inverted} size="large" />
-            </Modal>
-        )
-    }
-
     const headerClass = classNames({
-        headerComponent: true,
-        bordered: !showDates
+        headerComponent: true
     })
 
     return (
@@ -395,31 +128,37 @@ const HeaderComponent = ({
                             onClick={() => onClickLogo()}
                             src={inverted ? WordsLogoInverted : WordsLogo}
                         />
-                        <Icon
-                            color={inverted ? "green" : "white"}
-                            inverted={inverted}
-                            name="options"
-                            onClick={() => setSidebarVisible(true)}
-                        />
+                        {inverted ? (
+                            <Icon
+                                color="green"
+                                inverted
+                                name="options"
+                                onClick={() => setSidebarVisible(true)}
+                            />
+                        ) : (
+                            <Icon inverted name="options" onClick={() => setSidebarVisible(true)} />
+                        )}
                     </div>
                     <div className="floatedRight">
-                        <Menu.Item className="menuItem">
-                            <Dropdown
-                                className="inverted"
-                                defaultValue={language}
-                                icon={null}
-                                item
-                                onChange={(e, { value }) => {
-                                    if (isAuth) {
-                                        updateSettings({ lang: value })
-                                    }
-                                    dispatch(setLanguage({ language: value }))
-                                    localStorage.setItem("lang", value)
-                                }}
-                                options={languages}
-                                pointing
-                                trigger={<Flag name={language === "en" ? "us" : language} />}
-                            />
+                        <Menu.Item className="menuItem lang">
+                            <div style={{ position: "absolute", right: "10px", bottom: "-6px" }}>
+                                <Dropdown
+                                    className="inverted"
+                                    defaultValue={language}
+                                    icon={null}
+                                    item
+                                    onChange={(e, { value }) => {
+                                        if (isAuth) {
+                                            updateSettings({ lang: value })
+                                        }
+                                        dispatch(setLanguage({ language: value }))
+                                        localStorage.setItem("lang", value)
+                                    }}
+                                    options={languages}
+                                    pointing
+                                    trigger={<Flag name={language === "en" ? "us" : language} />}
+                                />
+                            </div>
                         </Menu.Item>
                         <Menu.Item
                             className="menuItem"
@@ -431,32 +170,32 @@ const HeaderComponent = ({
                                 localStorage.setItem("inverted", !inverted ? 1 : 0)
                             }}
                         >
-                            <Icon
-                                color={inverted ? "green" : ""}
-                                inverted
-                                name={inverted ? "sun" : "moon"}
-                            />
-                        </Menu.Item>
-                        <Menu.Item className="menuItem">
-                            {isAuth ? (
-                                <Image
-                                    avatar
-                                    src={avatarPic}
-                                    onClick={() => setDropdownVisible(!dropdownVisible)}
-                                />
+                            {inverted ? (
+                                <Icon color="green" inverted name="sun" />
                             ) : (
-                                <Icon
-                                    color={inverted ? "green" : ""}
-                                    inverted
-                                    name="options"
-                                    onClick={() => setDropdownVisible(!dropdownVisible)}
-                                />
+                                <Icon inverted name="moon" />
+                            )}
+                        </Menu.Item>
+                        <Menu.Item
+                            className="menuItem settings"
+                            onClick={() => setDropdownVisible(!dropdownVisible)}
+                        >
+                            {isAuth ? (
+                                <Image avatar src={avatarPic} />
+                            ) : (
+                                <>
+                                    {inverted ? (
+                                        <Icon color="green" inverted name="options" />
+                                    ) : (
+                                        <Icon inverted name="options" />
+                                    )}
+                                </>
                             )}
                             {dropdownVisible && (
                                 <div
                                     style={{
                                         position: "absolute",
-                                        top: "1.4em",
+                                        top: "1.8em",
                                         left: "2em",
                                         visibility: "hidden",
                                         zIndex: 999
@@ -469,51 +208,38 @@ const HeaderComponent = ({
                                         onChange={(e, { value }) => {
                                             if (value === "settings") {
                                                 setSettingsVisible(true)
-                                                setDropdownVal(translatedOptions[0].value)
                                             }
                                             if (value === "stats") {
-                                                if (isAuth) {
-                                                    getStats()
-                                                }
                                                 setStatsVisible(true)
-                                                setDropdownVal(translatedOptions[1].value)
                                             }
                                             if (value === "history") {
-                                                if (isAuth) {
-                                                    getHistory()
-                                                }
                                                 setHistoryVisible(true)
-                                                setDropdownVal(translatedOptions[2].value)
                                             }
                                             if (value === "leaderboard") {
                                                 setLeaderboardVisible(true)
-                                                setDropdownVal(translatedOptions[3].value)
                                             }
                                             if (value === "signin") {
                                                 toggleLoginModal()
-                                                setDropdownVisible(false)
-                                                setDropdownVal(translatedOptions[0].value)
                                             }
                                             if (value === "signout") {
                                                 localStorage.setItem("auth", 0)
                                                 localStorage.setItem("bearer", null)
                                                 localStorage.setItem("user", null)
                                                 localStorage.setItem("verify", 0)
+
                                                 dispatch(logout())
                                                 dispatch(setHasAnswered({ hasAnswered: false }))
                                                 toast.success(
                                                     "You have been logged out!",
                                                     toastConfig
                                                 )
-                                                setDropdownVisible(false)
-                                                setDropdownVal(translatedOptions[0].value)
                                             }
+                                            setDropdownVisible(false)
                                         }}
                                         open={true}
                                         options={dropdownOpts}
                                         pointing
                                         trigger={() => null}
-                                        // value={dropdownVal}
                                     />
                                 </div>
                             )}
@@ -611,11 +337,21 @@ const HeaderComponent = ({
             </Sidebar>
 
             <UploadModal modalOpen={uploadModalOpen} setModalOpen={setUploadModalOpen} />
-
-            {settingsModal()}
-            {statsModal()}
-            {historyModal()}
-            {leaderBoardModal()}
+            <SettingsModal
+                callback={(visible) => setSettingsVisible(visible)}
+                modalOpen={settingsVisible}
+                updateSettings={(data) => updateSettings(data)}
+            />
+            <StatsModal
+                callback={(visible) => setStatsVisible(visible)}
+                modalOpen={statsVisible}
+                updateSettings={(data) => updateSettings(data)}
+            />
+            <HistoryModal
+                callback={(visible) => setHistoryVisible(visible)}
+                modalOpen={historyVisible}
+                updateSettings={(data) => updateSettings(data)}
+            />
         </div>
     )
 }

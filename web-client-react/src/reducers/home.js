@@ -8,6 +8,14 @@ const homeSlice = createSlice({
         clearQuiz: (state) => {
             state.quiz = defaultQuiz
         },
+        clearAnswer: (state) => {
+            state.answer = {
+                ...defaultAnswer,
+                lat: 40.758896,
+                lng: -73.98513
+            }
+            state.hasAnswered = false
+        },
         setAnswer: (state, action) => {
             state.answer = {
                 ...state.answer,
@@ -27,16 +35,14 @@ const homeSlice = createSlice({
         setHintTwo: (state, action) => {
             state.quiz.hintTwo = action.payload.hint
         },
-        clearAnswer: (state) => {
-            state.answer = {
-                ...defaultAnswer,
-                lat: 40.758896,
-                lng: -73.98513
-            }
-            state.hasAnswered = false
-        },
         setHintsUsed: (state, action) => {
             state.answer.hintsUsed = action.payload.amount
+        },
+        setHistoryAnswers: (state, action) => {
+            state.history.answers = action.payload.answers
+        },
+        setHistoryQuizzes: (state, action) => {
+            state.history.quizzes = action.payload.quizzes
         },
         setQuiz: (state, action) => {
             state.quiz = action.payload.quiz
@@ -52,6 +58,8 @@ export const {
     setHintOne,
     setHintTwo,
     setHintsUsed,
+    setHistoryAnswers,
+    setHistoryQuizzes,
     setQuiz
 } = homeSlice.actions
 

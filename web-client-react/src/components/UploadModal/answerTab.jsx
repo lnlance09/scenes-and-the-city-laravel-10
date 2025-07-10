@@ -87,7 +87,7 @@ const AnswerTab = ({ callback = () => null }) => {
         )
     }
 
-    const hintLimit = 20
+    const hintLimit = 50
     const warning = hintLimit - hint.length < 6
     const error = hintLimit - hint.length === 0
     const lengthClass = classNames({

@@ -26,7 +26,7 @@ class UserFactory extends Factory
         return [
             'username' => fake()->userName(),
             'email' => fake()->unique()->safeEmail(),
-            'password' => 'ae57225f2117a5c06a7d07dcb3da0164856bbe85', // SHA-1 of manhood
+            'password' => sha1('meaninglesspassword'), // SHA-1 of manhood
             'api_token' => bin2hex(random_bytes(32)),
             'verification_code' => 4444,
             'email_verified_at' => now(),

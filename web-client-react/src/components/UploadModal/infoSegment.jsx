@@ -153,7 +153,7 @@ const InfoSegment = ({
                     visible={videosVisible}
                 >
                     <div>
-                        {videos.length > 0 && (
+                        {videos.length > 0 && videosVisible && (
                             <Table celled inverted={inverted} selectable striped>
                                 <Table.Body>
                                     {videos.map((v) => (
@@ -233,14 +233,16 @@ const InfoSegment = ({
                     visible={!charEmpty}
                 >
                     <div>
-                        <Segment className="activeCharSegment" inverted={inverted} secondary>
-                            <Header inverted={inverted} size="small">
-                                <Header.Content>
-                                    {char.name}
-                                    <Header.Subheader>{char.actor.name}</Header.Subheader>
-                                </Header.Content>
-                            </Header>
-                        </Segment>
+                        {!charEmpty && (
+                            <Segment className="activeCharSegment" inverted={inverted} secondary>
+                                <Header inverted={inverted} size="small">
+                                    <Header.Content>
+                                        {char.name}
+                                        <Header.Subheader>{char.actor.name}</Header.Subheader>
+                                    </Header.Content>
+                                </Header>
+                            </Segment>
+                        )}
                     </div>
                 </Transition>
                 <Transition
@@ -250,50 +252,56 @@ const InfoSegment = ({
                     visible={charsVisible && chars.length > 0}
                 >
                     <div>
-                        <Table celled inverted={inverted} selectable striped>
-                            <Table.Body>
-                                {chars.map((c) => {
-                                    const { actor, firstName, lastName } = c
-                                    const charName = `${firstName}${!lastName ? "" : " " + lastName}`
-                                    const actorName = `${actor.firstName}${!actor.lastName ? "" : " " + actor.lastName}`
-                                    return (
-                                        <Table.Row
-                                            key={`${charName}-${c.id}`}
-                                            onClick={() => {
-                                                setCharIsSelf(firstName.toLowerCase() === "self")
-                                                setActorName(actorName)
-                                                const char = {
-                                                    id: c.id,
-                                                    name: charName,
-                                                    actor: {
-                                                        id: actor.id,
-                                                        name: actorName
+                        {charsVisible && chars.length > 0 && (
+                            <Table celled inverted={inverted} selectable striped>
+                                <Table.Body>
+                                    {chars.map((c) => {
+                                        const { actor, firstName, lastName } = c
+                                        const charName = `${firstName}${!lastName ? "" : " " + lastName}`
+                                        const actorName = `${actor.firstName}${!actor.lastName ? "" : " " + actor.lastName}`
+                                        return (
+                                            <Table.Row
+                                                key={`${charName}-${c.id}`}
+                                                onClick={() => {
+                                                    setCharIsSelf(
+                                                        firstName.toLowerCase() === "self"
+                                                    )
+                                                    setActorName(actorName)
+                                                    const char = {
+                                                        id: c.id,
+                                                        name: charName,
+                                                        actor: {
+                                                            id: actor.id,
+                                                            name: actorName
+                                                        }
                                                     }
-                                                }
-                                                dispatch(setChar({ char }))
-                                                setCharsVisible(false)
-                                                setActionsVisible(true)
-                                            }}
-                                        >
-                                            <Table.Cell>
-                                                <Header inverted={inverted} size="small">
-                                                    {charIsSelf ? (
-                                                        <Header.Content>{actorName}</Header.Content>
-                                                    ) : (
-                                                        <Header.Content>
-                                                            {charName}
-                                                            <Header.Subheader>
+                                                    dispatch(setChar({ char }))
+                                                    setCharsVisible(false)
+                                                    setActionsVisible(true)
+                                                }}
+                                            >
+                                                <Table.Cell>
+                                                    <Header inverted={inverted} size="small">
+                                                        {charIsSelf ? (
+                                                            <Header.Content>
                                                                 {actorName}
-                                                            </Header.Subheader>
-                                                        </Header.Content>
-                                                    )}
-                                                </Header>
-                                            </Table.Cell>
-                                        </Table.Row>
-                                    )
-                                })}
-                            </Table.Body>
-                        </Table>
+                                                            </Header.Content>
+                                                        ) : (
+                                                            <Header.Content>
+                                                                {charName}
+                                                                <Header.Subheader>
+                                                                    {actorName}
+                                                                </Header.Subheader>
+                                                            </Header.Content>
+                                                        )}
+                                                    </Header>
+                                                </Table.Cell>
+                                            </Table.Row>
+                                        )
+                                    })}
+                                </Table.Body>
+                            </Table>
+                        )}
                     </div>
                 </Transition>
                 {!videoEmpty && !charEmpty && actionsVisible && <Divider hidden section />}
@@ -305,7 +313,11 @@ const InfoSegment = ({
                             className="actionHeader"
                             content={lang.form.steps[1].headerThree.replace(
                                 "{name}",
-                                charIsSelf ? actorName : char.name
+                                charIsSelf
+                                    ? actorName
+                                    : char.name === null
+                                      ? "this character"
+                                      : char.name
                             )}
                             inverted={inverted}
                         />

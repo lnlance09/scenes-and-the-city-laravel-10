@@ -20,22 +20,21 @@
 		}
 
 		&.inverted {
-			background: colors.$blackBackgroundNormal !important;
-			border-top: colors.$invertedBorder !important;
+			background: colors.$blackBackgroundDark !important;
 
 			p {
 				color: #aaa !important;
 			}
 		}
 	}
+}
 
-	.footerModal {
-		h2.ui.header {
-			font-family: fonts.$cheltenham700 !important;
-		}
+.footerModal {
+	h2.ui.header {
+		font-family: fonts.$cheltenham700 !important;
+	}
 
-		p.ui.header.small {
-			font-family: fonts.$imperial400 !important;
-		}
+	p.ui.header.small {
+		font-family: fonts.$imperial400 !important;
 	}
 }

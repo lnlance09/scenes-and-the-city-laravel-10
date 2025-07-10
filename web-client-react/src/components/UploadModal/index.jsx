@@ -1,6 +1,5 @@
 import "./index.scss"
 import { Icon, Step } from "semantic-ui-react"
-import { Modal } from "react-responsive-modal"
 import { useState } from "react"
 import { useSelector } from "react-redux"
 import AnswerTab from "./answerTab"
@@ -9,6 +8,7 @@ import confetti from "canvas-confetti"
 import FlashScreen from "../FlashScreen"
 import ImageUpload from "./imageUpload"
 import InfoSegment from "./infoSegment"
+import ModalComponent from "../Header/modals/modal"
 import PropTypes from "prop-types"
 import * as translations from "../../assets/translate.json"
 import { timeout } from "../../utils/general"
@@ -48,16 +48,9 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
     const actionEmpty = action.id === null
     const answerStepDisabled = imgEmpty || videoEmpty || charEmpty || actionEmpty
 
-    const modalClass = classNames({
-        submitSceneModal: true,
-        simpleModal: true,
-        inverted
-    })
-    const modalOverlayClass = classNames({
-        submitSceneModalOverlay: true,
-        simpleModalOverlay: true,
-        inverted
-    })
+    const modalClass = {
+        submitSceneModal: true
+    }
     const stepClass = classNames({
         inverted
     })
@@ -79,15 +72,11 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
 
     return (
         <>
-            <Modal
-                classNames={{
-                    overlay: modalOverlayClass,
-                    modal: modalClass
-                }}
-                onClose={() => setModalOpen(false)}
-                onOpen={() => setModalOpen(true)}
+            <ModalComponent
+                callback={() => setModalOpen(false)}
+                className={modalClass}
                 open={modalOpen}
-                showCloseIcon={false}
+                size="large"
             >
                 <Step.Group fluid widths="three">
                     <Step
@@ -163,7 +152,7 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
                         flashOpen={flashOpen}
                     />
                 )}
-            </Modal>
+            </ModalComponent>
             <FlashScreen open={flashOpen} text="Your question has been submitted" />
         </>
     )

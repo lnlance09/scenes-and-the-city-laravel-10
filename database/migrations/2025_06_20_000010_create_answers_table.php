@@ -20,6 +20,7 @@ return new class extends Migration
             $table->decimal('lng', 16, 8)->nullable()->default(null);
             $table->integer('hints_used')->default(0);
             $table->integer('correct')->nullable()->default(null);
+            $table->integer('margin_of_error')->default(0);
             $table->timestamps();
 
             $table->foreign('quiz_id')->references('id')->on('quizzes');

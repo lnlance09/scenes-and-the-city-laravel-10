@@ -12,6 +12,7 @@ use App\Models\ScenePic;
 use App\Models\SceneAction;
 use App\Models\SceneCharacter;
 use App\Models\User;
+use App\Http\Resources\Quiz as QuizResource;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -79,56 +80,57 @@ class QuizController extends Controller
      */
     public function formatResponse($quiz, $user)
     {
-        $text = $quiz->generateQuestion();
-        $response = [
-            'quiz' => [
-                'quizId' => $quiz->quiz_id,
-                'img' => env('AWS_URL', 'https://blather-new.s3.us-west-2.amazonaws.com/') . $quiz->scene->pics[0]->s3_url,
-                'username' => $quiz->user->username,
-                'text' => $text,
-                'createdAt' => $quiz->created_at
-            ],
+        $answerData = [
+            'correct' => false,
+            'geoData' => [],
+            'hintsUsed' => 0,
         ];
 
+        // If the user's logged in, see if they've answered it
         if ($user) {
             $answer = Answer::where([
                 'user_id' => $user->id,
                 'quiz_id' => $quiz->id
             ])->first();
-            $response['answer'] = null;
 
-            if (!empty($answer)) {
-                $geoData = [
-                    'borough' => null,
-                    'hood' => null,
-                    'streets' => []
-                ];
-                if (!is_null($answer->lng) && !is_null($answer->lat)) {
-                    $nyc = new NewYorkCity();
-                    $geoData = $nyc->getLocationDetails($answer->lng, $answer->lat);
-                }
+            if (empty($answer)) {
+                return response([
+                    'quiz' => new QuizResource($quiz),
+                    'answer' => null
+                ]);
+            }
 
-                $geoData['lat'] = is_null($answer->lat) ? 40.758896 : $answer->lat;
-                $geoData['lng'] = is_null($answer->lng) ? -73.98513 : $answer->lng;
-                $geoData['hintsUsed'] = $answer->hints_used;
-                $response['answer'] = $geoData;
-                $response['answer']['correct'] = $answer->correct;
+            $geoData = [
+                'borough' => null,
+                'hood' => null,
+                'streets' => []
+            ];
+            if (!is_null($answer->lng) && !is_null($answer->lat)) {
+                $nyc = new NewYorkCity();
+                $geoData = $nyc->getLocationDetails($answer->lng, $answer->lat);
+            }
+            $geoData['lat'] = is_null($answer->lat) ? 40.758896 : $answer->lat;
+            $geoData['lng'] = is_null($answer->lng) ? -73.98513 : $answer->lng;
 
-                if ($answer->hints_used >= 1) {
-                    $nyc = new NewYorkCity();
-                    $details = $nyc->getLocationDetails($quiz->lng, $quiz->lat);
-                    $response['quiz']['hintOne'] = $details['hood'];
-                    return response($response);
-                }
+            $answerData['correct'] = $answer->correct;
+            $answerData['geoData'] = $geoData;
+            $answerData['hintsUsed'] = $answer->hints_used;
 
-                if ($answer->hints_used == 2) {
-                    $response['quiz']['hintTwo'] = $quiz->hint_one;
-                    return response($response);
-                }
+            if ($answer->hints_used >= 1) {
+                $nyc = new NewYorkCity();
+                $details = $nyc->getLocationDetails($quiz->lng, $quiz->lat);
+                $quiz->hint_one = $details['hood'];
+            }
+
+            if ($answer->hints_used == 2) {
+                $quiz->hint_two = $quiz->hint_one;
             }
         }
 
-        return response($response);
+        return response([
+            'quiz' => new QuizResource($quiz),
+            'answer' => $answerData
+        ]);
     }
 
     /**
@@ -159,6 +161,7 @@ class QuizController extends Controller
      */
     public function create(Request $request)
     {
+        $userId = $request->user()->id;
         $request->validate([
             'videoId' => 'bail|required|exists:videos,id',
             'charId' => 'bail|required|exists:characters,id',
@@ -167,7 +170,6 @@ class QuizController extends Controller
             'hint' => 'bail|required|min:3|max:50'
         ]);
 
-        $userId = $request->user()->id;
         $videoId = $request->input('videoId');
         $charId = $request->input('charId');
         $actionId = $request->input('actionId', false);

@@ -48,15 +48,13 @@
             margin-top: 9px;
 
             .footerLink {
-                border-bottom: solid 1px colors.$blue;
                 cursor: pointer;
+                font-style: italic;
                 padding-bottom: 3px;
-            }
-        }
 
-        &.inverted {
-            .footerText .footerLink {
-                border-bottom: solid 1px colors.$terminalGreen;
+                &:hover {
+                    text-decoration: underline;
+                }
             }
         }
     }
@@ -71,6 +69,10 @@
             font-size: 14px !important;
             margin-right: 4px !important;
             vertical-align: top;
+        }
+
+        &:hover {
+            text-decoration: underline;
         }
     }
 }

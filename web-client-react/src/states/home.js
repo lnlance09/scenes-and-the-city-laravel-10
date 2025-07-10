@@ -1,11 +1,20 @@
 export const defaultQuiz = {
-    createdAt: null,
-    quizId: null,
+    id: null,
     img: null,
-    text: null,
-    username: null,
     hintOne: null,
-    hintTwo: null
+    hintTwo: null,
+    video: {
+        title: null,
+        year: null
+    },
+    char: {
+        firstName: null,
+        lastName: null,
+        img: null
+    },
+    action: null,
+    username: null,
+    createdAt: null
 }
 
 export const defaultAnswer = {
@@ -21,25 +30,16 @@ export const initialHomeState = {
     quiz: defaultQuiz,
     answer: defaultAnswer,
     hasAnswered: false,
-    leaderboard: {
-        count: 0,
-        data: [{}, {}, {}, {}],
-        isLoading: false
-    },
     history: {
-        count: 0,
-        data: [{}, {}, {}, {}],
-        isLoading: false
-    },
-    options: {
-        hardMode: false,
-        soundEffects: true,
-        useMetric: false
-    },
-    stats: {
-        attemps: 0,
-        marginOfError: 0,
-        percentage: 0,
-        streak: 0
+        answers: {
+            count: 0,
+            data: [{}, {}, {}, {}],
+            isLoading: false
+        },
+        quizzes: {
+            count: 0,
+            data: [{}, {}, {}, {}],
+            isLoading: false
+        }
     }
 }

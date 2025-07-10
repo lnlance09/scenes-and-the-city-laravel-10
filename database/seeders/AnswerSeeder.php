@@ -25,6 +25,7 @@ class AnswerSeeder extends Seeder
             for ($i = 0; $i < count($quizzes); $i++) {
                 $quiz = $quizzes[$i];
                 $user = $users->random();
+                $status = 1;
 
                 if (mt_rand(2, 3) % 2 === 0) {
                     // Create values that aren't correct
@@ -32,6 +33,7 @@ class AnswerSeeder extends Seeder
                     $newPosition = $nyc->getLocationByDistance($newDistance, $newDistance, $quiz->lat, $quiz->lng);
                     $newLat = $newPosition[0];
                     $newLng = $newPosition[1];
+                    $status = 0;
                 } else {
                     // Use identical coordinates as the quiz's answer
                     $newLat = $quiz->lat;
@@ -43,6 +45,7 @@ class AnswerSeeder extends Seeder
                     'user_id' => $user->id,
                     'lat' => $newLat,
                     'lng' => $newLng,
+                    'correct' => $status,
                     'hints_used' => mt_rand(0, 2)
                 ]);
             }

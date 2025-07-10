@@ -21,7 +21,8 @@ class Answer extends Model
         'lat',
         'lng',
         'hints_used',
-        'correct'
+        'correct',
+        'margin_of_error'
     ];
 
     /**

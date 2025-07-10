@@ -11,7 +11,7 @@ const LocationInfo = ({ answer, size = "medium" }) => {
     const lang = translations[language]
 
     return (
-        <Segment className="locationInfoSegment" inverted={inverted} raised>
+        <Segment className="locationInfoSegment" inverted={inverted}>
             {answer.hood !== null && (
                 <Header inverted={inverted} size={size}>
                     <a href="#" onClick={(e) => e.preventDefault()}>

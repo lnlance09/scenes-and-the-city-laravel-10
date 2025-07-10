@@ -15,12 +15,20 @@ class Answer extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'createdAt' => $this->created_at,
-            'hintsUsed' => $this->hints_used,
             'correct' => $this->correct,
             'lat' => (float)$this->lat,
             'lng' => (float)$this->lng,
-            'quiz' => new Quiz($this->quiz)
+            'hintsUsed' => $this->hints_used,
+            'quiz' => [
+                'id' => $this->quiz->quiz_id,
+                'img' => env('AWS_URL', 'https://blather-new.s3.us-west-2.amazonaws.com/') . $this->quiz->scene->pics[0]->s3_url,
+                'video' => [
+                    'title' => $this->quiz->scene->video->title,
+                    'year' => $this->quiz->scene->video->year
+                ],
+
+            ],
+            'createdAt' => $this->created_at
         ];
     }
 }

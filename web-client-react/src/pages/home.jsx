@@ -1,4 +1,3 @@
-import { Modal } from "react-responsive-modal"
 import { useNavigate, useParams } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
@@ -11,6 +10,7 @@ import {
     setHintsUsed,
     setQuiz
 } from "../reducers/home"
+import { defaultAnswer } from "../states/home"
 import { dateFormat, isSunday, isWeekend, nyc } from "../utils/date"
 import { timeout } from "../utils/general"
 import { toast, ToastContainer } from "react-toastify"
@@ -19,6 +19,7 @@ import axios from "axios"
 import classNames from "classnames"
 import isAlphanumeric from "validator/lib/isAlphanumeric"
 import moment from "moment-timezone"
+import ModalComponent from "../components/Header/modals/modal"
 import AuthenticationForm from "../components/Authentication"
 import FooterComponent from "../components/Footer"
 import HeaderComponent from "../components/Header"
@@ -27,7 +28,6 @@ import HintsSection from "../components/Hints"
 import ImageSection from "../components/Image"
 import QuestionSection from "../components/Question"
 import * as translations from "../assets/translate.json"
-import { defaultAnswer } from "../states/home"
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
 const defaultDate = moment().tz(nyc).format(dateFormat)
@@ -35,6 +35,7 @@ const defaultDate = moment().tz(nyc).format(dateFormat)
 const HomepageLayout = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
+
     const { slug } = useParams()
     const validQuizId = slug && isAlphanumeric(slug) && slug.length === 8
     const validDate = moment(slug, dateFormat, true).isValid()
@@ -47,7 +48,9 @@ const HomepageLayout = () => {
     const language = useSelector((state) => state.app.language)
     const lang = translations[language]
 
+    const [animation, setAnimation] = useState("slide left")
     const [date, setDate] = useState()
+    const [imgVisible, setImgVisible] = useState(false)
     const [loading, setLoading] = useState(true)
     const [loginModal, toggleLoginModal] = useState(false)
     const [quiz404, setQuiz404] = useState(false)
@@ -85,6 +88,7 @@ const HomepageLayout = () => {
     }, [slug, validQuizId, validDate])
 
     const getQuiz = async (url) => {
+        setImgVisible(false)
         setLoading(true)
         dispatch(setAnswer(defaultAnswer))
 
@@ -97,7 +101,7 @@ const HomepageLayout = () => {
             .then((response) => {
                 const { quiz } = response.data
                 setQuiz404(false)
-                setDate(quiz.createdAt)
+                setDate(moment(quiz.createdAt).format(dateFormat))
                 dispatch(setQuiz({ quiz }))
                 if (response.data.answer) {
                     const { answer } = response.data
@@ -115,6 +119,8 @@ const HomepageLayout = () => {
             })
         await timeout(700)
         setLoading(false)
+        await timeout(300)
+        setImgVisible(true)
     }
 
     const getActions = () => {
@@ -130,16 +136,6 @@ const HomepageLayout = () => {
         homePage: true,
         inverted
     })
-    const modalClass = classNames({
-        loginModal: true,
-        simpleModal: true,
-        inverted
-    })
-    const modalOverlayClass = classNames({
-        loginModalOverlay: true,
-        simpleModalOverlay: true,
-        inverted
-    })
 
     return (
         <div className={homePageClass}>
@@ -147,6 +143,11 @@ const HomepageLayout = () => {
                 date={date}
                 isAuth={isAuth}
                 onClickDate={(d) => {
+                    setAnimation(
+                        moment(d, dateFormat).isAfter(moment(date, dateFormat))
+                            ? "fly left"
+                            : "fly right"
+                    )
                     setDate(d)
                     navigate(`/${moment(d).tz(nyc).format(dateFormat)}`)
                 }}
@@ -162,6 +163,7 @@ const HomepageLayout = () => {
             />
 
             <ImageSection
+                animation={animation}
                 date={date}
                 goToLastWeek={(d) => {
                     const lastWeek = moment(d).tz(nyc).subtract(7, "days").format(dateFormat)
@@ -175,6 +177,7 @@ const HomepageLayout = () => {
                     setDate(today)
                     navigate(`/${today}`)
                 }}
+                imgVisible={imgVisible}
                 isInFuture={isInFuture}
                 isWeekend={isWeekend(date)}
                 loading={loading}
@@ -198,28 +201,14 @@ const HomepageLayout = () => {
                         toggleLoginModal(true)
                     }}
                     date={date}
+                    loading={loading}
                 />
             )}
 
             <FooterComponent />
-            <Modal
-                classNames={{
-                    overlay: modalOverlayClass,
-                    modal: modalClass
-                }}
-                center
-                onClose={() => {
-                    if (verify) {
-                        return
-                    }
-                    toggleLoginModal(false)
-                }}
-                onOpen={() => toggleLoginModal(true)}
-                open={loginModal}
-                showCloseIcon={false}
-            >
+            <ModalComponent callback={() => toggleLoginModal(false)} open={loginModal} title={null}>
                 <AuthenticationForm closeModal={() => toggleLoginModal(false)} size="large" />
-            </Modal>
+            </ModalComponent>
             <ToastContainer className={inverted ? "inverted" : null} />
         </div>
     )

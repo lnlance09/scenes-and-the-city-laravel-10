@@ -1,6 +1,7 @@
 {
     "en": {
         "auth": {
+            "email": "Email",
             "emailOrUsername": "Email or Username",
             "password": "Password",
             "signIn": "Sign In",
@@ -27,6 +28,7 @@
             "submit": "Submit",
             "title": "Know the answer?"
         },
+        "allDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
         "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Weekend"],
         "form": {
             "steps": [
@@ -82,6 +84,11 @@
             "settings": "Settings",
             "stats": "Stats"
         },
+        "settings": {
+            "hardMode": "Hard Mode",
+            "revealAnswers": "Reveal answers after quizzes have expired",
+            "units": "Measure distance in"
+        },
         "stats": {
             "totalAnswers": "Total Answers",
             "correctAnswers": "Correct Answers",
@@ -95,12 +102,16 @@
             "weekendOf": "Weekend of",
             "errorMessage": "There was en error fetching this quiz.",
             "seeStreetView": "see street view",
-            "toastErrorMessage": "Error fetching quiz"
+            "toastErrorMessage": "Error fetching quiz",
+            "history": "History",
+            "settings": "Settings",
+            "stats": "Stats"
         },
         "months": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
     },
     "es": {
         "auth": {
+            "email": "Email",
             "emailOrUsername": "Email o nombre de usuario",
             "password": "Contraseña",
             "signIn": "Iniciar sesión",
@@ -127,6 +138,7 @@
             "submit": "Entregar",
             "title": "¿Sabes la respuesta?"
         },
+        "allDays": ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
         "days": ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Fin de Semana"],
         "form": {
             "steps": [
@@ -182,11 +194,16 @@
             "settings": "Ajustes",
             "stats": "Estadísticas"
         },
+        "settings": {
+            "hardMode": "Modo Difícil",
+            "revealAnswers": "Revelar respuestas después de que los cuestionarios hayan expirado",
+            "units": "Medir la distancia en"
+        },
         "stats": {
             "totalAnswers": "Respuestas Totales",
-            "correctAnswers": "Respuestas correctas",
+            "correctAnswers": "Respuestas Correctas",
             "accuracy": "Exactitud",
-            "currentStreak": "Racha actual",
+            "currentStreak": "Racha Actual",
             "marginOfError": "Margen de Error"
         },
         "main": {
@@ -195,12 +212,16 @@
             "weekendOf": "Fin de semana de",
             "errorMessage": "Hubo un error al obtener este cuestionario.",
             "seeStreetView": "ver vista de la calle",
-            "toastErrorMessage": "Error al obtener el cuestionario"
+            "toastErrorMessage": "Error al obtener el cuestionario",
+            "history": "Historia",
+            "settings": "Ajustes",
+            "stats": "Estadísticas"
         },
         "months": ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
     },
     "cn": {
         "auth": {
+            "email": "电子邮件",
             "emailOrUsername": "电子邮件或用户名",
             "password": "密码",
             "signIn": "登入",
@@ -227,6 +248,7 @@
             "submit": "提交",
             "title": "知道答案吗"
         },
+        "allDays": ["周一", "周二", "周三", "周四", "星期五", "周六", "星期日"],
         "days": ["周一", "周二", "周三", "周四", "星期五", "周末"],
         "form": {
             "steps": [
@@ -282,6 +304,11 @@
             "settings": "设置",
             "stats": "统计数据"
         },
+        "settings": {
+            "hardMode": "困难模式",
+            "revealAnswers": "测验结束后显示答案",
+            "units": "测量距离"
+        },
         "stats": {
             "totalAnswers": "总答案",
             "correctAnswers": "正确答案",
@@ -295,7 +322,10 @@
             "weekendOf": "周末",
             "errorMessage": "获取此测验时出错",
             "toastErrorMessage": "获取测验时出错",
-            "seeStreetView": "查看街景"
+            "seeStreetView": "查看街景",
+            "history": "历史",
+            "settings": "设置",
+            "stats": "统计数据"
         },
         "months": ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"]
     }

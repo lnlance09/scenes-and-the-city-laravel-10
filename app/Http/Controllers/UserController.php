@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\AnswerCollection;
+use App\Http\Resources\QuizCollection as QuizCollection;
 use App\Http\Resources\User as UserResource;
 use App\Http\Resources\UserCollection as UserCollection;
 use App\Mail\ForgotPassword;
 use App\Mail\VerificationCode;
 use App\Models\Answer;
+use App\Models\Quiz;
 use App\Models\Setting;
 use App\Models\User;
 use App\Http\Resources\Setting as SettingResource;
@@ -42,9 +44,9 @@ class UserController extends Controller
     /**
      * Change username
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
+     * @param  Request  $request
+     * @param  User  $user
+     * @return Response
      */
     public function channgeUsername(Request $request, User $user)
     {
@@ -66,9 +68,8 @@ class UserController extends Controller
     /**
      * Check availability of a username
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
+     * @param  Request  $request
+     * @return Response
      */
     public function checkUsername(Request $request)
     {
@@ -90,8 +91,8 @@ class UserController extends Controller
     /**
      * Login
      * 
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  Request  $request
+     * @return Response
      */
     public function login(Request $request)
     {
@@ -111,6 +112,7 @@ class UserController extends Controller
                 $query->where('password', '=', $password);
             });
         })->with(['setting'])->first();
+
         if (!$user) {
             return response([
                 'message' => 'Incorrect password'
@@ -129,8 +131,8 @@ class UserController extends Controller
     /**
      * Register
      * 
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  Request  $request
+     * @return Response
      */
     public function register(Request $request)
     {
@@ -191,8 +193,8 @@ class UserController extends Controller
     /**
      * Verify
      * 
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  Request  $request
+     * @return Response
      */
     public function verify(Request $request)
     {
@@ -218,8 +220,8 @@ class UserController extends Controller
     /**
      * Forgot password
      * 
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  Request  $request
+     * @return Response
      */
     public function forgot(Request $request)
     {
@@ -260,9 +262,8 @@ class UserController extends Controller
     /**
      * Recover password
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
+     * @param  Request  $request
+     * @return Response
      */
     public function recoverPassword(Request $request)
     {
@@ -294,9 +295,8 @@ class UserController extends Controller
     /**
      * Change password
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
+     * @param  Request  $request
+     * @return Response
      */
     public function changePassword(Request $request)
     {
@@ -319,12 +319,12 @@ class UserController extends Controller
     /**
      * Update settings
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
+     * @param  Request  $request
+     * @return Response
      */
     public function updateSettings(Request $request)
     {
+        $userId = $request->user()->id;
         $request->validate([
             'darkMode' => 'bail|integer|min:0|max:1',
             'hardMode' => 'bail|integer|min:0|max:1',
@@ -337,8 +337,12 @@ class UserController extends Controller
         $reveal = $request->input('reveal', null);
         $units = $request->input('units', null);
 
-        $userId = $request->user()->id;
         $setting = Setting::where('user_id', $userId)->first();
+        if (empty($setting)) {
+            return response([
+                'error' => true
+            ], 404);
+        }
 
         if ($darkMode !== null) {
             $setting->dark_mode = $darkMode;
@@ -365,9 +369,8 @@ class UserController extends Controller
     /**
      * Update settings
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
+     * @param  Request  $request
+     * @return Response
      */
     public function getStats(Request $request)
     {
@@ -414,7 +417,7 @@ class UserController extends Controller
         return response([
             'totalAnswers' => $totalAnswers,
             'correctAnswers' => $correctAnswers,
-            'accuracy' => $accuracy,
+            'accuracy' => $accuracy * 100 . "%",
             'currentStreak' => $currentStreak,
             'maxStreak' => '',
             'margin' => $marginOfError
@@ -424,16 +427,22 @@ class UserController extends Controller
     /**
      * Update settings
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
+     * @param  Request  $request
+     * @return Response
      */
     public function getHistory(Request $request)
     {
         $userId = $request->user()->id;
-        $answers = Answer::where('user_id', $userId)
-            ->with(['quiz'])
-            ->get();
-        return new AnswerCollection($answers);
+        $type = $request->input('type', 'answers');
+
+        if ($type === 'answers') {
+            $answers = Answer::where('user_id', $userId)
+                ->with(['quiz'])
+                ->get();
+            return new AnswerCollection($answers);
+        }
+
+        $quizzes = Quiz::where('user_id', $userId)->get();
+        return new QuizCollection($quizzes);
     }
 }

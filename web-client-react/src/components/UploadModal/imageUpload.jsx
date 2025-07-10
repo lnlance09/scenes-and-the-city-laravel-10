@@ -1,5 +1,5 @@
 import "./index.scss"
-import { Button, Header, Segment } from "semantic-ui-react"
+import { Button, Divider, Header, Segment } from "semantic-ui-react"
 import { setFile, setImg } from "../../reducers/form"
 import { useCallback } from "react"
 import { useSelector, useDispatch } from "react-redux"
@@ -99,9 +99,7 @@ const ImageUpload = ({ callback = () => null }) => {
             </div>
             {!imgEmpty ? (
                 <>
-                    <div className={uploadClass}>
-                        <span onClick={() => open()}>{lang.form.steps[0].selectAnother}</span>
-                    </div>
+                    <Divider inverted={inverted} />
                     <Button
                         color={inverted ? "green" : "blue"}
                         content={lang.form.steps[0].submitBtn}
@@ -110,6 +108,9 @@ const ImageUpload = ({ callback = () => null }) => {
                         onClick={() => callback()}
                         size="large"
                     />
+                    <div className={uploadClass}>
+                        <span onClick={() => open()}>{lang.form.steps[0].selectAnother}</span>
+                    </div>
                 </>
             ) : (
                 <div className={monroeClass}>

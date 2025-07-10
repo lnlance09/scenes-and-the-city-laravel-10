@@ -4,6 +4,8 @@
 @use "../../scss/colors.scss";
 
 .imageSectionComponent {
+    min-height: 50vh;
+    
     .ui.container.mainContainer {
         padding: 1em 0 3em 0;
 

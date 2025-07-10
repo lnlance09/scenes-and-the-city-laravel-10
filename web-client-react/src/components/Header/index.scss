@@ -4,8 +4,6 @@
 @use "../../scss/colors.scss";
 
 .headerComponent {
-	position: relative;
-
 	.menu.pointing.secondary.headerMenu {
 		background-image: linear-gradient(#1f1f1f 25%, colors.$blackBackgroundNormal 50%, #1f1f1f 75%);
 		height: 65px;
@@ -27,12 +25,23 @@
 			display: inline-block;
 			margin-left: 0.75em;
 
-			.ui.image.avatar {
+			.ui.image.avatar, .icon {
 				cursor: pointer;
 			}
 
 			.flag {
 				margin-right: 0;
+			}
+
+			&.lang {
+				.visible.menu.transition {
+					right: -5.4em;
+					top: 2.8em !important;
+				}
+
+				.item.dropdown.active {
+					border: none !important;
+				}
 			}
 		}
 
@@ -65,12 +74,12 @@
 		}
 
 		.visible.menu.transition {
+			border: solid 1px #ddd;
 			border-radius: 0.25em !important;
 			font-family: fonts.$franklin600 !important;
 			left: auto;
 			position: absolute;
 			right: -5em;
-			top: 2em;
 			width: 13em;
 			z-index: 99999;
 
@@ -83,10 +92,10 @@
 					border-radius: 0.25em !important;
 				}
 
-				&.active, &:active {
+				&.selected {
 					background: inherit !important;
-					border: none;
-					font-family: fonts.$franklin700 !important;
+					border: none !important;
+					font-family: fonts.$franklin800 !important;
 				}
 			}
 
@@ -132,12 +141,6 @@
 					background: colors.$green;
 				}
 			}
-		}
-	}
-
-	&.bordered {
-		.menu.pointing.secondary.headerMenu.inverted {
-			border-bottom: colors.$invertedBorder;
 		}
 	}
 
@@ -193,6 +196,69 @@
 
 		a.item {
 			text-align: left;
+		}
+	}
+}
+
+.settingsModal {
+	.settingsModalHeader {
+		font-family: fonts.$cheltenham700 !important;
+	}
+
+	.ui.header.statNumber {
+		font-family: fonts.$cheltenham300 !important;
+		font-size: 48px;
+		margin-bottom: 0 !important;
+
+		+ .ui.header {
+			font-family: fonts.$cheltenham700 !important;
+			margin-top: 0;
+		}
+	}
+
+	.ui.list {
+		.item > .content {
+			font-family: fonts.$cheltenham400 !important;
+
+			.ui.selection.active.dropdown .menu {
+				width: 100% !important;
+			}
+		}
+	}
+
+	&.inverted {
+		background: transparent;
+
+		.ui.list {
+			.item > .content {
+				color: colors.$white !important;
+			}
+		}
+	}
+
+	.ui.menu > .item {
+		font-family: fonts.$franklin700 !important;
+	}
+
+	.emptyHeader {
+		font-family: fonts.$franklin700 !important;
+	}
+
+	.historyAnswerSegment {
+		cursor: pointer;
+
+		&:first-of-type {
+			.label.corner {
+				overflow: hidden;
+			}
+		}
+
+		.ui.header {
+			font-family: fonts.$franklin700 !important;
+		}
+
+		img {
+			margin-bottom: 0 !important;
 		}
 	}
 }

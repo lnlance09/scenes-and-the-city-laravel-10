@@ -48,56 +48,6 @@ button {
 	}
 }
 
-.react-responsive-modal-overlay.simpleModalOverlay {
-    background: rgba(0, 0, 0, 0.87);
-
-    &.inverted {
-        background: rgba(0, 0, 0, 0.97);
-    }
-}
-
-.simpleModal {
-	border-radius: 0.25em;
-    overflow-x: hidden;
-	min-height: 360px;
-	min-width: 500px;
-
-	.ui.header.statNumber {
-		font-size: 48px;
-		margin-bottom: 0 !important;
-
-		+ .ui.header {
-			margin-top: 0;
-		}
-	}
-
-	.ui.list {
-		.item > .content {
-			font-family: fonts.$cheltenham400 !important;
-
-			.ui.selection.active.dropdown .menu {
-				width: 100% !important;
-			}
-		}
-	}
-
-    &.inverted {
-        background: transparent;
-
-		.ui.list {
-			.item > .content {
-				color: colors.$white !important;
-			}
-		}
-    }
-
-	&:not(.submitSceneModal, .loginModal) {
-		.ui.header {
-			font-family: fonts.$cheltenham700 !important;
-		}
-	}
-}
-
 .Toastify__toast-container.Toastify__toast-container--top-center {
 	.Toastify__toast {
 		display: inline;
