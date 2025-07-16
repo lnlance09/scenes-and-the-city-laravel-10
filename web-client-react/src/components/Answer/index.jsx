@@ -198,6 +198,7 @@ const AnswerSection = ({
                             {!displayForm && (
                                 <Header
                                     as="h2"
+                                    className="expiredHeader"
                                     content={lang.main.expiredMsg}
                                     inverted={inverted}
                                     textAlign="center"

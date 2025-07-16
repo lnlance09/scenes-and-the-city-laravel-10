@@ -202,7 +202,7 @@ const HistoryModal = ({ activeItem = "answers", callback = () => null, modalOpen
                                         </Header>
                                         {a.correct && (
                                             <Header
-                                                color="green"
+                                                color={inverted ? "green" : "blue"}
                                                 content={`+${points} ${lang.answer.points}`}
                                                 inverted={inverted}
                                                 size="tiny"

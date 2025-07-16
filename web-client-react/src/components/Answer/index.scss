@@ -32,6 +32,10 @@
             font-family: fonts.$franklin700 !important;
             font-size: 2em;
             margin-bottom: 0.75em !important;
+
+            &.expiredHeader {
+                font-family: fonts.$cheltenham700 !important;
+            }
         }
 
         p {

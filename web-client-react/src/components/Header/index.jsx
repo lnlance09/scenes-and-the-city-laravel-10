@@ -136,9 +136,15 @@ const HeaderComponent = ({
                                 inverted
                                 name="options"
                                 onClick={() => setSidebarVisible(true)}
+                                size="large"
                             />
                         ) : (
-                            <Icon inverted name="options" onClick={() => setSidebarVisible(true)} />
+                            <Icon
+                                inverted
+                                name="options"
+                                onClick={() => setSidebarVisible(true)}
+                                size="large"
+                            />
                         )}
                     </div>
                     <div className="floatedRight">
@@ -153,6 +159,7 @@ const HeaderComponent = ({
                                     options={languages}
                                     pointing
                                     trigger={<Flag name={language === "en" ? "us" : language} />}
+                                    value={language}
                                 />
                             </div>
                         </Menu.Item>
@@ -180,7 +187,7 @@ const HeaderComponent = ({
                                 <>
                                     <Label
                                         className="pointLabel"
-                                        color={inverted ? "green" : "orange"}
+                                        color={inverted ? "green" : "blue"}
                                         circular
                                         content={points}
                                         floating

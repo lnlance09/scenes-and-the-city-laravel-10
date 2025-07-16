@@ -5,7 +5,8 @@
 
 .headerComponent {
 	.menu.pointing.secondary.headerMenu {
-		background-image: linear-gradient(#1f1f1f 25%, colors.$blackBackgroundNormal 50%, #1f1f1f 75%);
+		// background-image: linear-gradient(#1f1f1f 25%, colors.$blackBackgroundNormal 50%, #1f1f1f 75%);
+		background: colors.$blackBackgroundNormal;
 		height: 65px;
 		margin-bottom: 0;
 
@@ -122,8 +123,11 @@
 		}
 	
 		&.inverted {
-			background-color: transparent;
 			background: colors.$blackBackgroundDark;
+
+			@media only screen and (min-width: 320px) and (max-width: 767px) {
+				border-bottom: colors.$invertedBorder !important;
+			}
 
 			.visible.menu.transition {
 				background: colors.$blackBackgroundNormal;
@@ -198,7 +202,9 @@
 		}
 
 		@media only screen and (min-width: 320px) and (max-width: 767px) {
-			display: none;
+			.row > .column {
+				padding: 0.8em !important;
+			}
 		}
 	}
 
