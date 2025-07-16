@@ -2,16 +2,16 @@ import "./index.scss"
 import { Icon, Step } from "semantic-ui-react"
 import { useState } from "react"
 import { useSelector } from "react-redux"
-import AnswerTab from "./answerTab"
+import { timeout } from "../../utils/general"
+import AnswerTab from "./tabs/answer"
 import classNames from "classnames"
 import confetti from "canvas-confetti"
 import FlashScreen from "../FlashScreen"
-import ImageUpload from "./imageUpload"
-import InfoSegment from "./infoSegment"
+import ImageUpload from "./tabs/image"
+import InfoSegment from "./tabs/info"
 import ModalComponent from "../Header/modals/modal"
 import PropTypes from "prop-types"
 import * as translations from "../../assets/translate.json"
-import { timeout } from "../../utils/general"
 
 const defaults = {
     spread: 360,
@@ -40,7 +40,10 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
     const [actionsVisible, setActionsVisible] = useState(false)
     const [charIsSelf, setCharIsSelf] = useState(false)
     const [actorName, setActorName] = useState("")
+    const [charName, setCharName] = useState("")
     const [flashOpen, setFlashOpen] = useState(false)
+    const [quizVal, setQuizVal] = useState("")
+    const [quizzesVisible, setQuizzesVisible] = useState(false)
 
     const imgEmpty = img.path === null
     const videoEmpty = video.id === null
@@ -120,6 +123,7 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
                     <InfoSegment
                         actionsVisible={actionsVisible}
                         actorName={actorName}
+                        charName={charName}
                         callback={() => setPageNum(3)}
                         charIsSelf={charIsSelf}
                         charsVisible={charsVisible}
@@ -128,6 +132,7 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
                         videoType={videoType}
                         setActionsVisible={(visible) => setActionsVisible(visible)}
                         setActorName={(name) => setActorName(name)}
+                        setCharName={(name) => setCharName(name)}
                         setCharIsSelf={(isSelf) => setCharIsSelf(isSelf)}
                         setCharsVisible={(visible) => setCharsVisible(visible)}
                         setVideosVisible={(visible) => setVideosVisible(visible)}
@@ -150,10 +155,14 @@ const UploadModal = ({ modalOpen = false, setModalOpen = () => null }) => {
                             setFlashOpen(false)
                         }}
                         flashOpen={flashOpen}
+                        quizVal={quizVal}
+                        quizzesVisible={quizzesVisible}
+                        setQuizVal={(value) => setQuizVal(value)}
+                        setQuizzesVisible={(visible) => setQuizzesVisible(visible)}
                     />
                 )}
             </ModalComponent>
-            <FlashScreen open={flashOpen} text="Your question has been submitted" />
+            <FlashScreen open={flashOpen} text={lang.form.steps[2].successMsg} />
         </>
     )
 }

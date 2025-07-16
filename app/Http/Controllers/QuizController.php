@@ -13,9 +13,11 @@ use App\Models\SceneAction;
 use App\Models\SceneCharacter;
 use App\Models\User;
 use App\Http\Resources\Quiz as QuizResource;
+use App\Models\QuizPartTwo;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManager;
@@ -58,11 +60,17 @@ class QuizController extends Controller
             'date' => 'required|date_format:n-j-y',
         ]);
         $date = $request->input('date');
-        $quiz = Quiz::where('user_id', Self::OFFICIAL_USER_ID)
+        $today = Carbon::createFromFormat('n-j-y', $date)->format('Y-m-d');
+
+        $quiz = Quiz::where([
+            'user_id' => Self::OFFICIAL_USER_ID,
+            'is_official' => true
+        ])
             ->whereBetween('created_at', [
-                Carbon::createFromFormat('n-j-y', $date)->format('Y-m-d') . ' 00:00:00',
-                Carbon::createFromFormat('n-j-y', $date)->format('Y-m-d') . ' 23:59:59'
+                $today . ' 00:00:00',
+                $today . ' 23:59:59'
             ])
+            ->with(['partTwo.partTwo'])
             ->first();
         if (empty($quiz)) {
             return response([
@@ -80,11 +88,33 @@ class QuizController extends Controller
      */
     public function formatResponse($quiz, $user)
     {
+        $nyc = new NewYorkCity();
+
         $answerData = [
-            'correct' => false,
-            'geoData' => [],
+            'correct' => null,
+            'geoData' => [
+                'lat' => 40.758896,
+                'lng' => -73.98513,
+                'hood' => 'Theater District',
+                'borough' => 'Manhattan',
+                'streets' => ['Broadway', '7th Ave', 'W 46th St']
+            ],
+            'marginOfError' => null,
             'hintsUsed' => 0,
+            'hasAnswered' => false
         ];
+
+        $partTwo = null;
+        $partTwoResource = null;
+        $hasPartTwo = !is_null($quiz->partTwo);
+
+        if ($hasPartTwo) {
+            $partTwo = $quiz->partTwo->partTwo;
+            $quizLocation = $nyc->locationToObject('Point', $quiz->lng, $quiz->lat);
+            $partTwoLocation = $nyc->locationToObject('Point', $partTwo->lng, $partTwo->lat);
+            $partTwo->distance = $quizLocation->distance($partTwoLocation);
+            $partTwoResource = new QuizResource($partTwo);
+        }
 
         // If the user's logged in, see if they've answered it
         if ($user) {
@@ -92,43 +122,56 @@ class QuizController extends Controller
                 'user_id' => $user->id,
                 'quiz_id' => $quiz->id
             ])->first();
-
             if (empty($answer)) {
                 return response([
                     'quiz' => new QuizResource($quiz),
-                    'answer' => null
+                    'partTwo' => $partTwoResource,
+                    'answer' => $answerData
                 ]);
             }
 
-            $geoData = [
-                'borough' => null,
-                'hood' => null,
-                'streets' => []
-            ];
-            if (!is_null($answer->lng) && !is_null($answer->lat)) {
-                $nyc = new NewYorkCity();
-                $geoData = $nyc->getLocationDetails($answer->lng, $answer->lat);
-            }
-            $geoData['lat'] = is_null($answer->lat) ? 40.758896 : $answer->lat;
-            $geoData['lng'] = is_null($answer->lng) ? -73.98513 : $answer->lng;
+            $geoData = $nyc->getLocationDetails($quiz->lng, $quiz->lat);
+            $geoData['lng'] = (float)$quiz->lng;
+            $geoData['lat'] = (float)$quiz->lat;
 
-            $answerData['correct'] = $answer->correct;
-            $answerData['geoData'] = $geoData;
+            $quiz->geo_data = $geoData;
+            $quiz->reveal_answer = Carbon::now()->diffInDays(new Carbon($quiz->created_at)->startOfDay()) > 0;
+
+            $lng = $answer->lng;
+            $lat = $answer->lat;
+            if ($lng != 0 && $lat != 0) {
+                $geoData = $nyc->getLocationDetails($lng, $lat);
+                $geoData['lng'] = $lng;
+                $geoData['lat'] = $lat;
+                $answerData['geoData'] = $geoData;
+            }
+
+            $answerData['correct'] = $answer->correct === 1;
             $answerData['hintsUsed'] = $answer->hints_used;
-
-            if ($answer->hints_used >= 1) {
-                $nyc = new NewYorkCity();
-                $details = $nyc->getLocationDetails($quiz->lng, $quiz->lat);
-                $quiz->hint_one = $details['hood'];
-            }
+            $answerData['marginOfError'] = $answer->margin_of_error;
+            $answerData['hasAnswered'] = true;
 
             if ($answer->hints_used == 2) {
                 $quiz->hint_two = $quiz->hint_one;
+                $quiz->reveal_hint_two = true;
             }
+
+            if ($answer->hints_used >= 1) {
+                $details = $nyc->getLocationDetails($quiz->lng, $quiz->lat);
+                $quiz->hint_one = $details['hood'];
+                $quiz->reveal_hint_one = true;
+            }
+        }
+
+        if ($hasPartTwo) {
+            $quizLocation = $nyc->locationToObject('Point', $quiz->lng, $quiz->lat);
+            $partTwoLocation = $nyc->locationToObject('Point', $partTwo->lng, $partTwo->lat);
+            $partTwo['distance'] = $quizLocation->distance($partTwoLocation);
         }
 
         return response([
             'quiz' => new QuizResource($quiz),
+            'partTwo' => $partTwoResource,
             'answer' => $answerData
         ]);
     }
@@ -144,10 +187,12 @@ class QuizController extends Controller
             'file' => 'required|image|mimes:jpg,jpeg,png,gif',
         ]);
         $file = $request->file('file');
+
         $manager = new ImageManager(new Driver());
         $img = $manager->read($file);
         $img->resize(320, 320);
         $img->save($file);
+
         $s3Url = "quizzes/" . $quizId . ".jpg";
         Storage::disk('s3')->put($s3Url, file_get_contents($file));
         return $s3Url;
@@ -161,13 +206,14 @@ class QuizController extends Controller
      */
     public function create(Request $request)
     {
-        $userId = $request->user()->id;
+        $userId = $request->user()?->id;
         $request->validate([
             'videoId' => 'bail|required|exists:videos,id',
             'charId' => 'bail|required|exists:characters,id',
             'action' => 'bail|unique:actions,name|max:50',
             'actionId' => 'bail|exists:actions,id',
-            'hint' => 'bail|required|min:3|max:50'
+            'hint' => 'bail|required|min:3|max:50',
+            'partTwo' => 'bail|exists:quizzes,quiz_id'
         ]);
 
         $videoId = $request->input('videoId');
@@ -177,6 +223,7 @@ class QuizController extends Controller
         $lat = $request->input('lat', null);
         $lng = $request->input('lng', null);
         $hint = $request->input('hint');
+        $partTwo = $request->input('partTwo', false);
         $quizId = Str::random(8);
 
         // Make sure that the character belongs to the specified video
@@ -198,7 +245,7 @@ class QuizController extends Controller
 
         if (!$actionId) {
             $newAction = Action::create([
-                'name' => $action
+                'name' => substr($action, -1) === '.' ? substr($action, 0, -1) : $action
             ]);
             $newAction->refresh();
             $actionId = $newAction->id;
@@ -217,9 +264,10 @@ class QuizController extends Controller
             'character_id' => $charId,
         ]);
 
-        Quiz::create([
+        $quiz = Quiz::create([
             'scene_id' => $scene->id,
             'user_id' => $userId,
+            'is_official' => $userId === 1,
             'quiz_id' => $quizId,
             'img' => $s3Url,
             'hint_one' => $hint,
@@ -227,6 +275,16 @@ class QuizController extends Controller
             'lat' => $lat,
             'lng' => $lng
         ]);
+        $quiz->refresh();
+
+        if ($partTwo) {
+            $partTwoId = Quiz::where('quiz_id', $partTwo)->first()->id;
+            QuizPartTwo::create([
+                'quiz_id_one' => $quiz->id,
+                'quiz_id_two' => $partTwoId
+            ]);
+        }
+
         return response([
             'quiz' => $quizId
         ], 201);
@@ -234,7 +292,7 @@ class QuizController extends Controller
 
     private function validateQuiz(Request $request, String $quizId)
     {
-        $userId = $request->user()->id;
+        $userId = $request->user()?->id;
         $quiz = Quiz::where('quiz_id', $quizId)->first();
         if (!$quiz) {
             return [
@@ -246,6 +304,13 @@ class QuizController extends Controller
         if ($quiz->user_id == $userId) {
             return [
                 'message' => 'You cannot answer your own quiz',
+                'error' => true,
+                'code' => 422
+            ];
+        }
+        if (Carbon::now()->diffInDays(new Carbon($quiz->created_at)->startOfDay()) > 0) {
+            return [
+                'message' => 'This quiz has expired',
                 'error' => true,
                 'code' => 422
             ];
@@ -264,8 +329,9 @@ class QuizController extends Controller
      */
     public function answer(Request $request, String $quizId)
     {
-        $userId = $request->user()->id;
+        $userId = $request->user()?->id;
         $valid = $this->validateQuiz($request, $quizId);
+
         if ($valid['error']) {
             return response([
                 'message' => $valid['message']
@@ -297,7 +363,7 @@ class QuizController extends Controller
      */
     public function hint(Request $request, String $quizId)
     {
-        $userId = $request->user()->id;
+        $userId = $request->user()?->id;
         $valid = $this->validateQuiz($request, $quizId);
         if ($valid['error']) {
             return response([

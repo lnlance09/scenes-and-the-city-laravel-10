@@ -41,14 +41,12 @@
 
         .ui.grid {
             .column {
-                padding: 4em !important;
+                padding: 6em 4em 4em 4em !important;
                 box-shadow: none !important;
 
                 .charPic {
-                    border-radius: 50%;
-                    overflow: hidden;
                     position: absolute;
-                    top: -22%;
+                    top: -28%;
                     left: 39%;
 
                     @media only screen and (min-width: 320px) and (max-width: 767px) {
@@ -56,10 +54,17 @@
                         left: 32%;
                     }
 
-                    img {
+                    .ui.segment {
                         border-radius: 50%;
+                        padding: 0.5em;
                         height: 160px !important;
                         width: 160px !important;
+
+                        img, .ui.placeholder {
+                            border-radius: 50% !important;
+                            height: 160px !important;
+                            width: 160px !important;
+                        }
                     }
                 }
 
@@ -80,10 +85,6 @@
                 .hintPlaceholder {
                     color: colors.$terminalGreen !important;
                     height: 100%;
-                }
-
-                .charPic {
-                    border: inset 0.2em colors.$terminalGreen;
                 }
             }
         }

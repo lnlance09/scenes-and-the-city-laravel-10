@@ -1,6 +1,7 @@
 import "leaflet/dist/leaflet.css"
-import { Marker, TileLayer } from "react-leaflet"
+import { Marker, Popup, TileLayer } from "react-leaflet"
 import { useMapEvents } from "react-leaflet/hooks"
+import { Icon } from "leaflet"
 import { useMemo, useRef, useState } from "react"
 import { useSelector } from "react-redux"
 import { MapContainer } from "react-leaflet"
@@ -10,17 +11,32 @@ import { toastConfig } from "../../options/toast"
 import axios from "axios"
 import classNames from "classnames"
 import PropTypes from "prop-types"
+import empireStateIcon from "../../images/pizza-slice.svg"
+import empireStateInvertedIcon from "../../images/pizza-slice-inverted.svg"
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
 
+const iconData = {
+    className: "blinking",
+    iconUrl: empireStateIcon,
+    iconSize: [35, 35], // size of the icon
+    popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
+}
+const empireIcon = new Icon(iconData)
+const empireIconInverted = new Icon({
+    ...iconData,
+    iconUrl: empireStateInvertedIcon
+})
+
 const DraggableMarker = ({ callback = () => null, draggable = true, lat, lng }) => {
+    const inverted = useSelector((state) => state.app.inverted)
     const markerRef = useRef(null)
     const [position, setPosition] = useState({
         lat,
         lng
     })
 
-    const getAreaName = (lat, lng) => {
+    const getLocationInfo = (lat, lng) => {
         axios({
             url: `${apiBaseUrl}location?lat=${lat}&lng=${lng}`
         })
@@ -53,7 +69,7 @@ const DraggableMarker = ({ callback = () => null, draggable = true, lat, lng }) 
                     lat,
                     lng
                 })
-                getAreaName(lat, lng)
+                getLocationInfo(lat, lng)
             }
         }),
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -65,9 +81,12 @@ const DraggableMarker = ({ callback = () => null, draggable = true, lat, lng }) 
             className="mapMarker"
             draggable={draggable}
             eventHandlers={eventHandlers}
+            icon={inverted ? empireIconInverted : empireIcon}
             position={position}
             ref={markerRef}
-        />
+        >
+            <Popup>Text</Popup>
+        </Marker>
     )
 }
 

@@ -1,5 +1,4 @@
 const auth = localStorage.getItem("auth")
-const bearer = localStorage.getItem("bearer")
 const hardMode = localStorage.getItem("hardMode")
 const inverted = localStorage.getItem("inverted")
 const lang = localStorage.getItem("lang")
@@ -10,7 +9,6 @@ const verify = localStorage.getItem("verify")
 
 export const initialAppState = {
     auth: auth === "1",
-    bearer,
     hardMode: hardMode === "1",
     inverted: inverted === "1",
     language: lang || "en",

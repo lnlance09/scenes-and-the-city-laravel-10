@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('scene_id');
             $table->unsignedBigInteger('user_id');
+            $table->boolean('is_official')->default(false);
             $table->string('quiz_id')->unique();
             $table->string('hint_one');
             $table->string('hint_two');

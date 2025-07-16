@@ -1,10 +1,16 @@
 import "../index.scss"
-import { Header, Image, Label, Menu, Segment } from "semantic-ui-react"
+import { Grid, Header, Image, Menu, Placeholder, Segment } from "semantic-ui-react"
 import { translateDate } from "../../../utils/date"
+import { timeout } from "../../../utils/general"
 import { useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
-import { setHistoryAnswers, setHistoryQuizzes } from "../../../reducers/home"
+import {
+    setHistoryAnswers,
+    setHistoryQuizzes,
+    resetHistoryAnswers,
+    resetHistoryQuizzes
+} from "../../../reducers/home"
 import axios from "axios"
 import ModalComponent from "./modal"
 import NotFoundSvg from "../../../images/not-found.svg"
@@ -14,7 +20,7 @@ import * as translations from "../../../assets/translate.json"
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
 
-const HistoryModal = ({ callback = () => null, modalOpen = false }) => {
+const HistoryModal = ({ activeItem = "answers", callback = () => null, modalOpen = false }) => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
@@ -29,12 +35,24 @@ const HistoryModal = ({ callback = () => null, modalOpen = false }) => {
     const [historyFilter, setHistoryFilter] = useState("answers")
 
     useEffect(() => {
+        setHistoryFilter(activeItem)
+    }, [activeItem])
+
+    useEffect(() => {
         if (isAuth) {
             getHistory(historyFilter)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isAuth, historyFilter])
 
-    const getHistory = (type) => {
+    const getHistory = async (type) => {
+        if (type === "quizzes") {
+            dispatch(resetHistoryQuizzes())
+        }
+        if (type === "answers") {
+            dispatch(resetHistoryAnswers())
+        }
+        await timeout(500)
         axios({
             url: `${apiBaseUrl}users/history?type=${type}`,
             headers: {
@@ -66,118 +84,186 @@ const HistoryModal = ({ callback = () => null, modalOpen = false }) => {
         </Segment>
     )
 
-    const displayQuizzes = (data, count = 0) => {
-        if (count === 0) {
-            return emptyMsg("You haven't submitted any quizzes yet...")
+    const displayQuizzes = (data, count, loading) => {
+        if (count === 0 && !loading) {
+            return emptyMsg(lang.history.emptyQuizzesMsg)
         }
-        const items = data.map((q) => {
+        const items = data.map((q, i) => {
             return (
                 <Segment
+                    key={`quiz-scene-${i}`}
                     className="historyAnswerSegment"
                     inverted={inverted}
                     onClick={() => {
-                        navigate(`/${q.quizId}`)
+                        if (loading) {
+                            return
+                        }
+                        navigate(`/${q.id}`)
                         callback(false)
                     }}
                     size="large"
                 >
-                    <div>
-                        <Image
-                            alt={`Scene from ${q.video.title} (${q.video.year})`}
-                            floated="left"
-                            inline
-                            onError={(i) => (i.target.src = notFoundImg)}
-                            rounded
-                            size="small"
-                            src={q.img}
-                        />
-                        <Header floated="left" inverted={inverted} size="small">
-                            <Header.Content>
-                                {`Scene from ${q.video.title} (${q.video.year})`}
-                            </Header.Content>
-                            <Header.Subheader>
-                                {translateDate(q.createdAt, language)}
-                            </Header.Subheader>
-                        </Header>
-                        <div className="clearfix"></div>
-                    </div>
+                    <Grid>
+                        <Grid.Row>
+                            <Grid.Column width={6}>
+                                {loading ? (
+                                    <Placeholder inverted={inverted}>
+                                        <Placeholder.Image />
+                                    </Placeholder>
+                                ) : (
+                                    <Image
+                                        alt={`${lang.history.sceneFrom} ${q.video.title} (${q.video.year})`}
+                                        onError={(i) => (i.target.src = notFoundImg)}
+                                        rounded
+                                        size="small"
+                                        src={q.img}
+                                    />
+                                )}
+                            </Grid.Column>
+                            <Grid.Column width={10}>
+                                {loading ? (
+                                    <Placeholder inverted={inverted}>
+                                        <Placeholder.Line length="very long" />
+                                        <Placeholder.Line length="long" />
+                                        <Placeholder.Line length="very long" />
+                                    </Placeholder>
+                                ) : (
+                                    <Header floated="left" inverted={inverted} size="small">
+                                        <Header.Content>
+                                            {`${lang.history.sceneFrom} ${q.video.title} (${q.video.year})`}
+                                        </Header.Content>
+                                        <Header.Subheader>
+                                            {translateDate(q.createdAt, language)}
+                                        </Header.Subheader>
+                                    </Header>
+                                )}
+                            </Grid.Column>
+                        </Grid.Row>
+                    </Grid>
                 </Segment>
             )
         })
-        return <Segment.Group fluid>{items}</Segment.Group>
+        return <Segment.Group>{items}</Segment.Group>
     }
 
-    const displayAnswers = (data, count = 0) => {
-        if (count === 0) {
-            return emptyMsg("You haven't anywered anything yet...")
+    const displayAnswers = (data, count, loading) => {
+        if (count === 0 && !loading) {
+            return emptyMsg(lang.history.emptyAnswersMsg)
         }
-        const items = data.map((a) => {
+        const items = data.map((a, i) => {
+            let points = 10
+            points = a.hintsUsed === 1 ? 8 : a.hintsUsed === 2 ? 6 : points
             return (
                 <Segment
+                    key={`answer-scene-${i}`}
                     className="historyAnswerSegment"
                     inverted={inverted}
                     onClick={() => {
+                        if (loading) {
+                            return
+                        }
                         navigate(`/${a.quiz.id}`)
                         callback(false)
                     }}
                     size="large"
                 >
-                    <Label as="a" color="green" corner="right" icon="checkmark" />
-                    <div>
-                        <Image
-                            alt={`Scene from ${a.quiz.video.title} (${a.quiz.video.year})`}
-                            floated="left"
-                            inline
-                            onError={(i) => (i.target.src = notFoundImg)}
-                            rounded
-                            size="small"
-                            src={a.quiz.img}
-                        />
-                        <Header floated="left" inverted={inverted} size="small">
-                            <Header.Content>
-                                {`Scene from ${a.quiz.video.title} (${a.quiz.video.year})`}
-                            </Header.Content>
-                            <Header.Subheader>
-                                {translateDate(a.createdAt, language)}
-                            </Header.Subheader>
-                        </Header>
-                        <div className="clearfix"></div>
-                    </div>
+                    <Grid>
+                        <Grid.Row>
+                            <Grid.Column width={6}>
+                                {loading ? (
+                                    <Placeholder inverted={inverted}>
+                                        <Placeholder.Image />
+                                    </Placeholder>
+                                ) : (
+                                    <Image
+                                        alt={`${lang.history.sceneFrom} ${a.quiz.video.title} (${a.quiz.video.year})`}
+                                        onError={(i) => (i.target.src = notFoundImg)}
+                                        rounded
+                                        src={a.quiz.img}
+                                    />
+                                )}
+                            </Grid.Column>
+                            <Grid.Column width={10}>
+                                {loading ? (
+                                    <Placeholder inverted={inverted}>
+                                        <Placeholder.Line length="very long" />
+                                        <Placeholder.Line length="long" />
+                                        <Placeholder.Line length="very long" />
+                                    </Placeholder>
+                                ) : (
+                                    <>
+                                        <Header inverted={inverted} size="small">
+                                            <Header.Content>
+                                                {`${lang.history.sceneFrom} ${a.quiz.video.title} (${a.quiz.video.year})`}
+                                            </Header.Content>
+                                            <Header.Subheader>
+                                                {translateDate(a.createdAt, language)}
+                                            </Header.Subheader>
+                                        </Header>
+                                        {a.correct && (
+                                            <Header
+                                                color="green"
+                                                content={`+${points} ${lang.answer.points}`}
+                                                inverted={inverted}
+                                                size="tiny"
+                                                style={{ marginTop: 0 }}
+                                            />
+                                        )}
+                                    </>
+                                )}
+                            </Grid.Column>
+                        </Grid.Row>
+                    </Grid>
                 </Segment>
             )
         })
-        return <Segment.Group fluid>{items}</Segment.Group>
+        return <Segment.Group>{items}</Segment.Group>
     }
 
     return (
         <div className="historyModalComponent">
             <ModalComponent
                 callback={() => callback(false)}
+                className={{ settingsModal: true }}
                 open={modalOpen}
-                title={lang.main.history}
+                title={lang.header.history}
             >
                 <Menu inverted={inverted} pointing secondary size="huge">
                     <Menu.Item
                         active={historyFilter === "answers"}
                         name="Answers"
-                        onClick={() => setHistoryFilter("answers")}
-                    />
+                        onClick={async () => {
+                            setHistoryFilter("answers")
+                        }}
+                    >
+                        {lang.history.answers}
+                    </Menu.Item>
                     <Menu.Item
                         active={historyFilter === "quizzes"}
                         name="Quizzes"
-                        onClick={() => setHistoryFilter("quizzes")}
-                    />
+                        onClick={async () => {
+                            setHistoryFilter("quizzes")
+                        }}
+                    >
+                        {lang.history.quizzes}
+                    </Menu.Item>
                 </Menu>
-                {historyFilter === "quizzes" && <>{displayQuizzes(quizzes.data, quizzes.count)}</>}
-                {historyFilter === "answers" && <>{displayAnswers(answers.data, answers.count)}</>}
+                {historyFilter === "quizzes" && (
+                    <>{displayQuizzes(quizzes.data, quizzes.count, quizzes.isLoading)}</>
+                )}
+                {historyFilter === "answers" && (
+                    <>{displayAnswers(answers.data, answers.count, answers.isLoading)}</>
+                )}
             </ModalComponent>
         </div>
     )
 }
 
 HistoryModal.propTypes = {
+    activeItem: PropTypes.string,
     callback: PropTypes.func,
-    modalOpen: PropTypes.bool
+    modalOpen: PropTypes.bool,
+    updateSettings: PropTypes.func
 }
 
 export default HistoryModal

@@ -15,7 +15,7 @@ export const isValidDate = (date) => moment(date, "YYYY-MM-DD HH:mm:ss", true).i
 export const translateDate = (date, lang, isWeekend = false, weekendOf = "") => {
     const day = moment(date).format("dddd")
     const month = moment(date).format("MMMM")
-    const dayOfMonth = moment(date).format("DD")
+    const dayOfMonth = moment(date).format("D")
     const yearFormat = moment(date).format("YYYY")
 
     if (!isWeekend) {
@@ -29,6 +29,6 @@ export const translateDate = (date, lang, isWeekend = false, weekendOf = "") => 
     const sunday = isSunday(date) ? nycDate : plusOneDay
     const satMonth = translateMonth(saturday.format("MMMM"), lang)
     const sunMonth = translateMonth(sunday.format("MMMM"), lang)
-    const dateRange = `${satMonth} ${saturday.format("DD")} - ${sunMonth} ${sunday.format("DD")}`
+    const dateRange = `${satMonth} ${saturday.format("D")} - ${sunMonth} ${sunday.format("D")}`
     return `${weekendOf} ${dateRange}, ${yearFormat}`
 }

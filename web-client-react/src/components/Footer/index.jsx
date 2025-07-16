@@ -17,9 +17,9 @@ const FooterComponent = () => {
 
     return (
         <div className="footerComponent">
-            <Segment className="footerSegment" inverted={inverted} vertical>
+            <Segment className="footerSegment" inverted vertical>
                 <Container textAlign="center">
-                    <List horizontal inverted={inverted} size="large">
+                    <List horizontal inverted size="large">
                         {items.map((item) => (
                             <List.Item
                                 key={item}
@@ -72,6 +72,18 @@ const FooterComponent = () => {
                                 seen it before. I knew it. I was 100% positive. It was on the Upper
                                 West Side. I just wasn't quite sure where yet...
                             </Header>
+                            <Segment inverted={inverted}>
+                                <iframe
+                                    width="100%"
+                                    height="315"
+                                    src="https://www.youtube.com/embed/Zd8vzIRQLLM?si=WsHl5CdIHUtlEg3X&amp;controls=0"
+                                    title="YouTube video player"
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    referrerpolicy="strict-origin-when-cross-origin"
+                                    allowfullscreen
+                                ></iframe>
+                            </Segment>
                             <Header as="p" inverted={inverted} size="small">
                                 And then I sort of had an epiphany moment. And, no. In case you're
                                 wondering, I'm not gay. I promise! Anyways, though... it began to

@@ -34,6 +34,12 @@ button {
 	background: colors.$blackBackgroundNormal;
 }
 
+.adminPage {
+	.ui.header {
+		font-family: fonts.$franklin600 !important;
+	}
+}
+
 .ui.placeholder {
 	border-radius: 0.25em;
 }

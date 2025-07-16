@@ -61,6 +61,7 @@ class QuizSeeder extends Seeder
             'scene_id' => $scene->id,
             'user_id' => $data['user_id'],
             'quiz_id' => $data['quiz_id'],
+            'is_official' => true,
             'hint_one' => $data['hint'],
             'hint_two' => '',
             'lat' => $data['lat'],

@@ -5,12 +5,14 @@ import { setActions } from "../reducers/form"
 import {
     clearAnswer,
     clearQuiz,
-    setAnswer,
+    setAnswerGeoData,
     setHasAnswered,
     setHintsUsed,
-    setQuiz
+    setQuiz,
+    setPartTwo,
+    setMarginOfError,
+    setCorrect
 } from "../reducers/home"
-import { defaultAnswer } from "../states/home"
 import { dateFormat, isSunday, isWeekend, nyc } from "../utils/date"
 import { timeout } from "../utils/general"
 import { toast, ToastContainer } from "react-toastify"
@@ -32,7 +34,7 @@ import * as translations from "../assets/translate.json"
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
 const defaultDate = moment().tz(nyc).format(dateFormat)
 
-const HomepageLayout = () => {
+const HomePage = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
@@ -41,22 +43,22 @@ const HomepageLayout = () => {
     const validDate = moment(slug, dateFormat, true).isValid()
     const quizId = validQuizId ? slug : null
 
-    const hasAnswered = useSelector((state) => state.home.hasAnswered)
+    const hasAnswered = useSelector((state) => state.home.answer.hasAnswered)
     const inverted = useSelector((state) => state.app.inverted)
     const isAuth = useSelector((state) => state.app.auth)
     const verify = useSelector((state) => state.app.verify)
     const language = useSelector((state) => state.app.language)
     const lang = translations[language]
 
-    const [animation, setAnimation] = useState("slide left")
+    const [animation, setAnimation] = useState("fly left")
     const [date, setDate] = useState()
-    const [imgVisible, setImgVisible] = useState(false)
+    const [imgVisible, setImgVisible] = useState(true)
     const [loading, setLoading] = useState(true)
     const [loginModal, toggleLoginModal] = useState(false)
     const [quiz404, setQuiz404] = useState(false)
 
     const isToday = moment(date).tz(nyc).isSameOrAfter(moment().subtract(1, "days"))
-    const isAfterToday = (date) => moment(date, dateFormat).isAfter(moment().tz(nyc))
+    const isAfterToday = (date) => moment(date, dateFormat).tz(nyc).isAfter(moment().tz(nyc))
     const isInFuture = isAfterToday(date)
 
     useEffect(() => {
@@ -74,11 +76,12 @@ const HomepageLayout = () => {
         }
 
         if (validDate) {
+            setDate(slug)
             if (!isAfterToday(slug)) {
                 getQuiz(`/show/date?date=${slug}`)
                 return
             }
-            setDate(slug)
+
             setLoading(false)
             setQuiz404(true)
             return
@@ -90,7 +93,7 @@ const HomepageLayout = () => {
     const getQuiz = async (url) => {
         setImgVisible(false)
         setLoading(true)
-        dispatch(setAnswer(defaultAnswer))
+        dispatch(clearAnswer())
 
         await axios({
             url: `${apiBaseUrl}quiz${url}`,
@@ -99,17 +102,22 @@ const HomepageLayout = () => {
             }
         })
             .then((response) => {
-                const { quiz } = response.data
+                const { answer, partTwo, quiz } = response.data
+                const createdAt = moment(quiz.createdAt, "YYYY-MM-DD HH:mm:ss")
+                    .tz(nyc)
+                    .format(dateFormat)
+
+                setDate(createdAt)
                 setQuiz404(false)
-                setDate(moment(quiz.createdAt).format(dateFormat))
                 dispatch(setQuiz({ quiz }))
-                if (response.data.answer) {
-                    const { answer } = response.data
-                    dispatch(setAnswer(answer))
-                    dispatch(setHasAnswered({ hasAnswered: true }))
-                    dispatch(setHintsUsed({ amount: answer.hintsUsed }))
-                } else {
-                    dispatch(clearAnswer())
+                dispatch(setPartTwo({ partTwo }))
+
+                dispatch(setAnswerGeoData({ geoData: answer.geoData }))
+                dispatch(setHasAnswered({ hasAnswered: answer.hasAnswered }))
+                dispatch(setHintsUsed({ amount: answer.hintsUsed }))
+                dispatch(setCorrect({ correct: answer.correct }))
+                if (answer.hasAnswered) {
+                    dispatch(setMarginOfError({ margin: answer.marginOfError }))
                 }
             })
             .catch(() => {
@@ -117,6 +125,7 @@ const HomepageLayout = () => {
                 dispatch(clearQuiz())
                 toast.error(lang.main.toastErrorMessage, toastConfig)
             })
+
         await timeout(700)
         setLoading(false)
         await timeout(300)
@@ -207,11 +216,15 @@ const HomepageLayout = () => {
 
             <FooterComponent />
             <ModalComponent callback={() => toggleLoginModal(false)} open={loginModal} title={null}>
-                <AuthenticationForm closeModal={() => toggleLoginModal(false)} size="large" />
+                <AuthenticationForm
+                    loginCallback={() => toggleLoginModal(false)}
+                    verifyCallback={() => toggleLoginModal(false)}
+                    size="large"
+                />
             </ModalComponent>
             <ToastContainer className={inverted ? "inverted" : null} />
         </div>
     )
 }
 
-export default HomepageLayout
+export default HomePage

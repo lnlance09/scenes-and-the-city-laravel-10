@@ -50,6 +50,8 @@ export const initialFormState = {
     hint: "",
     img: defaultImg,
     location: defaultLocation,
+    partTwo: null,
+    quizzes: [],
     video: defaultVideo,
     videos: []
 }

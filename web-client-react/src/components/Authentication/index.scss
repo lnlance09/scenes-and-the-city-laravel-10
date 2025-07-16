@@ -3,11 +3,9 @@
 
 .authComponent {
     margin: auto;
-    // width: 48%;
 
     .header.huge {
         font-family: fonts.$cheltenham700 !important;
-        margin-bottom: 0;
     }
 
     @media only screen and (max-width: 1025px) {
@@ -25,7 +23,6 @@
     .authSegment {
         border: none !important;
         margin: 0 auto;
-        padding: 1em 0 0 0;
 
         .divider {
             margin-bottom: 16px;
@@ -60,7 +57,6 @@
     }
 
     .forgotText {
-        cursor: pointer;
         font-family: fonts.$franklin500 !important;
         font-size: 14px !important;
         font-weight: normal !important;
@@ -71,7 +67,8 @@
             vertical-align: top;
         }
 
-        &:hover {
+        span:hover {
+            cursor: pointer;
             text-decoration: underline;
         }
     }

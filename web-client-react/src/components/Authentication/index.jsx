@@ -1,10 +1,9 @@
 import "./index.scss"
-import { Button, Divider, Form, Header, Icon, Input, Segment, Transition } from "semantic-ui-react"
+import { Button, Divider, Form, Header, Icon, Input, Transition } from "semantic-ui-react"
 import {
     setUserData,
     setNeedToVerify,
     verifyEmail,
-    setBearer,
     setHardMode,
     setDarkMode,
     setLanguage,
@@ -32,7 +31,24 @@ import * as translations from "../../assets/translate.json"
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
 
-const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size }) => {
+const setSessionData = (auth, bearer, verify, settings, user) => {
+    localStorage.setItem("auth", auth)
+    localStorage.setItem("bearer", bearer)
+    localStorage.setItem("hardMode", settings.hardMode)
+    localStorage.setItem("inverted", settings.darkMode)
+    localStorage.setItem("lang", settings.lang)
+    localStorage.setItem("reveal", settings.revealAnswers)
+    localStorage.setItem("units", settings.measureUnits)
+    localStorage.setItem("user", JSON.stringify(user))
+    localStorage.setItem("verify", verify)
+}
+
+const AuthenticationForm = ({
+    loginCallback = () => null,
+    verifyCallback = () => null,
+    showLogin = true,
+    size = "large"
+}) => {
     const dispatch = useDispatch()
     const verify = useSelector((state) => state.app.verify)
     const inverted = useSelector((state) => state.app.inverted)
@@ -40,7 +56,7 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
     const lang = translations[language]
 
     const [internalState, dispatchInternal] = useReducer(reducer, initialAuthState)
-    const { forgot, headerText, login, passwordReset, register } = internalState
+    const { forgot, headerKey, login, passwordReset, register } = internalState
 
     useEffect(() => {
         if (!showLogin) {
@@ -89,17 +105,7 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
                 dispatch(setUserData({ user: data.user }))
 
                 const { bearer, settings, verified } = data.user
-                localStorage.setItem("auth", 1)
-                localStorage.setItem("bearer", bearer)
-                localStorage.setItem("hardMode", settings.hardMode)
-                localStorage.setItem("inverted", settings.darkMode)
-                localStorage.setItem("lang", settings.lang)
-                localStorage.setItem("reveal", settings.revealAnswers)
-                localStorage.setItem("units", settings.measureUnits)
-                localStorage.setItem("user", JSON.stringify(data.user))
-                localStorage.setItem("verify", verified ? 1 : 0)
-
-                dispatch(setBearer({ bearer }))
+                setSessionData(1, bearer, verified ? 1 : 0, settings, data.user)
                 dispatch(setHardMode({ hardMode: settings.hardMode === 1 }))
                 dispatch(setDarkMode({ darkMode: settings.darkMode === 1 }))
                 dispatch(setLanguage({ language: settings.lang }))
@@ -107,7 +113,7 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
                 dispatch(setUnits({ units: settings.measureUnits }))
 
                 if (!verified) {
-                    closeModal()
+                    loginCallback()
                     toast.success("You have been logged in!", {
                         ...toastConfig,
                         className: inverted ? "inverted" : null
@@ -152,15 +158,7 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
                 dispatchInternal({ type: SET_VERIFY })
 
                 const { bearer, settings } = data.user
-                localStorage.setItem("auth", 1)
-                localStorage.setItem("bearer", bearer)
-                localStorage.setItem("hardMode", settings.hardMode)
-                localStorage.setItem("inverted", settings.darkMode)
-                localStorage.setItem("lang", settings.lang)
-                localStorage.setItem("reveal", settings.revealAnswers)
-                localStorage.setItem("units", settings.measureUnits)
-                localStorage.setItem("user", JSON.stringify(data.user))
-                localStorage.setItem("verify", 1)
+                setSessionData(1, bearer, 1, settings, data.user)
             })
             .catch((error) => {
                 let errorMsg = ""
@@ -195,7 +193,6 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
         } else {
             payload.username = forgotEmail
         }
-
         await axios
             .post(`${apiBaseUrl}users/forgot`, payload)
             .then(() => {
@@ -230,7 +227,7 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
                 localStorage.setItem("verify", false)
                 setLoadingVerify(false)
                 toast.success("Your account has been verified", toastConfig)
-                closeModal()
+                verifyCallback()
             })
             .catch((error) => {
                 let errorMsg = ""
@@ -271,13 +268,15 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
 
     return (
         <div className="authComponent">
-            <Header
-                as="h1"
-                className="huge"
-                content={headerText}
-                inverted={inverted}
-                textAlign="center"
-            />
+            {headerKey && (
+                <Header
+                    as="h1"
+                    className="huge"
+                    content={lang.auth[headerKey]}
+                    inverted={inverted}
+                    textAlign="center"
+                />
+            )}
             <div className={authSegmentClass}>
                 {!verify && (
                     <>
@@ -316,14 +315,13 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
                                 </Form>
                                 {authFooter(lang.auth.newToThis, lang.auth.signUp)}
                                 <Header
-                                    as="p"
                                     className="forgotText"
                                     inverted={inverted}
                                     onClick={() => dispatchInternal({ type: SET_FORGOT })}
                                     size="small"
                                     textAlign="center"
                                 >
-                                    {lang.auth.forgotPassword}
+                                    <span>{lang.auth.forgotPassword}</span>
                                 </Header>
                             </>
                         )}
@@ -386,7 +384,7 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
                             </Form.Field>
                             <Button
                                 color={inverted ? "green" : "blue"}
-                                content={lang.auth.sendIntructions}
+                                content={lang.auth.sendInstructions}
                                 disabled={forgotEmail.length < 5}
                                 fluid
                                 inverted={inverted}
@@ -396,20 +394,26 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
                             />
                         </Form>
                         <Header
-                            as="p"
                             className="forgotText"
                             inverted={inverted}
                             onClick={() => dispatchInternal({ type: SET_LOGIN })}
                             size="small"
                             textAlign="center"
                         >
-                            <Icon name="arrow left" /> {lang.auth.backToLogin}
+                            <span>
+                                <Icon name="arrow left" /> {lang.auth.backToLogin}
+                            </span>
                         </Header>
                     </>
                 )}
 
                 <Transition animation="scale" duration={500} visible={passwordReset}>
-                    <Header inverted={inverted} size="large" textAlign="center">
+                    <Header
+                        className="emailSentToYou"
+                        inverted={inverted}
+                        size="large"
+                        textAlign="center"
+                    >
                         <Header.Content>
                             <Icon color="green" inverted={inverted} name="checkmark" />{" "}
                             {lang.auth.emailSentToYou}
@@ -446,6 +450,8 @@ const AuthenticationForm = ({ closeModal = () => null, showLogin = true, size })
 }
 
 AuthenticationForm.propTypes = {
+    loginCallback: PropTypes.func,
+    verifyCallback: PropTypes.func,
     showLogin: PropTypes.bool,
     size: PropTypes.string
 }

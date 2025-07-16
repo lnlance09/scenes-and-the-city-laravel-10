@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -22,8 +23,10 @@ class Quiz extends JsonResource
         return [
             'id' => $this->quiz_id,
             'img' => $awsUrl . $scene->pics[0]->s3_url,
-            'hintOne' => $this->hint_one,
-            'hintTwo' => $this->hint_two,
+            'distance' => $this->distance ? $this->distance : null,
+            'geoData' => $this->reveal_answer ? $this->geo_data : null,
+            'hintOne' => $this->reveal_hint_one ? $this->hint_one : null,
+            'hintTwo' => $this->reveal_hint_two ? $this->hint_two : null,
             'video' => [
                 'title' => $scene->video->title,
                 'year' => $scene->video->year
@@ -35,7 +38,7 @@ class Quiz extends JsonResource
             ],
             'action' => $scene->action->action->name,
             'username' => $this->user->username,
-            'createdAt' => $this->created_at
+            'createdAt' =>  Carbon::createFromFormat('Y-m-d H:i:s', $this->created_at, 'America/New_York')->toDateTimeString()
         ];
     }
 }

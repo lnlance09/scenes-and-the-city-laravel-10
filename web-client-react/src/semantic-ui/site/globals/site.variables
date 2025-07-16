@@ -3,7 +3,7 @@
 *******************************/
 
 @importGoogleFonts: false;
-@green: #179b69;
+@green: #21de97;
 @lightGreen: #21de97;
-@blue: #0E3FA9;
+@blue: #0030ff;
 @yellow: #FFA903;

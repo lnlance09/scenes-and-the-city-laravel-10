@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Quiz;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -40,6 +41,7 @@ class User extends Authenticatable
         'username',
         'email',
         'password',
+        'points',
         'api_token',
         'forgot_code',
         'email_verified_at',
@@ -69,6 +71,33 @@ class User extends Authenticatable
         // 'email_verified_at' => 'datetime',
         // 'password' => 'hashed',
     ];
+
+    public function getPoints()
+    {
+        $points1 = Answer::where(
+            [
+                'user_id' => $this->id,
+                'correct' => 1,
+                'hints_used' => 0
+            ]
+        )->count();
+        $points2 = Answer::where(
+            [
+                'user_id' => $this->id,
+                'correct' => 1,
+                'hints_used' => 1
+            ]
+        )->count();
+        $points3 = Answer::where(
+            [
+                'user_id' => $this->id,
+                'correct' => 1,
+                'hints_used' => 2
+            ]
+        )->count();
+        $points = ($points1 * 10) + ($points2 * 8) + ($points3 * 6);
+        $this->points = $points;
+    }
 
     public function setting()
     {

@@ -19,7 +19,6 @@ use App\Rules\MatchOldPassword;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -53,7 +52,7 @@ class UserController extends Controller
         $user = $request->user();
         $input = $request->all();
         $username = $request->input('username', null);
-        if ($username ? $username !== $user->username : false) {
+        if ($username ? $username !== $user?->username : false) {
             $request->validate([
                 'username' => 'bail|required|max:20|unique:users,username|alpha_dash'
             ]);
@@ -118,9 +117,13 @@ class UserController extends Controller
                 'message' => 'Incorrect password'
             ], 401);
         }
+
+        $user->getPoints();
+
         return response([
             'user' => [
                 'bearer' => $user->api_token,
+                'points' => $user->points,
                 'username' => $user->username,
                 'verified' => $user->email_verified_at === null,
                 'settings' => new SettingResource($user->setting)
@@ -171,7 +174,6 @@ class UserController extends Controller
         ]);
         $setting->refresh();
 
-        /*
         try {
             Mail::to($email)->send(new VerificationCode($user));
         } catch (Exception $e) {
@@ -180,10 +182,10 @@ class UserController extends Controller
                 'message' => 'Error sending confirmation email'
             ], 401);
         }
-        */
 
         return response([
             'user' => [
+                'bearer' => $user->api_token,
                 'username' => $user->username,
                 'settings' => new SettingResource($setting)
             ]
@@ -324,7 +326,7 @@ class UserController extends Controller
      */
     public function updateSettings(Request $request)
     {
-        $userId = $request->user()->id;
+        $userId = $request->user()?->id;
         $request->validate([
             'darkMode' => 'bail|integer|min:0|max:1',
             'hardMode' => 'bail|integer|min:0|max:1',
@@ -374,7 +376,7 @@ class UserController extends Controller
      */
     public function getStats(Request $request)
     {
-        $userId = $request->user()->id;
+        $userId = $request->user()?->id;
 
         $correctAnswers = Answer::where(
             [
@@ -402,7 +404,10 @@ class UserController extends Controller
             }
         }
 
-        $answers = Answer::where('user_id', $userId)->with(['quiz'])->get();
+        // Need to get sum from column and then divide
+        $answers = Answer::where('user_id', $userId)
+            ->whereIn('correct', [0, 1])
+            ->with(['quiz'])->get();
         $nyc = new NewYorkCity();
         $margin = 0;
         $count = count($answers);
@@ -410,14 +415,14 @@ class UserController extends Controller
             $a = $answers[$i];
             $answerLocation = $nyc->locationToObject('Point', $a->lng, $a->lat);
             $quizLocation = $nyc->locationToObject('Point', $a->quiz->lng, $a->quiz->lat);
-            $margin += $quizLocation->distance($answerLocation);
+            $margin += $answerLocation->distance($quizLocation);
         }
         $marginOfError = $count === 0 ? $margin : $margin / $count;
 
         return response([
             'totalAnswers' => $totalAnswers,
             'correctAnswers' => $correctAnswers,
-            'accuracy' => $accuracy * 100 . "%",
+            'accuracy' => round($accuracy * 100, 2),
             'currentStreak' => $currentStreak,
             'maxStreak' => '',
             'margin' => $marginOfError
@@ -428,21 +433,54 @@ class UserController extends Controller
      * Update settings
      *
      * @param  Request  $request
-     * @return Response
+     * @return AnswerCollection|QuizCollection
      */
     public function getHistory(Request $request)
     {
-        $userId = $request->user()->id;
+        $userId = $request->user()?->id;
         $type = $request->input('type', 'answers');
 
         if ($type === 'answers') {
             $answers = Answer::where('user_id', $userId)
                 ->with(['quiz'])
+                ->orderBy('created_at', 'desc')
                 ->get();
             return new AnswerCollection($answers);
         }
 
-        $quizzes = Quiz::where('user_id', $userId)->get();
+        $quizzes = Quiz::where('user_id', $userId)
+            ->orderBy('created_at', 'desc')
+            ->get();
+        return new QuizCollection($quizzes);
+    }
+
+    /**
+     * Update settings
+     *
+     * @param  Request  $request
+     * @return QuizCollection
+     */
+    public function getOfficialQuizzes(Request $request)
+    {
+        $userId = $request->user()?->id;
+        if ($userId !== 1) {
+            return response([
+                'error' => 'You do not have access to this resource'
+            ], 401);
+        }
+
+        $q = $request->input('q');
+        $quizzes = Quiz::where(function ($query) use ($q) {
+            $query->whereHas('scene', function ($query) use ($q) {
+                $query->whereHas('video', function ($query) use ($q) {
+                    $query->where('title', 'LIKE', '%' . $q . '%');
+                });
+            });
+        })
+            ->where('user_id', 1)
+            ->doesntHave('partTwo')
+            ->orderBy('created_at', 'desc')
+            ->get();
         return new QuizCollection($quizzes);
     }
 }

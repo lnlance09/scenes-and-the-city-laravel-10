@@ -30,9 +30,11 @@ class CorrectAnswers extends Command
     {
         $nyc = new NewYorkCity();
         $today = Carbon::now()->format('Y-m-d');
-        $answers = Answer::where('created_at', $today . '00:00:00')
-            ->with(['quiz'])
-            ->get();
+        $answers = Answer::whereBetween('created_at', [
+            $today . ' 00:00:00',
+            $today . ' 23:59:59'
+        ]);
+        $answers = Answer::with(['quiz'])->get();
 
         for ($i = 0; $i < count($answers); $i++) {
             $a = $answers[$i];

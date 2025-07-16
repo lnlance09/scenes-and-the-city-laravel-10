@@ -1,5 +1,4 @@
 import "../index.scss"
-// import { Modal } from "react-responsive-modal"
 import { Header, Modal } from "semantic-ui-react"
 import { useSelector } from "react-redux"
 import classNames from "classnames"
@@ -18,7 +17,6 @@ const ModalComponent = ({
 
     const modalClass = classNames({
         ...className,
-        settingsModal: true,
         inverted
     })
 
@@ -56,10 +54,10 @@ const ModalComponent = ({
 ModalComponent.propTypes = {
     basic: PropTypes.bool,
     callback: PropTypes.func,
-    children: PropTypes.object,
-    className: PropTypes.oneOf("small", "large"),
+    children: PropTypes.element,
+    className: PropTypes.object,
     open: PropTypes.bool,
-    size: PropTypes.string,
+    size: PropTypes.oneOf(["small", "large"]),
     title: PropTypes.oneOfType([PropTypes.string, PropTypes.bool])
 }
 

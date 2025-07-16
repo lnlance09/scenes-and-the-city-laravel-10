@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/actions', [ActionController::class, 'index']); // 
 Route::get('/videos', [VideoController::class, 'index']); // 
 Route::get('/chars/{videoId}', [CharacterController::class, 'index']); //
+Route::post('/chars/pic', [CharacterController::class, 'createPic'])->middleware(['auth:api', 'verified']); //
 
 Route::get('/location', [LocationController::class, 'find']); //
 
@@ -36,6 +37,7 @@ Route::get('/quiz/leaderboard', [QuizController::class, 'leaderboard']);
 Route::get('/users/changePassword', [UserController::class, 'changePassword'])->middleware(['auth:api', 'verified']);
 Route::get('/users/changeUsername', [UserController::class, 'changeUsername'])->middleware(['auth:api', 'verified']);
 Route::get('/users/checkUsername', [UserController::class, 'checkUsername'])->middleware(['auth:api', 'verified']);
+Route::get('/users/quizzes', [UserController::class, 'getOfficialQuizzes'])->middleware(['auth:api', 'verified']);
 Route::get('/users/history', [UserController::class, 'getHistory'])->middleware(['auth:api', 'verified']);
 Route::get('/users/stats', [UserController::class, 'getStats'])->middleware(['auth:api', 'verified']);
 Route::post('/users/settings', [UserController::class, 'updateSettings'])->middleware(['auth:api', 'verified']);

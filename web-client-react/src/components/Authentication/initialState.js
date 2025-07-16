@@ -1,5 +1,5 @@
 export const initialAuthState = {
-    headerText: "Sign In",
+    headerKey: "signIn",
     login: true,
     register: false,
     forgot: false,

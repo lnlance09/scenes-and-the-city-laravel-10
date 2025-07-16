@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { defaultAnswer, defaultQuiz, initialHomeState } from "../states/home"
+import { defaultAnswer, defaultHistoryData, defaultQuiz, initialHomeState } from "../states/home"
 
 const homeSlice = createSlice({
     name: "home",
@@ -8,26 +8,26 @@ const homeSlice = createSlice({
         clearQuiz: (state) => {
             state.quiz = defaultQuiz
         },
-        clearAnswer: (state) => {
-            state.answer = {
-                ...defaultAnswer,
-                lat: 40.758896,
-                lng: -73.98513
-            }
-            state.hasAnswered = false
+        clearPartTwo: (state) => {
+            state.partTwo = null
         },
-        setAnswer: (state, action) => {
-            state.answer = {
-                ...state.answer,
-                lat: action.payload.lat,
-                lng: action.payload.lng,
-                hood: action.payload.hood,
-                borough: action.payload.borough,
-                streets: action.payload.streets
+        clearAnswer: (state) => {
+            state.answer = defaultAnswer
+        },
+        setAnswerGeoData: (state, action) => {
+            state.answer.geoData = {
+                lat: action.payload.geoData.lat,
+                lng: action.payload.geoData.lng,
+                hood: action.payload.geoData.hood,
+                borough: action.payload.geoData.borough,
+                streets: action.payload.geoData.streets
             }
+        },
+        setCorrect: (state, action) => {
+            state.answer.correct = action.payload.correct
         },
         setHasAnswered: (state, action) => {
-            state.hasAnswered = action.payload.hasAnswered
+            state.answer.hasAnswered = action.payload.hasAnswered
         },
         setHintOne: (state, action) => {
             state.quiz.hintOne = action.payload.hint
@@ -38,14 +38,26 @@ const homeSlice = createSlice({
         setHintsUsed: (state, action) => {
             state.answer.hintsUsed = action.payload.amount
         },
+        setMarginOfError: (state, action) => {
+            state.answer.marginOfError = action.payload.margin
+        },
         setHistoryAnswers: (state, action) => {
             state.history.answers = action.payload.answers
+        },
+        resetHistoryAnswers: (state) => {
+            state.history.answers = defaultHistoryData
         },
         setHistoryQuizzes: (state, action) => {
             state.history.quizzes = action.payload.quizzes
         },
+        resetHistoryQuizzes: (state) => {
+            state.history.quizzes = defaultHistoryData
+        },
         setQuiz: (state, action) => {
             state.quiz = action.payload.quiz
+        },
+        setPartTwo: (state, action) => {
+            state.partTwo = action.payload.partTwo
         }
     }
 })
@@ -53,14 +65,19 @@ const homeSlice = createSlice({
 export const {
     clearAnswer,
     clearQuiz,
-    setAnswer,
+    setAnswerGeoData,
+    setCorrect,
     setHasAnswered,
     setHintOne,
     setHintTwo,
     setHintsUsed,
+    setMarginOfError,
     setHistoryAnswers,
     setHistoryQuizzes,
-    setQuiz
+    resetHistoryAnswers,
+    resetHistoryQuizzes,
+    setQuiz,
+    setPartTwo
 } = homeSlice.actions
 
 export default homeSlice.reducer

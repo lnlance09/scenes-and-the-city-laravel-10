@@ -1,17 +1,9 @@
 import "./index.scss"
-import {
-    Container,
-    Header,
-    Icon,
-    Image,
-    Transition,
-    Placeholder,
-    Divider,
-    Segment
-} from "semantic-ui-react"
+import { Container, Divider, Header, Icon, Image, Placeholder, Transition } from "semantic-ui-react"
 import { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
 import { dateFormat, isSunday, nyc, translateDate } from "../../utils/date"
+import { capitalize } from "../../utils/general"
 import classNames from "classnames"
 import ModalComponent from "../Header/modals/modal"
 import moment from "moment-timezone"
@@ -21,7 +13,7 @@ import PropTypes from "prop-types"
 import * as translations from "../../assets/translate.json"
 
 const ImageSection = ({
-    animation = "slide left",
+    animation = "fly left",
     date = moment().tz(nyc).format(dateFormat),
     goToLastWeek = () => null,
     goToToday = () => null,
@@ -38,7 +30,7 @@ const ImageSection = ({
     const lang = translations[language]
 
     const [modalOpen, setModalOpen] = useState(false)
-    const [notFound, setNotFound] = useState(NotFoundSvg)
+    const [notFound, setNotFound] = useState("")
 
     useEffect(() => {
         setNotFound(inverted ? NotFoundSvgInverted : NotFoundSvg)
@@ -61,14 +53,9 @@ const ImageSection = ({
             <Container className={mainContainerClass} text>
                 {loading ? (
                     <>
-                        <Segment basic={!inverted} inverted={inverted}>
-                            <Placeholder fluid inverted={inverted}>
-                                <Placeholder.Header>
-                                    <Placeholder.Line length="very long" />
-                                    <Placeholder.Line length="long" />
-                                </Placeholder.Header>
-                            </Placeholder>
-                        </Segment>
+                        <Placeholder fluid inverted={inverted} style={{ height: "60px" }}>
+                            <Placeholder.Image />
+                        </Placeholder>
                         <Divider hidden />
                     </>
                 ) : (
@@ -97,9 +84,10 @@ const ImageSection = ({
                                 <div className="clearfix"></div>
                             </Header.Subheader>
                         )}
-                        {validQuizId && quiz.quizId && (
+                        {validQuizId && quiz.id && (
                             <Header.Subheader>
-                                By {quiz.username} - {moment(quiz.createdAt).tz(nyc).fromNow()}
+                                {capitalize(lang.main.by)} {quiz.username} -{" "}
+                                {moment(quiz.createdAt).tz(nyc).fromNow()}
                             </Header.Subheader>
                         )}
                     </Header>
@@ -121,7 +109,9 @@ const ImageSection = ({
                                     }
                                     setModalOpen(true)
                                 }}
-                                onError={(i) => (i.target.src = notFound)}
+                                onError={(i) => {
+                                    i.target.src = notFound
+                                }}
                                 rounded
                                 style={{ minHeight: "360px" }}
                                 src={quiz.img === null || quiz404 ? notFound : quiz.img}
@@ -130,17 +120,19 @@ const ImageSection = ({
                     </div>
                 </Transition>
             </Container>
-            <ModalComponent basic callback={() => setModalOpen(false)} open={modalOpen}>
-                <Image alt="Scenes and the City" fluid src={quiz.img} />
+            <ModalComponent callback={() => setModalOpen(false)} open={modalOpen} size="large">
+                <Image alt="Scenes and the City" bordered fluid rounded src={quiz.img} />
             </ModalComponent>
         </div>
     )
 }
 
 ImageSection.propTypes = {
+    animation: PropTypes.string,
     date: PropTypes.string,
     goToLastWeek: PropTypes.func,
     goToToday: PropTypes.func,
+    imgVisible: PropTypes.bool,
     isInFuture: PropTypes.bool,
     isWeekend: PropTypes.bool,
     loading: PropTypes.bool,

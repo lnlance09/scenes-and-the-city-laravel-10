@@ -63,6 +63,12 @@ const formSlice = createSlice({
                 streets: action.payload.streets
             }
         },
+        setPartTwo: (state, action) => {
+            state.partTwo = action.payload.partTwo
+        },
+        setQuizzes: (state, action) => {
+            state.quizzes = action.payload.quizzes
+        },
         clearForm: (state) => {
             state.action = defaultAction
             state.char = defaultChar
@@ -71,6 +77,8 @@ const formSlice = createSlice({
             state.hint = ""
             state.img = defaultImg
             state.location = defaultLocation
+            state.partTwo = null
+            state.quizzes = []
             state.video = defaultVideo
             state.videos = []
         }
@@ -89,6 +97,8 @@ export const {
     setHint,
     setImg,
     setLocation,
+    setPartTwo,
+    setQuizzes,
     setVideo,
     setVideos
 } = formSlice.actions

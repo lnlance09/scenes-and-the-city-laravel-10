@@ -10,6 +10,7 @@ class CharacterPic extends Model
     use HasFactory;
 
     protected $table = 'character_pics';
+    public $timestamps = false;
 
     /**
      * The attributes that are mass assignable.

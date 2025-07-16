@@ -7,13 +7,9 @@ const appSlice = createSlice({
     reducers: {
         logout: (state) => {
             state.auth = false
-            state.bearer = null
             state.hardMode = false
-            state.user = null
+            state.user = { settings: {} }
             state.verify = false
-        },
-        setBearer: (state, action) => {
-            state.bearer = action.payload.bearer
         },
         setHardMode: (state, action) => {
             state.hardMode = action.payload.hardMode
@@ -48,7 +44,6 @@ const appSlice = createSlice({
 
 export const {
     logout,
-    setBearer,
     setDarkMode,
     setHardMode,
     setLanguage,

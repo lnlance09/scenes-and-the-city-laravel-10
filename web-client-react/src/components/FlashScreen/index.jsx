@@ -1,9 +1,9 @@
 import "./index.scss"
+import { useEffect, useRef } from "react"
 import classNames from "classnames"
 import satcBeat from "../../assets/satc-beat.m4a"
 import satcJingle from "../../assets/satc-jingle.m4a"
 import satcEnding from "../../assets/satc-ending.m4a"
-import { useEffect, useRef } from "react"
 import PropTypes from "prop-types"
 
 const FlashScreen = ({ open = false, text = "" }) => {

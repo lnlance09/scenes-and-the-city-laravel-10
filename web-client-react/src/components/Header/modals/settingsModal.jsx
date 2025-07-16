@@ -12,6 +12,7 @@ const SettingsModal = ({
     updateSettings = () => null
 }) => {
     const dispatch = useDispatch()
+    // eslint-disable-next-line no-unused-vars
     const isAuth = useSelector((state) => state.app.auth)
     const hardMode = useSelector((state) => state.app.hardMode)
     const reveal = useSelector((state) => state.app.reveal)
@@ -20,13 +21,13 @@ const SettingsModal = ({
     const language = useSelector((state) => state.app.language)
     const lang = translations[language]
 
-    console.log("units", units)
     return (
         <div className="settingsModalComponent">
             <ModalComponent
                 callback={() => callback(false)}
+                className={{ settingsModal: true }}
                 open={modalOpen}
-                title={lang.main.settings}
+                title={lang.header.settings}
             >
                 <Segment basic={!inverted} inverted={inverted}>
                     <List inverted={inverted} size="big">
@@ -37,6 +38,7 @@ const SettingsModal = ({
                                     onChange={(e, data) => {
                                         updateSettings({ hardMode: data.checked ? 1 : 0 })
                                         dispatch(setHardMode({ hardMode: data.checked }))
+                                        localStorage.setItem("hardMode", data.checked ? 1 : 0)
                                     }}
                                     toggle
                                 />
@@ -50,6 +52,7 @@ const SettingsModal = ({
                                     onChange={(e, data) => {
                                         updateSettings({ reveal: data.checked ? 1 : 0 })
                                         dispatch(setReveal({ reveal: data.checked }))
+                                        localStorage.setItem("reveal", data.checked ? 1 : 0)
                                     }}
                                     toggle
                                 />
@@ -58,12 +61,13 @@ const SettingsModal = ({
                         </List.Item>
                         <List.Item>
                             <List.Content floated="right">
-                                <Form inverted={inverted} size="small">
+                                <Form size="small">
                                     <Select
                                         placeholder="Select units"
                                         onChange={(e, { value }) => {
                                             updateSettings({ units: value })
                                             dispatch(setUnits({ units: value }))
+                                            localStorage.setItem("units", value)
                                         }}
                                         options={[
                                             { key: "miles", value: "miles", text: "miles" },

@@ -18,10 +18,11 @@ class Quiz extends Model
         'scene_id',
         'user_id',
         'quiz_id',
+        'is_official',
         'hint_one',
         'hint_two',
         'lat',
-        'lng'
+        'lng',
     ];
 
     /**
@@ -46,5 +47,10 @@ class Quiz extends Model
     public function user()
     {
         return $this->hasOne(User::class, 'id', 'user_id');
+    }
+
+    public function partTwo()
+    {
+        return $this->hasOne(QuizPartTwo::class, 'quiz_id_one', 'id');
     }
 }

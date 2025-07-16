@@ -1,6 +1,7 @@
 export const defaultQuiz = {
     id: null,
     img: null,
+    geoData: null,
     hintOne: null,
     hintTwo: null,
     video: {
@@ -17,29 +18,34 @@ export const defaultQuiz = {
     createdAt: null
 }
 
-export const defaultAnswer = {
+export const geoData = {
     lat: null,
     lng: null,
     hood: "Theater District",
     borough: "Manhattan",
-    streets: ["Broadway", "7th Ave", "W 46th St"],
-    hintsUsed: 0
+    streets: ["Broadway", "7th Ave", "W 46th St"]
+}
+
+export const defaultAnswer = {
+    correct: null,
+    geoData,
+    hasAnswered: false,
+    hintsUsed: 0,
+    marginOfError: null
+}
+
+export const defaultHistoryData = {
+    count: 4,
+    data: [{}, {}, {}, {}],
+    isLoading: true
 }
 
 export const initialHomeState = {
     quiz: defaultQuiz,
+    partTwo: null,
     answer: defaultAnswer,
-    hasAnswered: false,
     history: {
-        answers: {
-            count: 0,
-            data: [{}, {}, {}, {}],
-            isLoading: false
-        },
-        quizzes: {
-            count: 0,
-            data: [{}, {}, {}, {}],
-            isLoading: false
-        }
+        answers: defaultHistoryData,
+        quizzes: defaultHistoryData
     }
 }

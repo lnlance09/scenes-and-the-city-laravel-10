@@ -1,5 +1,5 @@
 import "./index.scss"
-import { Header, Segment } from "semantic-ui-react"
+import { Header, Icon, List, Segment } from "semantic-ui-react"
 import { useSelector } from "react-redux"
 import { capitalize } from "../../utils/general"
 import PropTypes from "prop-types"
@@ -14,19 +14,50 @@ const LocationInfo = ({ answer, size = "medium" }) => {
         <Segment className="locationInfoSegment" inverted={inverted}>
             {answer.hood !== null && (
                 <Header inverted={inverted} size={size}>
-                    <a href="#" onClick={(e) => e.preventDefault()}>
-                        {answer.streets[0]}
-                    </a>{" "}
-                    in between{" "}
-                    <a href="#" onClick={(e) => e.preventDefault()}>
-                        {answer.streets[1]}
-                    </a>{" "}
-                    and{" "}
-                    <a href="#" onClick={(e) => e.preventDefault()}>
-                        {answer.streets[2]}
-                    </a>
+                    <Header.Content>
+                        <a href="#" onClick={(e) => e.preventDefault()}>
+                            {answer.streets[0]}
+                        </a>{" "}
+                        {lang.main.inBetween}{" "}
+                        <a href="#" onClick={(e) => e.preventDefault()}>
+                            {answer.streets[1]}
+                        </a>{" "}
+                        {lang.main.and}{" "}
+                        <a href="#" onClick={(e) => e.preventDefault()}>
+                            {answer.streets[2]}
+                        </a>
+                    </Header.Content>
                     <Header.Subheader>
-                        {`${answer.hood}, ${capitalize(answer.borough)}`} -{" "}
+                        <i>{lang.main.estimatedLocation}</i>
+                    </Header.Subheader>
+                </Header>
+            )}
+            <List inverted={inverted}>
+                <List.Item>
+                    <List.Icon
+                        color={inverted ? "green" : "blue"}
+                        inverted={inverted}
+                        name="map marker"
+                    />
+                    <List.Content>
+                        {answer.lat}, {answer.lng}
+                    </List.Content>
+                </List.Item>
+                <List.Item>
+                    <List.Icon
+                        color={inverted ? "green" : "blue"}
+                        inverted={inverted}
+                        name="building"
+                    />
+                    <List.Content>{`${answer.hood}, ${capitalize(answer.borough)}`}</List.Content>
+                </List.Item>
+                <List.Item>
+                    <List.Icon
+                        color={inverted ? "green" : "blue"}
+                        inverted={inverted}
+                        name="google"
+                    />
+                    <List.Content>
                         <a
                             className="streetViewLink"
                             href="#"
@@ -40,23 +71,21 @@ const LocationInfo = ({ answer, size = "medium" }) => {
                         >
                             {lang.main.seeStreetView}
                         </a>
-                    </Header.Subheader>
-                </Header>
-            )}
+                    </List.Content>
+                </List.Item>
+            </List>
         </Segment>
     )
 }
 
 LocationInfo.propTypes = {
-    answer: PropTypes.objectOf(
-        PropTypes.shape({
-            lat: PropTypes.number,
-            lng: PropTypes.number,
-            hood: PropTypes.string,
-            borough: PropTypes.string,
-            streets: PropTypes.arrayOf(PropTypes.string)
-        })
-    ),
+    answer: PropTypes.shape({
+        lat: PropTypes.number,
+        lng: PropTypes.number,
+        hood: PropTypes.string,
+        borough: PropTypes.string,
+        streets: PropTypes.arrayOf(PropTypes.string)
+    }),
     size: PropTypes.string
 }
 

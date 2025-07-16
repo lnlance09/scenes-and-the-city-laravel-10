@@ -85,9 +85,11 @@
         }
     }
 
-    .ui.segment.noResults {
-        .header {
-            font-family: fonts.$franklin600 !important;
+    .ui.selection.dropdown {
+        font-family: fonts.$franklin600 !important;
+
+        .menu {
+            width: 100%;
         }
     }
 
@@ -116,59 +118,7 @@
         }
     }
 
-    .ui.table {
-        margin-top: 0.5em;
-
-        > tbody {
-            > tr {
-                > td {
-                    cursor: pointer;
-
-                    .header {
-                        font-family: fonts.$franklin600 !important;
-                    }
-                }
-
-                &.selected {
-                    td {
-                        cursor: default;
-                    }
-                }
-            }
-        }
-
-        &.inverted {
-            &.selected {
-                &:hover {
-                    background: rgb(51, 51, 51) !important;
-                }
-            }
-        }
-    }
-
-    .ui.segment.activeCharSegment {
-        &.inverted {
-            background: colors.$terminalGreen !important;
-        }
-
-        > .ui.header {
-            font-family: fonts.$franklin600 !important;
-        }
-    }
-
-    .ui.selection.dropdown {
-        font-family: fonts.$franklin600 !important;
-
-        .menu {
-            width: 100%;
-        }
-    }
-
-    .videoItemHeader {
-        margin: 0.5em 0;
-    }
-
-    .actionHeader, .charHeader, .videoHeader, .videoItemHeader, .locationHeader, .hintHeader {
+    .actionHeader, .locationHeader, .hintHeader, .twoPartHeader {
         font-family: fonts.$franklin600 !important;
 
         &.inverted {
@@ -207,17 +157,6 @@
             }
         }
     }
-
-    .ui.active.visible.fluid.search.selection.dropdown.inverted {
-        input::placeholder {
-            font-family: fonts.$franklin600 !important;
-        }
-    }
-
-	.ui.radio {
-		font-family: fonts.$imperial400;
-		margin-left: 0.75em;
-	}
 
     .answerGrid {
         .row:first-of-type {

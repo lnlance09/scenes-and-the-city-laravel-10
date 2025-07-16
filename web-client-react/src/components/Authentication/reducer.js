@@ -11,14 +11,14 @@ export const reducer = (state, action) => {
         case PASSWORD_RECOVERY_SENT:
             return {
                 ...state,
-                headerText: "",
+                headerKey: null,
                 forgot: false,
                 passwordReset: true
             }
         case SET_FORGOT:
             return {
                 ...state,
-                headerText: "Reset your password",
+                headerKey: "resetPassword",
                 forgot: true,
                 login: false,
                 register: false
@@ -26,7 +26,7 @@ export const reducer = (state, action) => {
         case SET_LOGIN:
             return {
                 ...state,
-                headerText: "Sign In",
+                headerKey: "signIn",
                 forgot: false,
                 login: true,
                 register: false,
@@ -35,7 +35,7 @@ export const reducer = (state, action) => {
         case SET_REGISTER:
             return {
                 ...state,
-                headerText: "Sign Up",
+                headerKey: "signUp",
                 forgot: false,
                 login: false,
                 register: true,
@@ -44,7 +44,7 @@ export const reducer = (state, action) => {
         case SET_VERIFY:
             return {
                 ...state,
-                headerText: "Verify your email",
+                headerKey: "verifyEmail",
                 forgot: false,
                 login: false,
                 register: false,
