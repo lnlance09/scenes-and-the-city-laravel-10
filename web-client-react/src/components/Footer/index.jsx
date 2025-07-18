@@ -17,29 +17,25 @@ const FooterComponent = () => {
 
     return (
         <div className="footerComponent">
-            <Segment className="footerSegment" inverted vertical>
-                <Container textAlign="center">
-                    <List horizontal inverted size="large">
-                        {items.map((item) => (
-                            <List.Item
-                                key={item}
-                                onClick={async () => {
-                                    setActiveItem(item)
-                                    setModalOpen(true)
-                                }}
-                            >
-                                {translations[language].footer[item]}
-                            </List.Item>
-                        ))}
-                    </List>
-                    <Header
-                        as="p"
-                        content="&copy; 2025 Scenes and the City"
-                        inverted={inverted}
-                        size="tiny"
-                    />
-                </Container>
-            </Segment>
+            <List horizontal inverted size="small">
+                {items.map((item) => (
+                    <List.Item
+                        key={item}
+                        onClick={async () => {
+                            setActiveItem(item)
+                            setModalOpen(true)
+                        }}
+                    >
+                        {translations[language].footer[item]}
+                    </List.Item>
+                ))}
+            </List>
+            <Header
+                as="p"
+                content="&copy; 2025 Scenes and the City"
+                inverted={inverted}
+                size="tiny"
+            />
 
             {activeItem && (
                 <ModalComponent
@@ -98,7 +94,16 @@ const FooterComponent = () => {
                             </Header>
                         </>
                     )}
-                    {activeItem === "privacy" && <></>}
+                    {activeItem === "privacy" && (
+                        <>
+                            <Header as="p" inverted={inverted} size="small">
+                                The only information that this app collects are your quizzes,
+                                guesses, and some very basic information about each user (username,
+                                email, and their settings like dark mode, hard mode, language,
+                                etc...) There is no advertising on this site.
+                            </Header>
+                        </>
+                    )}
                     {activeItem === "rules" && <></>}
                 </ModalComponent>
             )}

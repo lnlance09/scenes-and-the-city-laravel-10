@@ -30,7 +30,7 @@
             <link rel="author" href="{{ $authorUrl }}">
         @endif
 
-        <link rel="manifest" href="/manifest.json">
+        <!--<link rel="manifest" href="/manifest.json">-->
         <link rel="shortcut icon" href="/favicon.ico?v=3">
         <link rel="apple-touch-icon" sizes="128x128" href="/favicon.ico?v=3">
 
@@ -41,8 +41,7 @@
         @endif
 
         <!-- React build CSS -->
-        <link rel="stylesheet" type="text/css" href="/static/css/2.3daa458e.chunk.css">
-        <link rel="stylesheet" type="text/css" href="/static/css/main.df9b6f3a.chunk.css">
+        <link rel="stylesheet" type="text/css" href="/index-CWP8piXp.css">
 
         <title>{{ $title }}</title>
     </head>
@@ -62,7 +61,5 @@
     <script src="https://www.statcounter.com/counter/counter.js" async></script>
 
     <!-- React build JS -->
-    <script src="/static/js/2.af419d4a.chunk.js"></script>
-    <script src="/static/js/main.ec2c9dcb.chunk.js"></script>
-    <script src="/static/js/runtime-main.e1b51eb3.js"></script>
+    <script src="/assets/index-eynGKUtI.js"></script>
 </html>

@@ -2,30 +2,18 @@
 @use "../../scss/fonts.scss";
 
 .footerComponent {
-	.footerSegment {
-		background: colors.$offWhite !important;
+	.ui.list {
+		margin-bottom: 0.25em;
 
-		.ui.list {
-			margin-bottom: 0.25em;
-
-			> .item {
-				cursor: pointer;
-				font-family: fonts.$franklin600 !important;
-			}
+		> .item {
+			cursor: pointer;
+			font-family: fonts.$franklin600 !important;
 		}
+	}
 
-		p {
-			font-family: fonts.$franklin500 !important;
-			margin-top: 0.5em !important;
-		}
-
-		&.inverted {
-			background: colors.$blackBackgroundDark !important;
-
-			p {
-				color: #aaa !important;
-			}
-		}
+	p {
+		font-family: fonts.$franklin500 !important;
+		margin-top: 0.5em !important;
 	}
 }
 

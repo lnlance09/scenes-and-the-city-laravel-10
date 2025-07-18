@@ -214,7 +214,6 @@ const HomePage = () => {
                 />
             )}
 
-            <FooterComponent />
             <ModalComponent callback={() => toggleLoginModal(false)} open={loginModal} title={null}>
                 <AuthenticationForm
                     loginCallback={() => toggleLoginModal(false)}

@@ -40,46 +40,39 @@ class SetBuildFiles extends Command
         $bladePath = base_path() . '/resources/views/index.blade.php';
         $file = file_get_contents($bladePath);
 
-        $publicPath = base_path() . '/public/static/';
-        $cssFiles = array_slice(scandir($publicPath . 'css'), 2);
-        $jsFiles = array_slice(scandir($publicPath . 'js'), 2);
-        $mediaFiles = array_slice(scandir($publicPath . 'media'), 2);
+        $phpPath = base_path() . '/public/assets/';
+        $jsPath = base_path() . '/web-client-react/dist/assets/';
 
-        $basePath = base_path() . '/web-client-react/build/static/';
-        $newCssFiles = array_slice(scandir($basePath . 'css/'), 2);
-        $newJsFiles = array_slice(scandir($basePath . 'js/'), 2);
-        $newMediaFiles = array_slice(scandir($basePath . 'media/'), 2);
-
-        for ($i = 0; $i < count($newCssFiles); $i++) {
-            $content = file_get_contents($basePath . 'css/' . $newCssFiles[$i]);
-            file_put_contents($publicPath . 'css/' . $newCssFiles[$i], $content);
-            if ($i < count($cssFiles) ? $cssFiles[$i] !== $newCssFiles[$i] : false) {
-                exec('rm ' . $publicPath . 'css/' . $cssFiles[$i]);
+        $newJsFile = null;
+        $newCssFile = null;
+        $files = array_slice(scandir($jsPath), 2);
+        for ($i = 0; $i < count($files); $i++) {
+            if (substr($files[$i], -4) === '.css') {
+                $newCssFile = $files[$i];
             }
-            $file = str_replace($cssFiles[$i], $newCssFiles[$i], $file);
+            if (substr($files[$i], -3) === '.js') {
+                $newJsFile = $files[$i];
+            }
         }
 
-        for ($i = 0; $i < count($newJsFiles); $i++) {
-            $content = file_get_contents($basePath . 'js/' . $newJsFiles[$i]);
-            file_put_contents($publicPath . 'js/' . $newJsFiles[$i], $content);
-            if ($i < count($jsFiles) ? $jsFiles[$i] !== $newJsFiles[$i] : false) {
-                exec('rm ' . $publicPath . 'js/' . $jsFiles[$i]);
+        $oldJsFile = null;
+        $oldCssFile = null;
+        $files = array_slice(scandir($phpPath), 2);
+        for ($i = 0; $i < count($files); $i++) {
+            if (substr($files[$i], -4) === '.css') {
+                $oldCssFile = $files[$i];
             }
-            $file = str_replace($jsFiles[$i], $newJsFiles[$i], $file);
+            if (substr($files[$i], -3) === '.js') {
+                $oldJsFile = $files[$i];
+            }
         }
 
-        for ($i = 0; $i < count($newMediaFiles); $i++) {
-            $content = file_get_contents($basePath . 'media/' . $newMediaFiles[$i]);
-            file_put_contents($publicPath . 'media/' . $newMediaFiles[$i], $content);
-            if ($i < count($mediaFiles) ? $mediaFiles[$i] !== $newMediaFiles[$i] && !empty($mediaFiles[$i]) : false) {
-                exec('rm ' . $publicPath . 'media/' . $mediaFiles[$i]);
-            }
-            $file = str_replace($mediaFiles[$i], $newMediaFiles[$i], $file);
-        }
-
-        $content = file_get_contents(base_path() . '/web-client-react/build/asset-manifest.json');
-        file_put_contents(base_path() . '/public/asset-manifest.json', $content);
-
+        exec('rm -r ' . $phpPath . '/*');
+        exec('cp ' . $jsPath . '*  ' . $phpPath);
+        // echo "Old JS File: " . $oldJsFile . "\n";
+        // echo "New JS File: " . $newJsFile . "\n";
+        $file = str_replace($oldCssFile, $newCssFile, $file);
+        $file = str_replace($oldJsFile, $newJsFile, $file);
         file_put_contents($bladePath, $file);
     }
 }

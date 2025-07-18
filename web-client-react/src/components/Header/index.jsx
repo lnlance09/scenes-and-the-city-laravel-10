@@ -33,6 +33,7 @@ import axios from "axios"
 import avatarPic from "../../images/avatar/small/zoe.jpg"
 import avatarPicInverted from "../../images/avatar/small/nan.jpg"
 import HistoryModal from "./modals/historyModal"
+import FooterComponent from "../Footer"
 import StatsModal from "./modals/statsModal"
 import classNames from "classnames"
 import moment from "moment-timezone"
@@ -423,6 +424,9 @@ const HeaderComponent = ({
                         {lang.auth.signIn}
                     </Menu.Item>
                 )}
+                <div style={{ padding: 0, position: "relative", bottom: 0 }}>
+                    <FooterComponent />
+                </div>
             </Sidebar>
 
             <UploadModal modalOpen={uploadModalOpen} setModalOpen={setUploadModalOpen} />

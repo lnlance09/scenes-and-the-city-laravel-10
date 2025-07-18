@@ -1,11 +1,15 @@
 import { defineConfig } from "vite"
+import { nodePolyfills } from "vite-plugin-node-polyfills"
 import path from "path"
 import react from "@vitejs/plugin-react"
 import svgr from "vite-plugin-svgr"
 
 // https://vite.dev/config/
 export default defineConfig({
-    plugins: [svgr(), react()],
+    define: {
+        global: "globalThis" // Or _global: ({})
+    },
+    plugins: [svgr(), react(), nodePolyfills()],
     css: {
         preprocessorOptions: {
             less: {
@@ -23,7 +27,8 @@ export default defineConfig({
                 // eslint-disable-next-line
                 __dirname,
                 "./src/semantic-ui/theme.config"
-            )
+            ),
+            util: "node:util"
         }
     }
 })
