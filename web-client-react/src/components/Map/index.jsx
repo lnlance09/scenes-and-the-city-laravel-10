@@ -8,7 +8,6 @@ import { MapContainer } from "react-leaflet"
 import { mapTheme, invertedMapTheme } from "../../options/maps"
 import { toast } from "react-toastify"
 import { toastConfig } from "../../options/toast"
-import axios from "axios"
 import classNames from "classnames"
 import PropTypes from "prop-types"
 import empireStateIcon from "../../images/pizza-slice.svg"
@@ -37,11 +36,10 @@ const DraggableMarker = ({ callback = () => null, draggable = true, lat, lng }) 
     })
 
     const getLocationInfo = (lat, lng) => {
-        axios({
-            url: `${apiBaseUrl}location?lat=${lat}&lng=${lng}`
-        })
+        fetch(`${apiBaseUrl}location?lat=${lat}&lng=${lng}`)
+            .then((response) => response.json())
             .then((response) => {
-                const { data } = response.data
+                const { data } = response
                 callback({
                     lat,
                     lng,

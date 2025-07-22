@@ -1,0 +1,74 @@
+@use "sass:color";
+
+@use "./fonts.module.scss";
+@use "./colors.module.scss";
+
+.searchVideosComponent, .searchCharsComponent, .searchQuizzesComponent {
+    .ui.active.visible.fluid.search.selection.dropdown.inverted {
+        input::placeholder {
+            font-family: fonts.$franklin600 !important;
+            color: red;
+        }
+    }
+
+    .ui.segment.noResults {
+        .header {
+            font-family: fonts.$franklin600 !important;
+        }
+    }
+
+    .charHeader, .videoItemHeader, .activePartTwoHeader > .ui.header {
+        font-family: fonts.$franklin600 !important;
+
+        &.inverted {
+            a {
+                color: colors.$terminalGreen !important;
+            }
+        }
+    }
+
+    .videoItemHeader {
+        margin: 0.5em 0;
+    }
+
+    .ui.table {
+        margin-top: 0.5em;
+
+        > tbody {
+            > tr {
+                > td {
+                    cursor: pointer;
+
+                    .header {
+                        font-family: fonts.$franklin600 !important;
+                    }
+                }
+
+                &.selected {
+                    td {
+                        cursor: default;
+                    }
+                }
+            }
+        }
+
+        &.inverted {
+            &.selected {
+                &:hover {
+                    background: rgb(51, 51, 51) !important;
+                }
+            }
+        }
+    }
+
+    .ui.radio {
+		font-family: fonts.$franklin500;
+		margin-left: 0.75em;
+	}
+    
+    .ui.segment.activeCharSegment {
+        > .ui.header {
+            font-family: fonts.$franklin600 !important;
+        }
+    }
+}

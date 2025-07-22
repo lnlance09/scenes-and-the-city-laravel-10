@@ -4,7 +4,6 @@ import { setPartTwo, setQuizzes } from "../../../reducers/form"
 import { translateDate } from "../../../utils/date"
 import { useSelector, useDispatch } from "react-redux"
 import { DebounceInput } from "react-debounce-input"
-import axios from "axios"
 import classNames from "classnames"
 import NotFoundSvg from "../../../images/not-found.svg"
 import NotFoundSvgInverted from "../../../images/not-found-inverted.svg"
@@ -37,16 +36,17 @@ const QuizSearch = ({
 
     const getQuizzes = (q) => {
         setQuizzesVisible(false)
-        axios({
-            url: `${apiBaseUrl}users/quizzes?q=${q}`,
+        fetch(`${apiBaseUrl}users/quizzes?q=${q}`, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("bearer")}`
             }
-        }).then((response) => {
-            const { quizzes } = response.data.data
-            dispatch(setQuizzes({ quizzes }))
-            setQuizzesVisible(true)
         })
+            .then((response) => response.json())
+            .then((response) => {
+                const { quizzes } = response.data
+                dispatch(setQuizzes({ quizzes }))
+                setQuizzesVisible(true)
+            })
     }
 
     const displayQuizzes = (quizzes) => (

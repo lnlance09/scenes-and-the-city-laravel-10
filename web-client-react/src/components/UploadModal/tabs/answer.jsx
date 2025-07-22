@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom"
 import { useSelector, useDispatch } from "react-redux"
 import { toastConfig } from "../../../options/toast"
 import { toast } from "react-toastify"
-import axios from "axios"
 import classNames from "classnames"
 import LocationInfo from "../../Map/locationInfo"
 import MapComponent from "../../Map"
@@ -45,35 +44,43 @@ const AnswerTab = ({
         setFormLoading(true)
 
         const formData = new FormData()
-        formData.set("file", file)
-        formData.set("videoId", video.id)
-        formData.set("charId", char.id)
-        formData.set("lat", location.lat)
-        formData.set("lng", location.lng)
-        formData.set("hint", hint)
+        formData.append("file", file)
+        formData.append("videoId", video.id)
+        formData.append("charId", char.id)
+        formData.append("lat", location.lat)
+        formData.append("lng", location.lng)
+        formData.append("hint", hint)
 
         if (partTwo) {
             formData.set("partTwo", partTwo.id)
         }
 
         if (action.id !== 0) {
-            formData.set("actionId", action.id)
+            formData.append("actionId", action.id)
         }
 
         if (action.value !== null) {
-            formData.set("action", action.value)
+            formData.append("action", action.value)
         }
 
-        axios
-            .post(`${apiBaseUrl}quiz/submit`, formData, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("bearer")}`,
-                    "Content-Type": "multipart/form-data",
-                    enctype: "multipart/form-data"
+        fetch(`${apiBaseUrl}quiz/submit`, {
+            method: "POST",
+            body: formData,
+            mode: "cors",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("bearer")}`,
+                "Content-Type": "multipart/form-data",
+                enctype: "multipart/form-data"
+            }
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    console.error("response is not okay")
                 }
+                response.json()
             })
             .then((response) => {
-                const quizId = response.data.quiz
+                const quizId = response.quiz
                 dispatch(clearForm())
                 setFormLoading(false)
                 setQuizVal("")
@@ -82,7 +89,8 @@ const AnswerTab = ({
                 navigate(`/${quizId}`)
             })
             .catch((error) => {
-                toast.error(error.response.data.message, {
+                console.error("error2", error)
+                toast.error(error, {
                     ...toastConfig,
                     className: inverted ? "inverted" : null
                 })

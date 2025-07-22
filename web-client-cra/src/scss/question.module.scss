@@ -1,0 +1,49 @@
+@use "sass:color";
+
+@use "./fonts.module.scss";
+@use "./colors.module.scss";
+
+.questionSectionComponent {
+	// background: color.adjust(colors.$blue, $lightness: 14%, $space: hsl);
+	background: colors.$offWhite;
+	background-image: linear-gradient(colors.$white, #ededed);
+	min-height: 140px;
+	padding: 6em 0 9em 0;
+	width: 100%;
+
+	.cursorGreen {
+		color: colors.$black;
+	}
+
+	.ui.header.questionHeader {
+		color: colors.$black;
+		font-family: fonts.$cheltenham300 !important;
+	}
+
+	span.underline {
+		text-decoration: underline;
+		text-underline-offset: 0.25em;
+	}
+
+	&.inverted {
+		background: colors.$blackBackgroundDark;
+
+		.cursorGreen {
+			color: colors.$terminalGreen;
+		}
+
+		.ui.header.questionHeader {
+			color: colors.$terminalGreen;
+		}
+	}
+
+	@media only screen and (min-width: 320px) and (max-width: 767px) {
+		padding: 8em 0;
+	}
+
+	&.quiz404 {
+		&:not(.inverted) {
+			border-bottom: solid 1px #ddd;
+		}
+	}
+}

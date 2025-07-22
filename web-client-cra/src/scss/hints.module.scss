@@ -1,0 +1,101 @@
+@use "sass:color";
+
+@use "./fonts.module.scss";
+@use "./colors.module.scss";
+
+.hintsSectionComponent {
+    .hintsSegment {
+        padding: 0 !important;
+        z-index: 9;
+
+        h2.ui.header, h3.ui.header {
+            font-family: fonts.$cheltenham700 !important;
+            font-size: 2em;
+            margin-bottom: 0.25em;
+            margin-top: 0.25em;
+        }
+
+
+        h3.ui.header {
+            font-size: 1.5em;
+
+            &.inverted {
+                color: colors.$terminalGreen;
+            }
+        }
+
+        p {
+            font-family: fonts.$cheltenham400 !important;
+            font-size: 1.33em;
+        }
+
+        &.inverted {
+            .ui.inverted.button {
+                background: colors.$blackBackgroundDark;
+                color: colors.$white;
+
+                &:hover {
+                    background: colors.$green;
+                }
+            }
+        }
+
+        .ui.grid {
+            .column {
+                padding: 6em 4em 4em 4em !important;
+                box-shadow: none !important;
+
+                .charPic {
+                    position: absolute;
+                    top: -28%;
+                    left: 39%;
+
+                    @media only screen and (min-width: 320px) and (max-width: 767px) {
+                        top: -18%;
+                        left: 32%;
+                    }
+
+                    .ui.segment {
+                        border-radius: 50%;
+                        padding: 0.5em;
+                        height: 160px !important;
+                        width: 160px !important;
+
+                        img, .ui.placeholder {
+                            border-radius: 50% !important;
+                            height: 160px !important;
+                            width: 160px !important;
+                        }
+                    }
+                }
+
+                &:last-of-type {
+                    border-left: solid 0.1em #d8d8d8;
+
+                    @media only screen and (min-width: 320px) and (max-width: 767px) {
+                        margin-top: 5em !important;
+                    }
+                }
+            }
+
+            &.inverted .column {
+                &:last-of-type {
+                    border-left: colors.$invertedBorder;
+                }
+
+                .hintPlaceholder {
+                    color: colors.$terminalGreen !important;
+                    height: 100%;
+                }
+            }
+        }
+
+        &.inverted {
+            background: colors.$blackBackgroundNormal !important;
+
+            .dimmer {
+                border: colors.$invertedBorder;
+            }
+        }
+    }
+}

@@ -17,13 +17,11 @@ import { dateFormat, isSunday, isWeekend, nyc } from "../utils/date"
 import { timeout } from "../utils/general"
 import { toast, ToastContainer } from "react-toastify"
 import { toastConfig } from "../options/toast"
-import axios from "axios"
 import classNames from "classnames"
 import isAlphanumeric from "validator/lib/isAlphanumeric"
 import moment from "moment-timezone"
 import ModalComponent from "../components/Header/modals/modal"
 import AuthenticationForm from "../components/Authentication"
-import FooterComponent from "../components/Footer"
 import HeaderComponent from "../components/Header"
 import AnswerSection from "../components/Answer"
 import HintsSection from "../components/Hints"
@@ -95,14 +93,14 @@ const HomePage = () => {
         setLoading(true)
         dispatch(clearAnswer())
 
-        await axios({
-            url: `${apiBaseUrl}quiz${url}`,
+        await fetch(`${apiBaseUrl}quiz${url}`, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("bearer")}`
             }
         })
+            .then((response) => response.json())
             .then((response) => {
-                const { answer, partTwo, quiz } = response.data
+                const { answer, partTwo, quiz } = response
                 const createdAt = moment(quiz.createdAt, "YYYY-MM-DD HH:mm:ss")
                     .tz(nyc)
                     .format(dateFormat)
@@ -133,12 +131,12 @@ const HomePage = () => {
     }
 
     const getActions = () => {
-        axios({
-            url: `${apiBaseUrl}actions`
-        }).then((response) => {
-            const { actions } = response.data.data
-            dispatch(setActions({ actions }))
-        })
+        fetch(`${apiBaseUrl}actions`)
+            .then((response) => response.json())
+            .then((response) => {
+                const { actions } = response.data
+                dispatch(setActions({ actions }))
+            })
     }
 
     const homePageClass = classNames({

@@ -6,7 +6,6 @@ import { useSelector, useDispatch } from "react-redux"
 import { DebounceInput } from "react-debounce-input"
 import { filterTypes } from "../../../options/filters"
 import { isValidDate } from "../../../utils/date"
-import axios from "axios"
 import classNames from "classnames"
 import moment from "moment-timezone"
 import NotFoundSvg from "../../../images/not-found.svg"
@@ -43,18 +42,18 @@ const VideoSearch = ({
 
     const getVideos = (q, type = 5) => {
         setVideosVisible(false)
-        axios({
-            url: `${apiBaseUrl}videos?q=${q}&type=${type}`
-        }).then((response) => {
-            const { videos } = response.data.data
-            if (initialState === "form") {
-                dispatch(setVideos({ videos }))
-            }
-            if (initialState === "admin") {
-                dispatch(setAdminVideos({ videos }))
-            }
-            setVideosVisible(true)
-        })
+        fetch(`${apiBaseUrl}videos?q=${q}&type=${type}`)
+            .then((response) => response.json())
+            .then((response) => {
+                const { videos } = response.data
+                if (initialState === "form") {
+                    dispatch(setVideos({ videos }))
+                }
+                if (initialState === "admin") {
+                    dispatch(setAdminVideos({ videos }))
+                }
+                setVideosVisible(true)
+            })
     }
 
     const displayVideos = (videos) => (

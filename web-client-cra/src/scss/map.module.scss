@@ -1,0 +1,68 @@
+@use "sass:color";
+
+@use "./fonts.module.scss";
+@use "./colors.module.scss";
+
+.ui.segment.locationInfoSegment {
+	&.inverted {
+		border: colors.$invertedBorder !important;
+	}
+
+	.header {
+		font-family: fonts.$franklin700 !important;
+		margin-top: 0;
+
+		a {
+			color: colors.$blue !important;
+			cursor: default;
+		}
+
+		a.streetViewLink {
+			cursor: pointer;
+		}
+
+		&.inverted {
+			a {
+				color: colors.$terminalGreen !important;
+			}
+		}
+	}
+
+	.ui.list {
+		font-family: fonts.$franklin600 !important;
+
+		a {
+			color: colors.$blue !important;
+			text-decoration: underline;
+			text-underline-offset: 0.25em;
+
+			&:hover {
+				color: colors.$blue !important;
+			}
+		}
+	}
+
+	&.inverted {
+		.header a {
+			color: colors.$terminalGreen !important;
+		}
+
+		.ui.list a {
+			color: colors.$white !important;
+
+			&:hover {
+				color: colors.$terminalGreen !important;
+			}
+		}
+	}
+}
+
+@keyframes fade { 
+	from { opacity: 0.5; } 
+}
+
+.blinking {
+	animation: fade 0.5s infinite alternate;
+	height: 40px;
+	width: 40px;
+}

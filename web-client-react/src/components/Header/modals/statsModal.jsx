@@ -1,9 +1,8 @@
 import "../index.scss"
 import { Grid, Header, Segment } from "semantic-ui-react"
-import { formatMargin, formatPlural } from "../../../utils/general"
+import { formatMargin } from "../../../utils/general"
 import { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
-import axios from "axios"
 import ModalComponent from "./modal"
 import PropTypes from "prop-types"
 import * as translations from "../../../assets/translate.json"
@@ -24,18 +23,19 @@ const StatsModal = ({ callback = () => null, modalOpen = false }) => {
     const [marginOfError, setMarginOfError] = useState(0)
 
     const getStats = () => {
-        axios({
-            url: `${apiBaseUrl}users/stats`,
+        fetch(`${apiBaseUrl}users/stats`, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("bearer")}`
             }
-        }).then((response) => {
-            setTotalAnswers(response.data.totalAnswers)
-            setCorrectAnswers(response.data.correctAnswers)
-            setAccuracy(response.data.accuracy)
-            setCurrentStreak(response.data.currentStreak)
-            setMarginOfError(response.data.margin)
         })
+            .then((response) => response.json())
+            .then((response) => {
+                setTotalAnswers(response.totalAnswers)
+                setCorrectAnswers(response.correctAnswers)
+                setAccuracy(response.accuracy)
+                setCurrentStreak(response.currentStreak)
+                setMarginOfError(response.margin)
+            })
     }
 
     useEffect(() => {

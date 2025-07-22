@@ -11,7 +11,6 @@ import {
     resetHistoryAnswers,
     resetHistoryQuizzes
 } from "../../../reducers/home"
-import axios from "axios"
 import ModalComponent from "./modal"
 import NotFoundSvg from "../../../images/not-found.svg"
 import NotFoundSvgInverted from "../../../images/not-found-inverted.svg"
@@ -53,29 +52,31 @@ const HistoryModal = ({ activeItem = "answers", callback = () => null, modalOpen
             dispatch(resetHistoryAnswers())
         }
         await timeout(500)
-        axios({
-            url: `${apiBaseUrl}users/history?type=${type}`,
+        fetch(`${apiBaseUrl}users/history?type=${type}`, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("bearer")}`
             }
-        }).then((response) => {
-            if (type === "quizzes") {
-                const { quizzes } = response.data.data
-                dispatch(
-                    setHistoryQuizzes({
-                        quizzes: { count: quizzes.length, data: quizzes, isLoading: false }
-                    })
-                )
-            }
-            if (type === "answers") {
-                const { answers } = response.data.data
-                dispatch(
-                    setHistoryAnswers({
-                        answers: { count: answers.length, data: answers, isLoading: false }
-                    })
-                )
-            }
         })
+            .then((response) => response.json())
+            .then((response) => {
+                if (type === "quizzes") {
+                    const { quizzes } = response.data
+                    dispatch(
+                        setHistoryQuizzes({
+                            quizzes: { count: quizzes.length, data: quizzes, isLoading: false }
+                        })
+                    )
+                }
+                if (type === "answers") {
+                    const { answers } = response.data
+                    dispatch(
+                        setHistoryAnswers({
+                            answers: { count: answers.length, data: answers, isLoading: false }
+                        })
+                    )
+                }
+            })
+            .catch((error) => {})
     }
 
     const emptyMsg = (msg) => (

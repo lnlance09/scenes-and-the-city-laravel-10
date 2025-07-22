@@ -8,7 +8,6 @@ import { formatMargin, formatPlural, timeout, typeWriterEffect } from "../../uti
 import { toast } from "react-toastify"
 import { toastConfig } from "../../options/toast"
 import { dateFormat, nyc } from "../../utils/date"
-import axios from "axios"
 import giphy from "../../images/regis-philbin.gif"
 import FlashScreen from "../FlashScreen"
 import LocationInfo from "../Map/locationInfo"
@@ -66,16 +65,13 @@ const AnswerSection = ({
     const hoursLeft = `${hours}`.padStart(1, "0")
 
     const submitAnswer = () => {
-        axios
-            .post(
-                `${apiBaseUrl}quiz/answer/${quiz.id}`,
-                { lat: answer.geoData.lat, lng: geoData.lng },
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("bearer")}`
-                    }
-                }
-            )
+        fetch(`${apiBaseUrl}quiz/answer/${quiz.id}`, {
+            method: "POST",
+            body: JSON.stringify({ lat: answer.geoData.lat, lng: geoData.lng }),
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("bearer")}`
+            }
+        })
             .then(async () => {
                 setFlashOpen(true)
                 await timeout(9000)

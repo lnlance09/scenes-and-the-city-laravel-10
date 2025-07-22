@@ -1,0 +1,25 @@
+@use "sass:color";
+
+$white: #fff;
+$offWhite: #f4f4f4;
+
+$black: #000;
+$standardBlack: #1b1c1d;
+
+$blue: #1c1c84;
+$yellow: #ffa903;
+$paleYellow: #fff8db;
+$green: #34aa7d;
+$terminalGreen: #21de97;
+
+$whiteBackgroundNormal: $white;
+$whiteBackgroundDark: $offWhite;
+
+$blackBackgroundDark: $black;
+$blackBackgroundNormal: color.adjust($blackBackgroundDark, $lightness: 5%, $space: hsl);
+
+$invertedBorderColor: #333;
+$invertedBorder: solid 1px $invertedBorderColor;
+
+$red: #db2828;
+$lightRed: #ff695e;

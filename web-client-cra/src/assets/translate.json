@@ -1,0 +1,392 @@
+{
+    "en": {
+        "auth": {
+            "email": "Email",
+            "emailOrUsername": "Email or Username",
+            "password": "Password",
+            "signIn": "Sign In",
+            "newToThis": "New to this game?",
+            "signUp": "Sign Up",
+            "signOut": "Sign Out",
+            "forgotPassword": "Forgot password?",
+            "resetPassword": "Reset your password",
+            "username": "Username",
+            "regsiterBtn": "Create an account",
+            "alreadyAccount": "Already have an account?",
+            "enterYourEmail": "Enter your email",
+            "sendInstructions": "Send Instructions",
+            "backToLogin": "Back to login",
+            "emailSentToYou": "An email has been sent to you",
+            "verificationCode": "Verification code",
+            "verify": "Verify",
+            "verifyEmail": "Verify your email"
+        },
+        "answer": {
+            "hintOne": "Hint One",
+            "hintTwo": "Hint Two",
+            "or": "Or",
+            "placeholder": "Enter the name of the street",
+            "reveal": "Reveal",
+            "submit": "Submit",
+            "title": "Know the answer?",
+            "myGuess": "My Guess",
+            "actualAnswer": "Actual Answer",
+            "points": "points",
+            "correct": "correct",
+            "incorrect": "wrong",
+            "successMsg": "Your answer has been submitted"
+        },
+        "allDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Weekend"],
+        "stepOne": {
+            "name": "Picture",
+            "description": "From a movie, TV show, or music video",
+            "addPicture": "Add Picture",
+            "header": "A picture is worth a thousand words...",
+            "selectAnother": "select another photo",
+            "placeholderInfo": "Marilyn Monroe at Lexington Avenue and 52nd Street circa 1955",
+            "placeholderCredit": "Credit",
+            "submitBtn": "Next"
+        },
+        "stepTwo": {
+            "name": "Info",
+            "description": "What is this from? Who is in it?",
+            "headerOne": "Where is this from?",
+            "formOnePlaceholder": "Search movies, TV shows, and music videos",
+            "headerTwo": "Who is in this pic?",
+            "seeFullCast": "see full cast",
+            "headerThree": "What is {name} doing?",
+            "formThreePlaceholder": "eg: walking his dog, eating pizza, etc...",
+            "noResults": "no results",
+            "filters": ["movie", "tv show", "music video", "all"],
+            "submitBtn": "Next"
+        },
+        "stepThree": {
+            "name": "Answer",
+            "description": "Provide a hint to help solve",
+            "buttonText": "Submit",
+            "locationHeader": "Where is this located?",
+            "locationSubHeader": "Anywhere in NYC",
+            "hintHeader": "Provide a hint",
+            "hintPlaceholder": "Say something creative",
+            "submitBtn": "Submit",
+            "successMsg": "Your quiz has been created"
+        },
+        "time": {
+            "hour": "hour",
+            "minute": "minute",
+            "second": "second"
+        },
+        "footer": {
+            "about": "About",
+            "privacy": "Privacy",
+            "rules": "Rules"
+        },
+        "header": {
+            "history": "History",
+            "leaderboard": "LeaderBoard",
+            "makeAQuiz": "Make a Quiz",
+            "settings": "Settings",
+            "stats": "Stats",
+            "language": "Language"
+        },
+        "history": {
+            "answers": "Answers",
+            "quizzes": "Quizzes",
+            "emptyAnswersMsg": "You haven't answered anything yet...",
+            "emptyQuizzesMsg": "You haven't created any quizzes yet...",
+            "sceneFrom": "Scene from"
+        },
+        "settings": {
+            "darkMode": "Dark Mode",
+            "hardMode": "Hard Mode",
+            "revealAnswers": "Reveal answers",
+            "units": "Measure distance in"
+        },
+        "stats": {
+            "totalAnswers": "Total Answers",
+            "correctAnswers": "Correct Answers",
+            "accuracy": "Accuracy",
+            "currentStreak": "Current Streak",
+            "marginOfError": "Margin of Error"
+        },
+        "main": {
+            "seeLastWeek": "see last week",
+            "seeToday": "see today",
+            "weekendOf": "Weekend of",
+            "errorMessage": "There was en error fetching this quiz.",
+            "seeStreetView": "see street view",
+            "toastErrorMessage": "Error fetching quiz",
+            "and": "and",
+            "by": "by",
+            "inBetween": "in between",
+            "expiredMsg": "This quiz has expired",
+            "finalAnswerHeader": "You won't lose anything for guessing incorrectly",
+            "finalAnswerDeny": "Let me think some more",
+            "finalAnswerConfirm": "Yep, that's correct",
+            "estimatedLocation": "Estimated Location",
+            "away": "away"
+        },
+        "months": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    },
+    "es": {
+        "auth": {
+            "email": "Email",
+            "emailOrUsername": "Email o nombre de usuario",
+            "password": "Contraseña",
+            "signIn": "Iniciar sesión",
+            "newToThis": "¿Eres nuevo en este juego?",
+            "signUp": "Inscribirse",
+            "signOut": "Desconectar",
+            "forgotPassword": "¿Has olvidado tu contraseña?",
+            "resetPassword": "Restablece tu contraseña",
+            "username": "Nombre de usuario",
+            "regsiterBtn": "Crea una cuenta",
+            "alreadyAccount": "¿Ya tienes una cuenta?",
+            "enterYourEmail": "Introduce tu correo electrónico",
+            "sendInstructions": "Enviar instrucciones",
+            "backToLogin": "Volver a iniciar sesión",
+            "emailSentToYou": "Se le ha enviado un correo electrónico",
+            "verificationCode": "Código de verificación",
+            "verify": "Verificar",
+            "verifyEmail": "Verifica tu email"
+        },
+        "answer": {
+            "hintOne": "Pista Número Uno",
+            "hintTwo": "Pista Número Dos",
+            "or": "o",
+            "placeholder": "Introduzca el nombre de la calle",
+            "reveal": "Revelar",
+            "submit": "Entregar",
+            "title": "¿Sabes la respuesta?",
+            "myGuess": "Mi Suposición",
+            "actualAnswer": "Respuesta Real",
+            "points": "agujas",
+            "correct": "correcto",
+            "incorrect": "equivocado",
+            "successMsg": "Tu respuesta ha sido enviada"
+        },
+        "allDays": ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
+        "days": ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Fin de Semana"],
+        "stepOne": {
+            "name": "Imagen",
+            "description": "De una película, un programa de televisión o un vídeo musical",
+            "addPicture": "Agregar imagen",
+            "header": "Una imagen vale más que mil palabras...",
+            "selectAnother": "seleccione otra foto",
+            "placeholderInfo": "Marilyn Monroe en Lexington Avenue y 52nd Street alrededor de 1955",
+            "placeholderCredit": "Crédito",
+            "submitBtn": "Próximo"
+        },
+        "stepTwo": {
+            "name": "Información",
+            "description": "¿De dónde es esto? ¿Quién está ahí?",
+            "headerOne": "¿De donde es esto?",
+            "formOnePlaceholder": "Buscar películas, programas de TV y videos musicales",
+            "headerTwo": "¿Quién está en esta foto?",
+            "seeFullCast": "ver reparto completo",
+            "headerThree": "¿Qué está haciendo {name}?",
+            "formThreePlaceholder": "por ejemplo: pasear a su perro, comer pizza, etc...",
+            "noResults": "sin resultados",
+            "filters": ["película", "programa de televisión", "vídeo musical", "todo"],
+            "submitBtn": "Próximo"
+        },
+        "stepThree": {
+            "name": "Respuesta",
+            "description": "Proporciona una pista para ayudar a resolver",
+            "buttonText": "Entregar",
+            "locationHeader": "¿Donde está ubicado esto?",
+            "locationSubHeader": "En cualquier lugar de Nueva York",
+            "hintHeader": "Proporcionar una pista",
+            "hintPlaceholder": "Di algo creativo",
+            "submitBtn": "Entregar",
+            "successMsg": "Tu pregunta ha sido creada"
+        },
+        "time": {
+            "hour": "hora",
+            "minute": "minuto",
+            "second": "segundo"
+        },
+        "footer": {
+            "about": "Acerca de",
+            "privacy": "Privacidad",
+            "rules": "Normas"
+        },
+        "header": {
+            "history": "Historia",
+            "leaderboard": "Tabla De Lideres",
+            "makeAQuiz": "Hacer una Prueba",
+            "settings": "Ajustes",
+            "stats": "Estadísticas",
+            "language": "Idioma"
+        },
+        "history": {
+            "answers": "Respuestas",
+            "quizzes": "Preguntas",
+            "emptyAnswersMsg": "Aún no has respondido nada...",
+            "emptyQuizzesMsg": "Aún no has creado ningún cuestionario...",
+            "sceneFrom": "Escena de"
+        },
+        "settings": {
+            "darkMode": "Modo Oscuro",
+            "hardMode": "Modo Difícil",
+            "revealAnswers": "Revelar respuestas",
+            "units": "Medir la distancia en"
+        },
+        "stats": {
+            "totalAnswers": "Respuestas Totales",
+            "correctAnswers": "Respuestas Correctas",
+            "accuracy": "Exactitud",
+            "currentStreak": "Racha Actual",
+            "marginOfError": "Margen de Error"
+        },
+        "main": {
+            "seeLastWeek": "ver la semana pasada",
+            "seeToday": "ver hoy",
+            "weekendOf": "Fin de semana de",
+            "errorMessage": "Hubo un error al obtener este cuestionario.",
+            "seeStreetView": "ver vista de la calle",
+            "toastErrorMessage": "Error al obtener el cuestionario",
+            "and": "y",
+            "by": "por",
+            "inBetween": "entre",
+            "expiredMsg": "Este cuestionario ha expirado",
+            "finalAnswerHeader": "No perderás nada por adivinar incorrectamente",
+            "finalAnswerDeny": "Déjame pensar un poco más",
+            "finalAnswerConfirm": "Sí, eso es correcto",
+            "estimatedLocation": "Ubicación Estimada",
+            "away": "A {distance} de distancia"
+        },
+        "months": ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+    },
+    "cn": {
+        "auth": {
+            "email": "电子邮件",
+            "emailOrUsername": "电子邮件或用户名",
+            "password": "密码",
+            "signIn": "登入",
+            "newToThis": "第一次玩这个游戏吗?",
+            "signUp": "报名",
+            "signOut": "登出",
+            "forgotPassword": "忘记密码?",
+            "resetPassword": "重置您的密码",
+            "username": "用户名",
+            "regsiterBtn": "创建一个帐户",
+            "alreadyAccount": "已有账户?",
+            "enterYourEmail": "输入您的电子邮件",
+            "sendInstructions": "发送指令",
+            "backToLogin": "返回登录",
+            "emailSentToYou": "已向您发送电子邮件",
+            "verificationCode": "验证码",
+            "verify": "核实",
+            "verifyEmail": "验证您的电子邮件"
+        },
+        "answer": {
+            "hintOne": "提示一",
+            "hintTwo": "提示二",
+            "or": "或者",
+            "placeholder": "输入街道名称",
+            "reveal": "揭示",
+            "submit": "提交",
+            "title": "知道答案吗",
+            "myGuess": "我的猜测",
+            "actualAnswer": "实际答案",
+            "points": "点",
+            "correct": "正确的",
+            "incorrect": "不正确",
+            "successMsg": "您的答案已提交"
+        },
+        "allDays": ["周一", "周二", "周三", "周四", "星期五", "周六", "星期日"],
+        "days": ["周一", "周二", "周三", "周四", "星期五", "周末"],
+        "stepOne": {
+            "name": "图片",
+            "description": "来自电影、电视节目或音乐视频",
+            "addPicture": "添加图片",
+            "header": "一张图片胜过千言万语…",
+            "selectAnother": "选择另一张照片",
+            "placeholderInfo": "玛丽莲·梦露于 1955 年在莱克星顿大道和第 52 街",
+            "placeholderCredit": "信用",
+            "submitBtn": "下一个"
+        },
+        "stepTwo": {
+            "name": "信息",
+            "description": "这是什么？里面都有谁?",
+            "headerOne": "这是从哪里来的?",
+            "formOnePlaceholder": "搜索电影、电视节目和音乐视频",
+            "headerTwo": "这张照片上的人是谁?",
+            "seeFullCast": "查看完整演员表",
+            "headerThree": "{name}在做什么？",
+            "formThreePlaceholder": "例如：遛狗、吃披萨等…",
+            "noResults": "没有结果",
+            "filters": ["电影", "电视节目", "音乐录影带", "全部"],
+            "submitBtn": "下一个"
+        },
+        "stepThree": {
+            "name": "回答",
+            "description": "提供提示以帮助解决",
+            "buttonText": "提交",
+            "locationHeader": "它位于哪里?",
+            "locationSubHeader": "纽约市的任何地方",
+            "hintHeader": "提供提示",
+            "hintPlaceholder": "说点有创意的话",
+            "submitBtn": "提交",
+            "successMsg": "您的问题已创建"
+        },
+        "time": {
+            "hour": "小时",
+            "minute": "分钟",
+            "second": "第二"
+        },
+        "footer": {
+            "about": "关于",
+            "privacy": "隐私",
+            "rules": "规则"
+        },
+        "header": {
+            "history": "历史",
+            "leaderboard": "排行榜",
+            "makeAQuiz": "做一个测验",
+            "settings": "设置",
+            "stats": "统计数据",
+            "language": "语言"
+        },
+        "history": {
+            "answers": "答案",
+            "quizzes": "问题",
+            "emptyAnswersMsg": "您尚未回答任何问题",
+            "emptyQuizzesMsg": "您尚未创建任何测验",
+            "sceneFrom": "这是来自的一个场景"
+        },
+        "settings": {
+            "darkMode": "深色模式",
+            "hardMode": "困难模式",
+            "revealAnswers": "揭晓答案",
+            "units": "测量距离"
+        },
+        "stats": {
+            "totalAnswers": "总答案",
+            "correctAnswers": "正确答案",
+            "accuracy": "准确性",
+            "currentStreak": "当前连胜",
+            "marginOfError": "误差幅度"
+        },
+        "main": {
+            "seeLastWeek": "见上周",
+            "seeToday": "今天见",
+            "weekendOf": "周末",
+            "errorMessage": "获取此测验时出错",
+            "toastErrorMessage": "获取测验时出错",
+            "seeStreetView": "查看街景",
+            "and": "和",
+            "by": "通过",
+            "inBetween": "之间",
+            "expiredMsg": "此测验已过期",
+            "finalAnswerHeader": "猜错不会有任何损失",
+            "finalAnswerDeny": "让我再想想",
+            "finalAnswerConfirm": "是的，没错",
+            "estimatedLocation": "预计位置",
+            "away": "离开"
+        },
+        "months": ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"]
+    }
+}

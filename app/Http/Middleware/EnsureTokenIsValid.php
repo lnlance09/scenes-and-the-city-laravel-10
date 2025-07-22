@@ -16,7 +16,6 @@ class EnsureTokenIsValid
      */
     public function handle(Request $request, Closure $next)
     {
-        // dd($request);
         if ($request->input('token') !== 'my-secret-token') {
             return redirect('home');
         }

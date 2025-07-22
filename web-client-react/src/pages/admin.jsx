@@ -5,7 +5,6 @@ import { useSelector, useDispatch } from "react-redux"
 import { toast, ToastContainer } from "react-toastify"
 import { toastConfig } from "../options/toast"
 import { useDropzone } from "react-dropzone"
-import axios from "axios"
 import classNames from "classnames"
 import AuthenticationForm from "../components/Authentication"
 import ModalComponent from "../components/Header/modals/modal"
@@ -88,16 +87,18 @@ const AdminPage = () => {
         formData.set("file", file)
         formData.set("charId", char.id)
 
-        await axios
-            .post(`${apiBaseUrl}chars/pic`, formData, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("bearer")}`,
-                    "Content-Type": "multipart/form-data",
-                    enctype: "multipart/form-data"
-                }
-            })
+        await fetch(`${apiBaseUrl}chars/pic`, {
+            method: "POST",
+            body: formData,
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("bearer")}`,
+                "Content-Type": "multipart/form-data",
+                enctype: "multipart/form-data"
+            }
+        })
+            .then((response) => response.json())
             .then((response) => {
-                setS3Url(response.data.s3Url)
+                setS3Url(response.s3Url)
                 toast.success("Picture has been created!", toastConfig)
             })
             .catch(() => {

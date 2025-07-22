@@ -1,0 +1,9 @@
+/*******************************
+     User Global Variables
+*******************************/
+
+@importGoogleFonts: false;
+@green: #21de97;
+@lightGreen: #21de97;
+@blue: #0310bb;
+@yellow: #FFA903;

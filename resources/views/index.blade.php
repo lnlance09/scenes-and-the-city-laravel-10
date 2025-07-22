@@ -41,7 +41,7 @@
         @endif
 
         <!-- React build CSS -->
-        <link rel="stylesheet" type="text/css" href="/index-CWP8piXp.css">
+        <link rel="stylesheet" type="text/css" href="/assets/index-CWP8piXp.css">
 
         <title>{{ $title }}</title>
     </head>
@@ -61,5 +61,5 @@
     <script src="https://www.statcounter.com/counter/counter.js" async></script>
 
     <!-- React build JS -->
-    <script src="/assets/index-eynGKUtI.js"></script>
+    <script src="/assets/index-BU8RDwI3.js"></script>
 </html>

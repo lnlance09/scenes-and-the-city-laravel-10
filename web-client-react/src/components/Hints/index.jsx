@@ -7,7 +7,6 @@ import { toast } from "react-toastify"
 import { toastConfig } from "../../options/toast"
 import { typeWriterEffect } from "../../utils/general"
 import { setHintOne, setHintTwo, setHintsUsed } from "../../reducers/home"
-import axios from "axios"
 import PropTypes from "prop-types"
 import NotFoundSvg from "../../images/not-found.svg"
 import NotFoundSvgInverted from "../../images/not-found-inverted.svg"
@@ -45,26 +44,22 @@ const HintsSection = ({ callback = () => null, loading = true }) => {
     }, [hintsUsed, loading])
 
     const getHint = (quizId, number) => {
-        axios
-            .post(
-                `${apiBaseUrl}quiz/hint/${quizId}`,
-                {
-                    number
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("bearer")}`
-                    }
-                }
-            )
+        fetch(`${apiBaseUrl}quiz/hint/${quizId}`, {
+            method: "POST",
+            body: JSON.stringify({ number }),
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("bearer")}`
+            }
+        })
+            .then((response) => response.json())
             .then((response) => {
                 const toastMsg = `${hintsUsed === 0 ? "First" : "Second"} hint has been used!`
                 dispatch(setHintsUsed({ amount: hintsUsed + 1 }))
                 if (number === 1) {
-                    dispatch(setHintOne({ hint: response.data.hint }))
+                    dispatch(setHintOne({ hint: response.hint }))
                 }
                 if (number === 2) {
-                    dispatch(setHintTwo({ hint: response.data.hint }))
+                    dispatch(setHintTwo({ hint: response.hint }))
                 }
             })
             .catch((error) => {

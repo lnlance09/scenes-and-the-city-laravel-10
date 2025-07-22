@@ -1,0 +1,7 @@
+/*******************************
+    User Variable Overrides
+*******************************/
+
+@secondaryPointingBorderWidth: 1px;
+@secondaryPointingItemHorizontalPadding: 0.5em;
+@dropdownItemBackground: inherit;

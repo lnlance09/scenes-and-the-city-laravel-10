@@ -5,7 +5,6 @@ import { setChar as setAdminChar, setChars as setAdminChars } from "../../../red
 import { setChar, setChars } from "../../../reducers/form"
 import { formatName } from "../../../utils/general"
 import { useSelector, useDispatch } from "react-redux"
-import axios from "axios"
 import PropTypes from "prop-types"
 import * as translations from "../../../assets/translate.json"
 
@@ -37,17 +36,17 @@ const CharacterSearch = ({
     const visible = charsVisible && chars.length > 0
 
     const getCharacters = (videoId) => {
-        axios({
-            url: `${apiBaseUrl}chars/${videoId}`
-        }).then((response) => {
-            const { chars } = response.data.data
-            if (initialState === "form") {
-                dispatch(setChars({ chars }))
-            }
-            if (initialState === "admin") {
-                dispatch(setAdminChars({ chars }))
-            }
-        })
+        fetch(`${apiBaseUrl}chars/${videoId}`)
+            .then((response) => response.json())
+            .then((response) => {
+                const { chars } = response.data
+                if (initialState === "form") {
+                    dispatch(setChars({ chars }))
+                }
+                if (initialState === "admin") {
+                    dispatch(setAdminChars({ chars }))
+                }
+            })
     }
 
     const displayChars = (chars) => (

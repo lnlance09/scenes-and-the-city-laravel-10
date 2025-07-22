@@ -1,0 +1,6 @@
+/*******************************
+    User Variable Overrides
+*******************************/
+
+@menuBorderColor: transparent;
+@menuBorderWidth: 0;
