@@ -4,6 +4,7 @@ import {
     Flag,
     Form,
     Header,
+    Image,
     List,
     Menu,
     Radio,
@@ -13,29 +14,35 @@ import {
 import { useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { ClassNames, Language, ReduxState, UnitsUpdate } from "@interfaces/index"
-import { capitalize } from "@/utils/general"
+import { resetSessionData } from "@utils/auth"
+import { capitalize } from "@utils/general"
 import { logout, setDarkMode, setHardMode, setLanguage, setReveal, setUnits } from "@reducers/app"
-import { setHasAnswered } from "@reducers/home"
+import { resetHistoryAnswers, resetHistoryQuizzes, setHasAnswered } from "@reducers/home"
 import { toast } from "react-toastify"
 import { toastConfig } from "@options/toast"
+import avatarPic from "@images/avatar/small/zoe.jpg"
+import avatarPicInverted from "@images/avatar/small/nan.jpg"
 import axios from "axios"
 import classNames from "classnames"
 import ModalComponent from "@components/primary/Modal"
 import translations from "@assets/translate.json"
+import { TranslationBlock } from "@/interfaces/translations"
 
 type FooterItem = "about" | "rules" | "privacy"
 
 type Props = {
+    loginModalOpen: boolean
     sidebarVisible: boolean
     setHistoryItem: (item: string) => any
     setSidebarVisible: (visible: boolean) => any
     setUploadModalOpen: (open: boolean) => any
     setHistoryVisible: (visible: boolean) => any
     setStatsVisible: (visible: boolean) => any
-    toggleLoginModal: () => any
+    toggleLoginModal: (visible: boolean) => any
 }
 
 const SidebarComponent = ({
+    loginModalOpen,
     sidebarVisible,
     setHistoryItem,
     setSidebarVisible,
@@ -46,12 +53,13 @@ const SidebarComponent = ({
 }: Props) => {
     const dispatch = useDispatch()
     const isAuth = useSelector((state: ReduxState) => state.app.auth)
+    const user = useSelector((state: ReduxState) => state.app.user)
     const hardMode = useSelector((state: ReduxState) => state.app.hardMode)
     const reveal = useSelector((state: ReduxState) => state.app.reveal)
     const units = useSelector((state: ReduxState) => state.app.units)
     const inverted = useSelector((state: ReduxState) => state.app.inverted)
     const language = useSelector((state: ReduxState) => state.app.language)
-    const lang = translations[language]
+    const lang: TranslationBlock = translations[language]
 
     const [footerItem, setFooterItem] = useState("")
     const [modalOpen, setModalOpen] = useState(false)
@@ -101,12 +109,24 @@ const SidebarComponent = ({
                 vertical
                 visible={sidebarVisible}
             >
-                <Menu.Item
-                    as="a"
-                    className="createQuizHeader"
-                    onClick={() => setUploadModalOpen(true)}
-                >
-                    {lang.header.makeAQuiz}
+                <Menu.Item>
+                    <Header
+                        className="createQuizHeader"
+                        inverted={inverted}
+                        onClick={() => setUploadModalOpen(true)}
+                    >
+                        {isAuth && (
+                            <Image
+                                circular
+                                size="big"
+                                src={inverted ? avatarPicInverted : avatarPic}
+                            />
+                        )}
+                        <Header.Content>
+                            {lang.header.makeAQuiz}
+                            {isAuth && <Header.Subheader>{user.username}</Header.Subheader>}
+                        </Header.Content>
+                    </Header>
                 </Menu.Item>
                 <Menu.Item>
                     {lang.header.settings}
@@ -235,22 +255,18 @@ const SidebarComponent = ({
                     <Menu.Item
                         as="a"
                         onClick={() => {
-                            localStorage.setItem("auth", "0")
-                            localStorage.setItem("bearer", "")
-                            localStorage.setItem("hardMode", "0")
-                            localStorage.setItem("reveal", "0")
-                            localStorage.setItem("units", "miles")
-                            localStorage.setItem("user", JSON.stringify({}))
-                            localStorage.setItem("verify", "0")
+                            resetSessionData()
                             dispatch(logout())
                             dispatch(setHasAnswered({ hasAnswered: false }))
+                            dispatch(resetHistoryQuizzes())
+                            dispatch(resetHistoryAnswers())
                             toast.success("You have been logged out!", toastConfig)
                         }}
                     >
                         {lang.auth.signOut}
                     </Menu.Item>
                 ) : (
-                    <Menu.Item as="a" onClick={() => toggleLoginModal()}>
+                    <Menu.Item as="a" onClick={() => toggleLoginModal(!loginModalOpen)}>
                         {lang.auth.signIn}
                     </Menu.Item>
                 )}
@@ -260,7 +276,6 @@ const SidebarComponent = ({
                 className="footerSidebar"
                 direction="left"
                 inverted={inverted}
-                onHide={() => setSidebarVisible(false)}
                 size="massive"
                 vertical
                 visible={sidebarVisible}
@@ -281,9 +296,7 @@ const SidebarComponent = ({
             </Sidebar>
 
             <ModalComponent
-                className={{
-                    footerModal: true
-                }}
+                className={{ footerModal: true }}
                 callback={() => setModalOpen(false)}
                 open={modalOpen}
             >

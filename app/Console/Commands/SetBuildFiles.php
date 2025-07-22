@@ -37,42 +37,18 @@ class SetBuildFiles extends Command
      */
     public function handle()
     {
-        $bladePath = base_path() . '/resources/views/index.blade.php';
-        $file = file_get_contents($bladePath);
+        $phpPath = base_path() . '/public/static/';
+        $jsBundleFile = base_path() . '/web-client-cra/build/static/js/bundle.js';
+        $jsBundleMapFile = base_path() . '/web-client-cra/build/static/js/bundle.js.map';
+        $mediaFolder = base_path() . '/web-client-cra/build/static/media/';
 
-        $phpPath = base_path() . '/public/assets/';
-        $jsPath = base_path() . '/web-client-react/dist/assets/';
+        // Delete old files
+        exec('rm -r ' . $phpPath . 'js/*');
+        exec('rm -r ' . $phpPath . 'media/*');
 
-        $newJsFile = null;
-        $newCssFile = null;
-        $files = array_slice(scandir($jsPath), 2);
-        for ($i = 0; $i < count($files); $i++) {
-            if (substr($files[$i], -4) === '.css') {
-                $newCssFile = $files[$i];
-            }
-            if (substr($files[$i], -3) === '.js') {
-                $newJsFile = $files[$i];
-            }
-        }
-
-        $oldJsFile = null;
-        $oldCssFile = null;
-        $files = array_slice(scandir($phpPath), 2);
-        for ($i = 0; $i < count($files); $i++) {
-            if (substr($files[$i], -4) === '.css') {
-                $oldCssFile = $files[$i];
-            }
-            if (substr($files[$i], -3) === '.js') {
-                $oldJsFile = $files[$i];
-            }
-        }
-
-        exec('rm -r ' . $phpPath . '/*');
-        exec('cp ' . $jsPath . '*  ' . $phpPath);
-        // echo "Old JS File: " . $oldJsFile . "\n";
-        // echo "New JS File: " . $newJsFile . "\n";
-        $file = str_replace($oldCssFile, $newCssFile, $file);
-        $file = str_replace($oldJsFile, $newJsFile, $file);
-        file_put_contents($bladePath, $file);
+        // Copy new ones
+        exec('cp ' . $jsBundleFile . '  ' . $phpPath . 'js/bundle.js');
+        exec('cp ' . $jsBundleMapFile . '  ' . $phpPath . 'js/bundle.js.map');
+        exec('cp ' . $mediaFolder . '*  ' . $phpPath . 'media/');
     }
 }

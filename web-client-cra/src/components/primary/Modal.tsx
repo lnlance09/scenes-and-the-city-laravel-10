@@ -32,9 +32,7 @@ const ModalComponent = ({
         inverted
     })
 
-    const headerClass = classNames({
-        modalComponent: true
-    })
+    const headerClass = classNames({ modalComponent: true })
 
     return (
         <div className={headerClass}>
@@ -55,7 +53,7 @@ const ModalComponent = ({
                         size="large"
                     />
                 )}
-                <Modal.Content>{children}</Modal.Content>
+                <Modal.Content className="modalContent">{children}</Modal.Content>
             </Modal>
         </div>
     )

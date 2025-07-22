@@ -1,32 +1,4 @@
-import { Actor, FullChar, Nullable, Setting, Units, User } from "../interfaces"
-
-export const setSessionData = (
-    auth: Nullable<number>,
-    bearer: Nullable<string>,
-    verify: Nullable<number>,
-    settings: Setting,
-    user: User
-) => {
-    if (auth) {
-        localStorage.setItem("auth", `${auth}`)
-    }
-    if (bearer) {
-        localStorage.setItem("bearer", bearer)
-    }
-    if (settings) {
-        localStorage.setItem("hardMode", `${settings.hardMode}`)
-        localStorage.setItem("inverted", `${settings.darkMode}`)
-        localStorage.setItem("lang", `${settings.lang}`)
-        localStorage.setItem("reveal", `${settings.revealAnswers}`)
-        localStorage.setItem("units", `${settings.measureUnits}`)
-    }
-    if (user) {
-        localStorage.setItem("user", JSON.stringify(user))
-    }
-    if (verify) {
-        localStorage.setItem("verify", `${verify}`)
-    }
-}
+import { Actor, FullChar, Units } from "../interfaces"
 
 export const capitalize = (str: string) => `${str.charAt(0).toUpperCase()}${str.slice(1)}`
 

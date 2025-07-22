@@ -220,8 +220,8 @@
 				float: right;
 			}
 
-			&.createQuizHeader {
-				font-size: 23px;
+			.ui.header.createQuizHeader {
+				font-family: fonts.$cheltenham700 !important;
 			}
 		}
 
@@ -370,7 +370,19 @@
     	font-family: fonts.$franklin600 !important;
 	}
 
-	.dimmer > .content {
-		width: 100%;
+	.dimmer {
+		> .content {
+			width: 100%;
+
+			.ui.header {
+				font-family: fonts.$cheltenham700 !important;
+			}
+		}
+
+		&.inverted {
+			.ui.header {
+				color: colors.$black !important;
+			}
+		}
 	}
 }

@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf8mb4">
         <meta name="viewport" content="width=device-width, user-scalable=0">
-        <meta name="theme-color" content="#050505">
+        <meta name="theme-color" content="#1c1c84">
 
         <meta property="og:description" content="{{ $description }}">
         <meta property="og:image" content="{{ $img['src'] }}">
@@ -39,10 +39,6 @@
                 <?php echo json_encode($schema); ?>
             </script>
         @endif
-
-        <!-- React build CSS -->
-        <link rel="stylesheet" type="text/css" href="/assets/index-CWP8piXp.css">
-
         <title>{{ $title }}</title>
     </head>
 
@@ -61,5 +57,6 @@
     <script src="https://www.statcounter.com/counter/counter.js" async></script>
 
     <!-- React build JS -->
-    <script src="/assets/index-BU8RDwI3.js"></script>
+    <script src="/static/js/bundle.js"></script>
+    <script src="/static/js/bundle.js.map"></script>
 </html>

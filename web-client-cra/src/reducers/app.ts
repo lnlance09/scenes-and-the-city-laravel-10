@@ -7,6 +7,11 @@ const appSlice = createSlice({
     reducers: {
         logout: (state) => {
             state.auth = false
+            state.hardMode = false
+            state.inverted = false
+            state.language = "en"
+            state.reveal = false
+            state.units = "miles"
             state.user = {
                 username: "",
                 settings: {

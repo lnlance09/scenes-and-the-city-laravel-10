@@ -85,10 +85,8 @@ const UploadModal = ({ modalOpen = false, setModalOpen }: Props) => {
                 callback={() => setModalOpen(false)}
                 className={modalClass}
                 open={modalOpen}
-                size="large"
                 title="Make a Quiz"
             >
-                {/*
                 <Step.Group fluid widths="three" size="large">
                     <Step
                         active={pageNum === 1}
@@ -98,7 +96,7 @@ const UploadModal = ({ modalOpen = false, setModalOpen }: Props) => {
                         <Icon inverted={inverted} name="picture" />
                         <Step.Content>
                             <Step.Title>{lang.stepOne.name}</Step.Title>
-                            <Step.Description>{lang.stepOne.description}</Step.Description>
+                            {/*<Step.Description>{lang.stepOne.description}</Step.Description>*/}
                         </Step.Content>
                     </Step>
                     <Step
@@ -110,7 +108,7 @@ const UploadModal = ({ modalOpen = false, setModalOpen }: Props) => {
                         <Icon inverted={inverted} name="info" />
                         <Step.Content>
                             <Step.Title>{lang.stepTwo.name}</Step.Title>
-                            <Step.Description>{lang.stepTwo.description}</Step.Description>
+                            {/*<Step.Description>{lang.stepTwo.description}</Step.Description>*/}
                         </Step.Content>
                     </Step>
                     <Step
@@ -122,12 +120,11 @@ const UploadModal = ({ modalOpen = false, setModalOpen }: Props) => {
                         <Icon inverted={inverted} name="world" />
                         <Step.Content>
                             <Step.Title>{lang.stepThree.name}</Step.Title>
-                            <Step.Description>{lang.stepThree.description}</Step.Description>
+                            {/*<Step.Description>{lang.stepThree.description}</Step.Description>*/}
                         </Step.Content>
                     </Step>
                 </Step.Group>
                 <Divider inverted={inverted} section />
-                */}
                 {pageNum === 1 && <ImageUpload callback={() => setPageNum(2)} />}
                 {pageNum === 2 && (
                     <InfoSegment

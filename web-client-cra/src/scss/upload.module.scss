@@ -7,7 +7,9 @@
     overflow-x: hidden;
 
     .step {
-        padding: 2.5em 1.25em !important;
+        &.large {
+            padding: 2.5em 1.25em !important;
+        }
 
         > .content {
             > .title {
@@ -185,5 +187,9 @@
 
     &.inverted {
         background: transparent;
+
+        .modalContent {
+            padding-top: 0 !important;
+        }
     }
 }

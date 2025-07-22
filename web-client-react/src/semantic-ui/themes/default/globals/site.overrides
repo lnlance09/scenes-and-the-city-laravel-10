@@ -1,6 +1,0 @@
-/*******************************
-        Global Overrides
-*******************************/
-
-@importGoogleFonts : false;
-@fontName          : 'Merienda';

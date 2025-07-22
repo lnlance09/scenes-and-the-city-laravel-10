@@ -12,7 +12,6 @@ import {
     resetHistoryQuizzes
 } from "@reducers/home"
 import axios from "axios"
-import AuthenticationForm from "@/components/primary/Authentication"
 import ImageComponent from "@components/primary/Image"
 import ModalComponent from "@components/primary/Modal"
 import translations from "@assets/translate.json"
@@ -20,10 +19,18 @@ import translations from "@assets/translate.json"
 type Props = {
     activeItem?: string
     callback: (param1: boolean) => any
+    loginModalOpen: boolean
     modalOpen?: boolean
+    toggleLoginModal: (visible: boolean) => any
 }
 
-const HistoryModal = ({ activeItem = "answers", callback, modalOpen = false }: Props) => {
+const HistoryModal = ({
+    activeItem = "answers",
+    callback,
+    loginModalOpen,
+    modalOpen = false,
+    toggleLoginModal
+}: Props) => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
@@ -262,12 +269,19 @@ const HistoryModal = ({ activeItem = "answers", callback, modalOpen = false }: P
                     {historyFilter === "answers" && (
                         <>{displayAnswers(answers.data, answers.count, answers.isLoading)}</>
                     )}
-                    <Dimmer
-                        active={!isAuth}
-                        inverted={!inverted}
-                        onClickOutside={() => null}
-                        verticalAlign="top"
-                    ></Dimmer>
+                    <Dimmer active={!isAuth} inverted={!inverted} verticalAlign="top">
+                        {!isAuth && (
+                            <>
+                                <Header content={lang.auth.signIn} inverted size="large" />
+                                <Button
+                                    color={inverted ? "green" : "blue"}
+                                    content={lang.auth.signIn}
+                                    inverted={inverted}
+                                    onClick={() => toggleLoginModal(!loginModalOpen)}
+                                />
+                            </>
+                        )}
+                    </Dimmer>
                 </Dimmer.Dimmable>
             </ModalComponent>
         </div>

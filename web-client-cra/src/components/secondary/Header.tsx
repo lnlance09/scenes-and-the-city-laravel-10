@@ -21,14 +21,16 @@ import translations from "@assets/translate.json"
 
 type Props = {
     date: string
+    loginModalOpen: boolean
     onClickDate: (date: string) => any
     onClickLogo: () => any
-    toggleLoginModal: () => any
+    toggleLoginModal: (visible: boolean) => any
     showDates?: boolean
 }
 
 const HeaderComponent = ({
     date,
+    loginModalOpen,
     onClickDate,
     onClickLogo,
     toggleLoginModal,
@@ -193,20 +195,23 @@ const HeaderComponent = ({
             </Menu>
             {showDates && <DateGrid date={date} onClickDate={(date) => onClickDate(date)} />}
             <SidebarComponent
+                loginModalOpen={loginModalOpen}
                 sidebarVisible={sidebarVisible}
                 setHistoryItem={(item) => setHistoryItem(item)}
                 setHistoryVisible={(visible) => setHistoryVisible(visible)}
                 setStatsVisible={(visible) => setStatsVisible(visible)}
                 setUploadModalOpen={(open) => setUploadModalOpen(open)}
-                setSidebarVisible={(visible) => setStatsVisible(visible)}
-                toggleLoginModal={() => toggleLoginModal()}
+                setSidebarVisible={(visible) => setSidebarVisible(visible)}
+                toggleLoginModal={(visible) => toggleLoginModal(visible)}
             />
             <UploadModal modalOpen={uploadModalOpen} setModalOpen={setUploadModalOpen} />
             <StatsModal callback={(visible) => setStatsVisible(visible)} modalOpen={statsVisible} />
             <HistoryModal
                 activeItem={historyItem}
                 callback={(visible) => setHistoryVisible(visible)}
+                loginModalOpen={loginModalOpen}
                 modalOpen={historyVisible}
+                toggleLoginModal={(visible) => toggleLoginModal(visible)}
             />
         </div>
     )

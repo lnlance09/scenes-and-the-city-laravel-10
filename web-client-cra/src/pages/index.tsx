@@ -113,9 +113,9 @@ const IndexPage = () => {
                 dispatch(setQuiz({ quiz }))
                 dispatch(setPartTwo({ partTwo }))
 
-                dispatch(setAnswerGeoData({ geoData: answer.geoData }))
                 dispatch(setHasAnswered({ hasAnswered: answer.hasAnswered }))
                 dispatch(setHintsUsed({ amount: answer.hintsUsed }))
+                dispatch(setAnswerGeoData({ geoData: answer.geoData }))
                 dispatch(setCorrect({ correct: answer.correct }))
                 if (answer.hasAnswered) {
                     dispatch(setMarginOfError({ margin: answer.marginOfError }))
@@ -150,6 +150,7 @@ const IndexPage = () => {
         <div className={homePageClass}>
             <HeaderComponent
                 date={date}
+                loginModalOpen={loginModal}
                 onClickDate={(d: string) => {
                     setAnimation(
                         moment(d, dateFormat).isAfter(moment(date, dateFormat))
