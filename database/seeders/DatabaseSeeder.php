@@ -13,7 +13,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $seeders = [
-            UserSeeder::class,
+            // UserSeeder::class,
             VideoSeeder::class,
             ActorSeeder::class,
             CharacterSeeder::class,
@@ -22,8 +22,8 @@ class DatabaseSeeder extends Seeder
             // ScenePicSeeder::class,
             // SceneCharacterSeeder::class,
             // SceneActionSeeder::class,
-            QuizSeeder::class,
-            AnswerSeeder::class
+            // QuizSeeder::class,
+            // AnswerSeeder::class
         ];
         $this->call($seeders);
     }
