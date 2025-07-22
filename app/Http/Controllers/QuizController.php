@@ -135,7 +135,8 @@ class QuizController extends Controller
             $geoData['lat'] = (float)$quiz->lat;
 
             $quiz->geo_data = $geoData;
-            $quiz->reveal_answer = Carbon::now()->diffInDays(new Carbon($quiz->created_at)->startOfDay()) > 0;
+            $startOfDay = new Carbon($quiz->created_at)->startOfDay();
+            $quiz->reveal_answer = Carbon::now()->diffInDays($startOfDay) > 0;
 
             $lng = $answer->lng;
             $lat = $answer->lat;
