@@ -309,7 +309,8 @@ class QuizController extends Controller
                 'code' => 422
             ];
         }
-        if (Carbon::now()->diffInDays(new Carbon($quiz->created_at)->startOfDay()) > 0) {
+        $createdAt = new Carbon($quiz->created_at);
+        if (Carbon::now()->diffInDays($createdAt->startOfDay()) > 0) {
             return [
                 'message' => 'This quiz has expired',
                 'error' => true,
