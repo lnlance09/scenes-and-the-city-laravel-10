@@ -102,7 +102,7 @@ const ImageUpload = ({ callback }: Props) => {
             </div>
             {!imgEmpty ? (
                 <>
-                    <Divider hidden />
+                    <Divider inverted={inverted} section />
                     <Button
                         color={inverted ? "green" : "blue"}
                         content={lang.stepOne.submitBtn}

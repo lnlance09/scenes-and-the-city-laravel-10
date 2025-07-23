@@ -137,7 +137,7 @@ const CharacterSearch = ({
                     </Header.Content>
                 </Header>
             )}
-            <Segment inverted={inverted}>
+            <Segment basic inverted={inverted}>
                 <Transition
                     animation={animation}
                     duration={duration}

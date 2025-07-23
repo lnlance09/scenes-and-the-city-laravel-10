@@ -217,7 +217,7 @@ const AnswerTab = ({
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
-            <Divider hidden />
+            <Divider inverted={inverted} section />
             <Button
                 color={inverted ? "green" : "blue"}
                 content={lang.stepThree.submitBtn}

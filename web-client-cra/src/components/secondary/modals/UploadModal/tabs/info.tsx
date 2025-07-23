@@ -68,105 +68,108 @@ const InfoSegment = ({
     const realCharName = charIsSelf ? actorName : char.name === null ? "this character" : char.name
 
     return (
-        <Form inverted={inverted} size="large" stacked>
-            <Form.Field>
-                <Header
-                    className="videoHeader"
-                    content={lang.stepTwo.headerOne}
-                    inverted={inverted}
-                    size="medium"
-                />
-                <Segment inverted={inverted}>
-                    <VideoSearch
-                        onSelectVideo={() => {
-                            dispatch(clearChar())
-                            setCharsVisible(true)
-                        }}
-                        setVideoType={(type) => setVideoType(type)}
-                        setVideoVal={(val) => setVideoVal(val)}
-                        setVideosVisible={(visible) => setVideosVisible(visible)}
-                        videoType={videoType}
-                        videoVal={videoVal}
-                        videosVisible={videosVisible}
-                    />
-                </Segment>
-                <Divider hidden section />
-            </Form.Field>
-            {/* Characters drop down */}
-            {video.id && (
+        <div className="infoSegmentComponent">
+            <Form as={Segment} inverted={inverted} size="large" stacked>
                 <Form.Field>
-                    <CharacterSearch
-                        actorName={actorName}
-                        charName={charName}
-                        charIsSelf={charIsSelf}
-                        charsVisible={charsVisible}
-                        onSelectChar={() => setActionsVisible(true)}
-                        setActorName={(name) => setActorName(name)}
-                        setCharName={(name) => setCharName(name)}
-                        setCharIsSelf={(isSelf) => setCharIsSelf(isSelf)}
-                        setCharsVisible={(visible) => setCharsVisible(visible)}
-                        videoId={video.id}
+                    <Header
+                        className="videoHeader"
+                        content={lang.stepTwo.headerOne}
+                        inverted={inverted}
+                        size="medium"
                     />
-                    <Divider hidden section />
-                </Form.Field>
-            )}
-            <Form.Field>
-                {actionsVisible && (
-                    <>
-                        <Header
-                            className="actionHeader"
-                            content={lang.stepTwo.headerThree.replace("{name}", realCharName)}
-                            inverted={inverted}
-                            size="medium"
+                    <Segment basic inverted={inverted}>
+                        <VideoSearch
+                            onSelectVideo={() => {
+                                dispatch(clearChar())
+                                setCharsVisible(true)
+                            }}
+                            setVideoType={(type) => setVideoType(type)}
+                            setVideoVal={(val) => setVideoVal(val)}
+                            setVideosVisible={(visible) => setVideosVisible(visible)}
+                            videoType={videoType}
+                            videoVal={videoVal}
+                            videosVisible={videosVisible}
                         />
-                        <Segment inverted={inverted}>
-                            <Dropdown
-                                allowAdditions
-                                className={inverted ? "inverted" : ""}
-                                defaultUpward
-                                fluid
-                                maxLength={50} // Need to find out how to limit to 20
-                                onAddItem={(e, { value }) => {
-                                    const action = {
-                                        id: 0,
-                                        key: value,
-                                        name: value,
-                                        text: value,
-                                        value
-                                    }
-                                    dispatch(addAction({ action }))
-                                    dispatch(setAction({ action }))
-                                }}
-                                onChange={(e, { value }) => {
-                                    // NOT on keyup. This gets triggered when an item from the dropdown is clicked
-                                    const action = actions.find((a) => a.value === value)
-                                    if (action === undefined) {
-                                        return
-                                    }
-                                    dispatch(
-                                        setAction({
-                                            action: {
-                                                id: action.id,
-                                                key: null,
-                                                name: null,
-                                                text: null,
-                                                value: null
-                                            }
-                                        })
-                                    )
-                                }}
-                                options={actions}
-                                placeholder={lang.stepTwo.formThreePlaceholder}
-                                search
-                                selection
-                                value={actionVal}
-                            />
-                        </Segment>
-                    </>
+                    </Segment>
+                    <Divider hidden />
+                </Form.Field>
+                {/* Characters drop down */}
+                {video.id && (
+                    <Form.Field>
+                        <CharacterSearch
+                            actorName={actorName}
+                            charName={charName}
+                            charIsSelf={charIsSelf}
+                            charsVisible={charsVisible}
+                            onSelectChar={() => setActionsVisible(true)}
+                            setActorName={(name) => setActorName(name)}
+                            setCharName={(name) => setCharName(name)}
+                            setCharIsSelf={(isSelf) => setCharIsSelf(isSelf)}
+                            setCharsVisible={(visible) => setCharsVisible(visible)}
+                            videoId={video.id}
+                        />
+                        <Divider hidden />
+                    </Form.Field>
                 )}
-            </Form.Field>
-            <Form.Field>
-                {!videoEmpty && !charEmpty && (
+                <Form.Field>
+                    {actionsVisible && (
+                        <>
+                            <Header
+                                className="actionHeader"
+                                content={lang.stepTwo.headerThree.replace("{name}", realCharName)}
+                                inverted={inverted}
+                                size="medium"
+                            />
+                            <Segment basic inverted={inverted}>
+                                <Dropdown
+                                    allowAdditions
+                                    className={inverted ? "inverted" : ""}
+                                    defaultUpward
+                                    fluid
+                                    maxLength={50} // Need to find out how to limit to 20
+                                    onAddItem={(e, { value }) => {
+                                        const action = {
+                                            id: 0,
+                                            key: value,
+                                            name: value,
+                                            text: value,
+                                            value
+                                        }
+                                        dispatch(addAction({ action }))
+                                        dispatch(setAction({ action }))
+                                    }}
+                                    onChange={(e, { value }) => {
+                                        // NOT on keyup. This gets triggered when an item from the dropdown is clicked
+                                        const action = actions.find((a) => a.value === value)
+                                        if (action === undefined) {
+                                            return
+                                        }
+                                        dispatch(
+                                            setAction({
+                                                action: {
+                                                    id: action.id,
+                                                    key: null,
+                                                    name: null,
+                                                    text: null,
+                                                    value: null
+                                                }
+                                            })
+                                        )
+                                    }}
+                                    options={actions}
+                                    placeholder={lang.stepTwo.formThreePlaceholder}
+                                    search
+                                    selection
+                                    value={actionVal}
+                                />
+                            </Segment>
+                        </>
+                    )}
+                </Form.Field>
+            </Form>
+            {!videoEmpty && !charEmpty && (
+                <>
+                    <Divider inverted={inverted} section />
                     <Button
                         color={inverted ? "green" : "blue"}
                         content={lang.stepTwo.submitBtn}
@@ -176,9 +179,9 @@ const InfoSegment = ({
                         onClick={() => callback()}
                         size="big"
                     />
-                )}
-            </Form.Field>
-        </Form>
+                </>
+            )}
+        </div>
     )
 }
 

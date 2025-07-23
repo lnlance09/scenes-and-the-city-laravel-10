@@ -299,19 +299,18 @@ const AuthenticationForm = ({
                                             value={password}
                                         />
                                     </Form.Field>
-                                    <Form.Field>
-                                        <Button
-                                            color={inverted ? "green" : "blue"}
-                                            content={lang.auth.signIn}
-                                            fluid
-                                            inverted={inverted}
-                                            loading={loadingLogin}
-                                            onClick={submitLoginForm}
-                                            size={size}
-                                            type="submit"
-                                        />
-                                    </Form.Field>
                                 </Form>
+                                <Divider inverted={inverted} />
+                                <Button
+                                    color={inverted ? "green" : "blue"}
+                                    content={lang.auth.signIn}
+                                    fluid
+                                    inverted={inverted}
+                                    loading={loadingLogin}
+                                    onClick={submitLoginForm}
+                                    size={size}
+                                    type="submit"
+                                />
                                 {authFooter(lang.auth.newToThis, lang.auth.signUp)}
                                 <Header
                                     className="forgotText"

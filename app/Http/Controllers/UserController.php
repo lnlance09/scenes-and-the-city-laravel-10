@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\AnswerCollection;
 use App\Http\Resources\QuizCollection as QuizCollection;
-use App\Http\Resources\User as UserResource;
-use App\Http\Resources\UserCollection as UserCollection;
 use App\Mail\ForgotPassword;
 use App\Mail\VerificationCode;
 use App\Models\Answer;
