@@ -31,6 +31,7 @@ import HintsSection from "@/components/secondary/Hints"
 import ImageSection from "@/components/secondary/Image"
 import QuestionSection from "@/components/secondary/Question"
 import translations from "@assets/translate.json"
+import { Segment } from "semantic-ui-react"
 
 const defaultDate = moment().tz(nyc).format(dateFormat)
 
@@ -205,11 +206,21 @@ const IndexPage = () => {
                 />
             )}
             <ModalComponent callback={() => toggleLoginModal(false)} open={loginModal}>
-                <AuthenticationForm
-                    loginCallback={() => toggleLoginModal(false)}
-                    verifyCallback={() => toggleLoginModal(false)}
-                    size="large"
-                />
+                {inverted ? (
+                    <Segment inverted padded="very">
+                        <AuthenticationForm
+                            loginCallback={() => toggleLoginModal(false)}
+                            verifyCallback={() => toggleLoginModal(false)}
+                            size="large"
+                        />
+                    </Segment>
+                ) : (
+                    <AuthenticationForm
+                        loginCallback={() => toggleLoginModal(false)}
+                        verifyCallback={() => toggleLoginModal(false)}
+                        size="large"
+                    />
+                )}
             </ModalComponent>
             <ToastContainer
                 className={inverted ? "inverted" : ""}

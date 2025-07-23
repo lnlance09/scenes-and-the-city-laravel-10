@@ -37,7 +37,7 @@ class VerificationCode extends Mailable
      */
     public function build()
     {
-        return $this->from('noreply@scenesandthecity.nyc')
+        return $this->from('noreply@scenesandthecity.com')
             ->view('mail/verificationCode');
     }
 }

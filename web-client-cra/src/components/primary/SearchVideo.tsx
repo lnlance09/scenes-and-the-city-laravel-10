@@ -154,7 +154,7 @@ const VideoSearch = ({
                 })}
             </div>
             {!videoEmpty && (
-                <Segment inverted={inverted}>
+                <Segment inverted={inverted} size="small">
                     <Header className="videoItemHeader" inverted={inverted}>
                         <ImageComponent
                             alt={video.title !== null ? video.title : ""}
