@@ -1,4 +1,4 @@
-import { Nullable } from "../../../interfaces"
+import { Nullable } from "@interfaces/index"
 
 type HeaderKey = "resetPassword" | "signIn" | "signUp" | "verifyEmail"
 

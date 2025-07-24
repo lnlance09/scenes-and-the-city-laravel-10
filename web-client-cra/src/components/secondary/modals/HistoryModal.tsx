@@ -33,7 +33,6 @@ const HistoryModal = ({
 }: Props) => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
-
     const isAuth = useSelector((state: ReduxState) => state.app.auth)
     const quizzes = useSelector((state: ReduxState) => state.home.history.quizzes)
     const answers = useSelector((state: ReduxState) => state.home.history.answers)

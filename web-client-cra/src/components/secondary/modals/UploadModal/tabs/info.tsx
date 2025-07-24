@@ -46,7 +46,6 @@ const InfoSegment = ({
     callback
 }: Props) => {
     const dispatch = useDispatch()
-
     const action = useSelector((state: ReduxState) => state.form.action)
     const actions = useSelector((state: ReduxState) => state.form.actions)
     const char = useSelector((state: ReduxState) => state.form.char)

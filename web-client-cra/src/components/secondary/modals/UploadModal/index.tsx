@@ -30,7 +30,6 @@ type Props = {
 
 const UploadModal = ({ modalOpen = false, setModalOpen }: Props) => {
     const dispatch = useDispatch()
-
     const inverted = useSelector((state: ReduxState) => state.app.inverted)
     const language = useSelector((state: ReduxState) => state.app.language)
     const lang = translations[language]
@@ -85,7 +84,7 @@ const UploadModal = ({ modalOpen = false, setModalOpen }: Props) => {
                 callback={() => setModalOpen(false)}
                 className={modalClass}
                 open={modalOpen}
-                title="Make a Quiz"
+                title={lang.header.makeAQuiz}
             >
                 <Step.Group fluid widths="three" size="large">
                     <Step

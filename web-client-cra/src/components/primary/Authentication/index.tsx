@@ -9,8 +9,6 @@ import {
     setReveal,
     setUnits
 } from "@reducers/app"
-import { useEffect, useReducer, useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
 import {
     PASSWORD_RECOVERY_SENT,
     SET_FORGOT,
@@ -25,6 +23,8 @@ import {
     ReduxState,
     VerificationPayload
 } from "@interfaces/index"
+import { useEffect, useReducer, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
 import { reducer } from "./reducer"
 import { initialAuthState } from "./initialState"
 import { toastConfig } from "@options/toast"
@@ -245,8 +245,7 @@ const AuthenticationForm = ({
     }
 
     const toggleLogin = () => {
-        const type = login ? SET_REGISTER : SET_LOGIN
-        dispatchInternal({ type })
+        dispatchInternal({ type: login ? SET_REGISTER : SET_LOGIN })
         setLoadingLogin(false)
         setLoadingRegistration(false)
     }
@@ -264,6 +263,8 @@ const AuthenticationForm = ({
         authSegment: true,
         inverted
     })
+
+    const btnColor = inverted ? "green" : "blue"
 
     return (
         <div className="authComponent">
@@ -302,7 +303,7 @@ const AuthenticationForm = ({
                                 </Form>
                                 <Divider inverted={inverted} />
                                 <Button
-                                    color={inverted ? "green" : "blue"}
+                                    color={btnColor}
                                     content={lang.auth.signIn}
                                     fluid
                                     inverted={inverted}
@@ -355,7 +356,7 @@ const AuthenticationForm = ({
                                 </Form>
                                 <Divider inverted={inverted} />
                                 <Button
-                                    color={inverted ? "green" : "blue"}
+                                    color={btnColor}
                                     content={lang.auth.regsiterBtn}
                                     fluid
                                     inverted={inverted}
@@ -371,7 +372,7 @@ const AuthenticationForm = ({
 
                 {forgot && (
                     <>
-                        <Form inverted={inverted} onSubmit={submitForgotPassword} size={size}>
+                        <Form inverted={inverted} size={size}>
                             <Form.Field>
                                 <Input
                                     inverted={inverted}
@@ -380,22 +381,25 @@ const AuthenticationForm = ({
                                     value={forgotEmail}
                                 />
                             </Form.Field>
-                            <Button
-                                color={inverted ? "green" : "blue"}
-                                content={lang.auth.sendInstructions}
-                                disabled={forgotEmail.length < 5}
-                                fluid
-                                inverted={inverted}
-                                loading={loadingForgot}
-                                size={size}
-                                type="submit"
-                            />
                         </Form>
+                        <Divider inverted={inverted} />
+                        <Button
+                            color={btnColor}
+                            content={lang.auth.sendInstructions}
+                            disabled={forgotEmail.length < 5}
+                            fluid
+                            inverted={inverted}
+                            loading={loadingForgot}
+                            onClick={submitForgotPassword}
+                            size={size}
+                            type="submit"
+                        />
                         <Header
                             className="forgotText"
                             inverted={inverted}
                             onClick={() => dispatchInternal({ type: SET_LOGIN })}
                             size="small"
+                            style={{ marginTop: "0.75em" }}
                             textAlign="center"
                         >
                             <span>
@@ -420,27 +424,31 @@ const AuthenticationForm = ({
                 </Transition>
 
                 <Transition animation="scale" duration={500} visible={verify}>
-                    <Form inverted={inverted} onSubmit={submitVerificationForm} size={size}>
-                        <Form.Field>
-                            <Input
-                                inverted={inverted}
-                                maxLength={4}
-                                onChange={(e, { value }) => setVerificationCode(value)}
-                                placeholder={lang.auth.verificationCode}
-                                value={verificationCode}
-                            />
-                        </Form.Field>
+                    <div>
+                        <Form inverted={inverted} size={size}>
+                            <Form.Field>
+                                <Input
+                                    inverted={inverted}
+                                    maxLength={4}
+                                    onChange={(e, { value }) => setVerificationCode(value)}
+                                    placeholder={lang.auth.verificationCode}
+                                    value={verificationCode}
+                                />
+                            </Form.Field>
+                        </Form>
+                        <Divider inverted={inverted} />
                         <Button
-                            color={inverted ? "green" : "blue"}
+                            color={btnColor}
                             content={lang.auth.verify}
                             disabled={verificationCode.length !== 4}
                             fluid
                             inverted={inverted}
                             loading={loadingVerify}
+                            onClick={submitVerificationForm}
                             size={size}
                             type="submit"
                         />
-                    </Form>
+                    </div>
                 </Transition>
             </div>
         </div>

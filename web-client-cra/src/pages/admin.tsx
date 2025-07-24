@@ -4,15 +4,17 @@ import { useCallback, useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { CharPicPayload, ReduxState } from "../interfaces"
 import { toast, ToastContainer } from "react-toastify"
+import { accept } from "@options/files"
 import { toastConfig } from "@options/toast"
+import { serialize } from "object-to-formdata"
 import { FileWithPath, useDropzone } from "react-dropzone"
+import { onDrop } from "@/utils/files"
 import axios from "axios"
 import classNames from "classnames"
 import AuthenticationForm from "@/components/primary/Authentication"
 import ModalComponent from "@/components/primary/Modal"
 import CharacterSearch from "@/components/primary/SearchCharacter"
 import VideoSearch from "@/components/primary/SearchVideo"
-import { serialize } from "object-to-formdata"
 
 const AdminPage = () => {
     const dispatch = useDispatch()
@@ -43,49 +45,24 @@ const AdminPage = () => {
         }
     }, [isAuth])
 
-    const onDrop = useCallback((files: FileWithPath[]) => {
-        if (files.length !== 1) {
-            return
-        }
-
-        const file = files[0]
-        dispatch(setFile({ file }))
-
-        const reader = new FileReader()
-        reader.onabort = () => console.error("file reading was aborted")
-        reader.onerror = () => console.error("file reading has failed")
-        reader.onload = () => {
-            const img = document.createElement("img")
-            img.src = typeof reader.result === "string" ? reader.result : ""
-            img.onload = () => {
-                const data = {
-                    dimensions: {
-                        height: img.height,
-                        width: img.width
-                    },
-                    path: file.path,
-                    src: img.src
-                }
-                dispatch(setImg({ data }))
-            }
-        }
-        reader.readAsDataURL(file)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-
     const { getRootProps, getInputProps } = useDropzone({
-        accept: {
-            "image/png": [".png"],
-            "image/jpg": [".jpg", ".jpeg"],
-            "image/gif": [".gif"]
-        },
+        accept,
         maxFiles: 1,
-        onDrop
+        onDrop: useCallback(
+            (files: FileWithPath[]) =>
+                onDrop(
+                    files,
+                    (file) => dispatch(setFile({ file })),
+                    (data) => dispatch(setImg({ data }))
+                ),
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+            []
+        )
     })
 
     const submitCharacterPic = async () => {
         setFormLoading(true)
-        const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}chars/pic`
+        const url = `${process.env.REACT_APP_API_BASE_URL}chars/pic`
         const payload: CharPicPayload = {
             file: file === null ? "" : file,
             charId: char.id === null ? "" : `${char.id}`
@@ -108,9 +85,7 @@ const AdminPage = () => {
         setFormLoading(false)
     }
 
-    const adminPageClass = classNames({
-        adminPage: true
-    })
+    const adminPageClass = classNames({ adminPage: true })
 
     return (
         <div className={adminPageClass}>

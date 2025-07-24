@@ -9,7 +9,7 @@ import axios from "axios"
 import translations from "@assets/translate.json"
 
 const animation = "fade"
-const duration = 600
+const duration = 1600
 
 type FormOrAdmin = "form" | "admin"
 type Props = {

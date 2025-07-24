@@ -159,4 +159,12 @@ export type TranslationBlock = {
     stats: TranslationStats
     main: TranslationMain
     months: string[]
+    aboutBlockOne: string
+    aboutBlockTwo: string
+    aboutBlockThree: string
+    privacy: string
+    rulesBlockOne: string
+    rulesBlockTwo: string
+    rulesBlockThree: string
+    rulesBlockFour: string
 }

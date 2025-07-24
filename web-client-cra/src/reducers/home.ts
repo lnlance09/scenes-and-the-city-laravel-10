@@ -36,7 +36,7 @@ const homeSlice = createSlice({
             state.quiz.hintTwo = action.payload.hint
         },
         setHintsUsed: (state, action) => {
-            state.answer.hintsUsed = action.payload.amount
+            state.answer.hintsUsed = action.payload.hintsUsed
         },
         setMarginOfError: (state, action) => {
             state.answer.marginOfError = action.payload.margin

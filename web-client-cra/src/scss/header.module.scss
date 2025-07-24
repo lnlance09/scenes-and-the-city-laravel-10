@@ -70,12 +70,12 @@
 
 			@media only screen and (min-width: 320px) and (max-width: 767px) {
 				float: none;
-				text-align: center;
+				margin-left: 1em;
 
 				.icon {
 					display: inline;
 					float: right;
-					line-height: 65px;
+					line-height: 61px;
 					right: 1em;
 				}
 			}
@@ -290,6 +290,12 @@
 			margin-bottom: 0.75em !important;
 			margin-top: 0 !important;
 			visibility: visible;
+		}
+
+		@media only screen and (min-width: 320px) and (max-width: 767px) {
+			.ui.container {
+				width: 320px !important;
+			}
 		}
 	}
 }
