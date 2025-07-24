@@ -14,6 +14,8 @@ use App\Models\SceneCharacter;
 use App\Models\User;
 use App\Http\Resources\Quiz as QuizResource;
 use App\Models\QuizPartTwo;
+use Brick\Geo\Engine\GeosEngine;
+use Brick\Geo\Point;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -89,6 +91,7 @@ class QuizController extends Controller
     public function formatResponse($quiz, $user)
     {
         $nyc = new NewYorkCity();
+        $geos = new GeosEngine();
 
         $answerData = [
             'correct' => null,
@@ -110,9 +113,9 @@ class QuizController extends Controller
 
         if ($hasPartTwo) {
             $partTwo = $quiz->partTwo->partTwo;
-            $quizLocation = $nyc->locationToObject('Point', $quiz->lng, $quiz->lat);
-            $partTwoLocation = $nyc->locationToObject('Point', $partTwo->lng, $partTwo->lat);
-            $partTwo->distance = $quizLocation->distance($partTwoLocation);
+            $quizLocation = Point::xy($quiz->lng, $quiz->lat);
+            $partTwoLocation = Point::xy($partTwo->lng, $partTwo->lat);
+            $partTwo->distance = $geos->distance($quizLocation, $partTwoLocation);
             $partTwoResource = new QuizResource($partTwo);
         }
 
@@ -162,12 +165,6 @@ class QuizController extends Controller
                 $quiz->hint_one = $details['hood'];
                 $quiz->reveal_hint_one = true;
             }
-        }
-
-        if ($hasPartTwo) {
-            $quizLocation = $nyc->locationToObject('Point', $quiz->lng, $quiz->lat);
-            $partTwoLocation = $nyc->locationToObject('Point', $partTwo->lng, $partTwo->lat);
-            $partTwo['distance'] = $quizLocation->distance($partTwoLocation);
         }
 
         return response([

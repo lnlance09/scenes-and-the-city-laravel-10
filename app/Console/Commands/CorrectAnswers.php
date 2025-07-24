@@ -3,7 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Models\Answer;
-use App\Models\NewYorkCity;
+use Brick\Geo\Engine\GeosEngine;
+use Brick\Geo\Point;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
@@ -14,7 +15,7 @@ class CorrectAnswers extends Command
      *
      * @var string
      */
-    protected $signature = 'app:correct-answers';
+    protected $signature = 'correct:answers';
 
     /**
      * The console command description.
@@ -28,19 +29,23 @@ class CorrectAnswers extends Command
      */
     public function handle()
     {
-        $nyc = new NewYorkCity();
+        $geos = new GeosEngine();
         $today = Carbon::now()->format('Y-m-d');
         $answers = Answer::whereBetween('created_at', [
             $today . ' 00:00:00',
             $today . ' 23:59:59'
-        ]);
-        $answers = Answer::with(['quiz'])->get();
+        ])
+            ->where(function ($query) {
+                $query->whereNotNull('lng')->whereNotNull('lat');
+            })
+            ->with(['quiz'])
+            ->get();
 
         for ($i = 0; $i < count($answers); $i++) {
             $a = $answers[$i];
-            $aLocation = $nyc->locationToObject('Point', $a->lng, $a->lat);
-            $qLocation = $nyc->locationToObject('Point', $a->quiz->lng, $a->quiz->lat);
-            $distance = $aLocation->distance($qLocation);
+            $aLocation = Point::xy($a->lng, $a->lat);
+            $qLocation = Point::xy($a->quiz->lng, $a->quiz->lat);
+            $distance = $geos->distance($aLocation, $qLocation);
             $correct = $distance < 0.05 ? 1 : 0;
 
             $answer = Answer::find($a->id);

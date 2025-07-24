@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
-use App\Geolocation\geoPHP;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Number;
 use Illuminate\Support\Str;
+use Brick\Geo\Engine\GeosEngine;
+use Brick\Geo\Point;
+use Brick\Geo\Io\GeoJsonReader;
 
 class NewYorkCity extends Model
 {
@@ -22,27 +24,36 @@ class NewYorkCity extends Model
     public $avenues = [];
     public $streets = [];
 
-    function __construct() {}
+    public $reader;
+    public $geosEngine;
+
+    function __construct()
+    {
+        $this->reader = new GeoJsonReader();
+        $this->geosEngine = new GeosEngine();
+    }
 
 
     public function isInBorough($lng, $lat, $borough = 'manhattan')
     {
-        $geoJson = File::json(resource_path('geoJSON/boroughs/' . $borough . '.geojson'));
-        $location = $this->locationToObject('Point', $lng, $lat);
-        $borough = geoPHP::load(json_encode($geoJson), 'json');
-        return $location->within($borough);
+        $json = File::json(resource_path('geoJSON/nyc-boroughs.geojson'));
+        $key = array_search($borough, $this->boroughs);
+
+        $location = Point::xy($lng, $lat);
+        $polygon = $this->reader->read(json_encode($json['features'][$key]['geometry']));
+        return $this->geosEngine->contains($polygon, $location);
     }
 
     public function getNeighborhood($lng, $lat, $borough)
     {
-        $geoJson = File::json(resource_path('geoJSON/boroughs/' . $borough . '.geojson'));
-        $neighborhoods = $geoJson['features'];
-        $location = $this->locationToObject('Point', $lng, $lat);
-        foreach ($neighborhoods as $hood) {
-            $hoodArea = geoPHP::load(json_encode($hood), 'json');
-            if ($location->within($hoodArea)) {
-                $hoodName = $hood['properties']['name'];
-                return $hoodName;
+        $json = File::json(resource_path('geoJSON/boroughs/' . $borough . '.geojson'));
+        $hoods = $json['features'];
+        $location = Point::xy($lng, $lat);
+
+        foreach ($hoods as $hood) {
+            $area = $this->reader->read(json_encode($hood['geometry']));
+            if ($this->geosEngine->contains($area, $location)) {
+                return $hood['properties']['name'];
             }
         }
         return false;
@@ -51,7 +62,7 @@ class NewYorkCity extends Model
     public function getClosestStreet($lng, $lat, $borough, $ignore = [], $intersectsWith = null)
     {
         $file = File::json(resource_path('./geoJSON/boroughs/streets/' . $borough . '.geojson'));
-        $location = $this->locationToObject('Point', $lng, $lat);
+        $location = Point::xy($lng, $lat);
         $streets = $file['features'];
         $shortestDistance = 0;
         $index = 0;
@@ -63,8 +74,8 @@ class NewYorkCity extends Model
                 continue;
             }
 
-            $streetGeo = geoPHP::load(json_encode($street), 'json');
-            $distance = $location->distance($streetGeo);
+            $streetGeo = $this->reader->read(json_encode($street['geometry']));
+            $distance = $this->geosEngine->distance($streetGeo, $location);
 
             if ($i === 0) {
                 $shortestDistance = $distance;
@@ -72,7 +83,7 @@ class NewYorkCity extends Model
             }
 
             if ($distance < $shortestDistance) {
-                if ($intersectsWith ? $streetGeo->intersects($intersectsWith) : true) {
+                if ($intersectsWith ? $this->geosEngine->intersects($streetGeo, $intersectsWith) : true) {
                     $shortestDistance = $distance;
                     $index = $i;
                 }
@@ -80,6 +91,29 @@ class NewYorkCity extends Model
         }
 
         return $streets[$index];
+    }
+
+    private function findClosestPoint($coords, $lat, $lng)
+    {
+        $location1 = $this->locationToObject('Point', $lng, $lat);
+        $shortestDistance = 0;
+        $index = 0;
+        for ($i = 0; $i < count($coords); $i++) {
+            $item = $coords[$i];
+            $location2 = Point::xy($item[1], $item[0]);
+            $distance = $this->geosEngine->distance($location1, $location2);
+
+            if ($i === 0) {
+                $shortestDistance = $distance;
+                continue;
+            }
+
+            if ($distance < $shortestDistance) {
+                $shortestDistance = $distance;
+                $index = $i;
+            }
+        }
+        return $coords[$index];
     }
 
     public function getLocationDetails($lng, $lat)
@@ -93,13 +127,12 @@ class NewYorkCity extends Model
             $street1 = $this->getClosestStreet($lng, $lat, $borough);
             $streetName1 = $street1['properties']['FULLNAME'];
             $geometry1 = $street1['geometry'];
-            $streetGeo = geoPHP::load(json_encode($geometry1), 'json');
+            $streetGeo = $this->reader->read(json_encode($geometry1));
 
             $ignore = [
                 $streetName1
             ];
             $street2 = $this->getClosestStreet($lng, $lat, $borough, $ignore, $streetGeo);
-            // $street2Geo = geoPHP::load(json_encode($street2), 'json');
             $streetName2 = $street2['properties']['FULLNAME'];
 
             $ignore[] = $streetName2;
@@ -126,8 +159,8 @@ class NewYorkCity extends Model
             ) {
                 $closest2 = $this->findClosestPoint($street2['geometry']['coordinates'], $lat, $lng);
                 $closest3 = $this->findClosestPoint($street3['geometry']['coordinates'], $lat, $lng);
-                $x2 = $this->locationToObject('Point', (float)$closest2[0], (float)$closest2[1])->x();
-                $x3 = $this->locationToObject('Point', (float)$closest3[0], (float)$closest3[1])->x();
+                $x2 = Point::xy($closest2[0], $closest2[1])->x();
+                $x3 = Point::xy($closest3[0], $closest3[1])->x();
 
                 if ($x3 > $x2) {
                     $ignore[] = $streetName3;
@@ -144,8 +177,8 @@ class NewYorkCity extends Model
             ) {
                 $closest2 = $this->findClosestPoint($street2['geometry']['coordinates'], $lat, $lng);
                 $closest3 = $this->findClosestPoint($street3['geometry']['coordinates'], $lat, $lng);
-                $x2 = $this->locationToObject('Point', (float)$closest2[0], (float)$closest2[1])->x();
-                $x3 = $this->locationToObject('Point', (float)$closest3[0], (float)$closest3[1])->x();
+                $x2 = Point::xy($closest2[0], $closest2[1])->x();
+                $x3 = Point::xy($closest3[0], $closest3[1])->x();
 
                 $switch = ($closest3 === 'Columbus Ave' && $x3 < $x2) || ($closest3 === 'Central Park W' && $x3 > $x2);
 
@@ -185,91 +218,6 @@ class NewYorkCity extends Model
         return false;
     }
 
-    public static function removeDuplicateStreets($borough = 'manhattan')
-    {
-        $streets = File::json(resource_path('geoJSON/boroughs/streets/' . $borough . '.geojson'));
-        $newFile = [
-            'type' => 'FeatureCollection',
-            'features' => []
-        ];
-        for ($i = 0; $i < count($streets['features']); $i++) {
-            $item = $streets['features'][$i];
-            $props = $item['properties'];
-            $name = $props['FULLNAME'];
-            $parsedName = NewYorkCity::parseStreetName($name);
-            $coords = $item['geometry']['coordinates'];
-
-            // Search the newly constructed array for duplicate values
-            $index = NewYorkCity::searchFeatures($newFile['features'], $parsedName, $coords);
-            if (!$index) {
-                $item['properties']['FULLNAME'] = $parsedName;
-                $newFile['features'][] = $item;
-            }
-        }
-        return json_encode($newFile);
-    }
-
-    public static function cleanUpData($boroughNum)
-    {
-        $boros = File::json(resource_path('geoJSON/nyc-boroughs.geojson'));
-        $streets = File::json(resource_path('geoJSON/nyc-streets.geojson'));
-        $newFile = [
-            'type' => 'FeatureCollection',
-            'features' => []
-        ];
-        $boroGeo = geoPHP::load(json_encode($boros['features'][$boroughNum]), 'json'); // 0 = staten, 1 = queens, 2 = brooklyn, 3 = manhattan, 4 = bronx 
-
-        for ($i = 0; $i < count($streets['features']); $i++) {
-            $item = $streets['features'][$i];
-            $streetGeo = geoPHP::load(json_encode($item), 'json');
-            if ($streetGeo->within($boroGeo)) {
-                $newFile['features'][] = $item;
-            }
-        }
-        return json_encode($newFile);
-    }
-
-    private function searchFeatures($features, $streetName, $coords)
-    {
-        for ($i = 0; $i < count($features); $i++) {
-            $item = $features[$i];
-            $props = $item['properties'];
-            $name = $props['FULLNAME'];
-            $parsedName = NewYorkCity::parseStreetName($name);
-            $coords1 = $item['geometry']['coordinates'];
-            $coordsEqual = $this->compareCoords($coords, $coords1);
-            if ($parsedName == $streetName && $coordsEqual) {
-                return $i;
-            }
-        }
-        return false;
-    }
-
-    private function findClosestPoint($coords, $lat, $lng)
-    {
-        $location1 = $this->locationToObject('Point', $lng, $lat);
-        $shortestDistance = 0;
-        $index = 0;
-
-        for ($i = 0; $i < count($coords); $i++) {
-            $item = $coords[$i];
-            $location2 = $this->locationToObject('Point', (float)$item[0], (float)$item[1]);
-            $distance = $location1->distance($location2);
-
-            if ($i === 0) {
-                $shortestDistance = $distance;
-                continue;
-            }
-
-            if ($distance < $shortestDistance) {
-                $shortestDistance = $distance;
-                $index = $i;
-            }
-        }
-
-        return $coords[$index];
-    }
-
     public static function parseStreetName($name)
     {
         if (!Str::contains($name, ' ')) {
@@ -304,14 +252,6 @@ class NewYorkCity extends Model
         return false;
     }
 
-    public function locationToObject($type = 'Point', $lng = -73.926186, $lat = 40.829659)
-    {
-        return geoPHP::load(json_encode([
-            'type' => $type,
-            'coordinates' => [$lng, $lat] // lng and lat format.
-        ]), 'json');
-    }
-
     private function compareCoords($coords1, $coords2)
     {
         $count = count($coords1);
@@ -326,7 +266,7 @@ class NewYorkCity extends Model
         return true;
     }
 
-    private function getStreetById($id)
+    public function getStreetById($id)
     {
         $allStreets = File::json(resource_path('geoJSON/nyc-streets.geojson'));
         $features = $allStreets['features'];
@@ -338,14 +278,61 @@ class NewYorkCity extends Model
         return false;
     }
 
-    public function getLocationByDistance($dx, $dy, $lat, $lng)
+    public static function removeDuplicateStreets($borough = 'manhattan')
     {
-        $rEarth = 6378; // in kilometers
-        $newLat  = $lat  + ($dy / $rEarth) * (180 / pi());
-        $newLng = $lng + ($dx / $rEarth) * (180 / pi()) / cos($lat * pi() / 180);
-        return [
-            $newLat,
-            $newLng
+        $streets = File::json(resource_path('geoJSON/boroughs/streets/' . $borough . '.geojson'));
+        $newFile = [
+            'type' => 'FeatureCollection',
+            'features' => []
         ];
+        for ($i = 0; $i < count($streets['features']); $i++) {
+            $item = $streets['features'][$i];
+            $props = $item['properties'];
+            $name = $props['FULLNAME'];
+            $parsedName = NewYorkCity::parseStreetName($name);
+            $coords = $item['geometry']['coordinates'];
+            // Search the newly constructed array for duplicate values
+            $index = NewYorkCity::searchFeatures($newFile['features'], $parsedName, $coords);
+            if (!$index) {
+                $item['properties']['FULLNAME'] = $parsedName;
+                $newFile['features'][] = $item;
+            }
+        }
+        return json_encode($newFile);
+    }
+
+    public function cleanUpData($boroughNum)
+    {
+        $boros = File::json(resource_path('geoJSON/nyc-boroughs.geojson'));
+        $streets = File::json(resource_path('geoJSON/nyc-streets.geojson'));
+        $newFile = [
+            'type' => 'FeatureCollection',
+            'features' => []
+        ];
+        $boroGeo = $this->reader->read(json_encode($boros['features'][$boroughNum]));
+        for ($i = 0; $i < count($streets['features']); $i++) {
+            $item = $streets['features'][$i];
+            $streetGeo = $this->reader->read(json_encode($item));
+            if ($this->geosEngine->within($streetGeo, $boroGeo)) {
+                $newFile['features'][] = $item;
+            }
+        }
+        return json_encode($newFile);
+    }
+
+    private function searchFeatures($features, $streetName, $coords)
+    {
+        for ($i = 0; $i < count($features); $i++) {
+            $item = $features[$i];
+            $props = $item['properties'];
+            $name = $props['FULLNAME'];
+            $parsedName = NewYorkCity::parseStreetName($name);
+            $coords1 = $item['geometry']['coordinates'];
+            $coordsEqual = $this->compareCoords($coords, $coords1);
+            if ($parsedName == $streetName && $coordsEqual) {
+                return $i;
+            }
+        }
+        return false;
     }
 }

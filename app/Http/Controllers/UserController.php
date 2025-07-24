@@ -14,6 +14,8 @@ use App\Models\User;
 use App\Http\Resources\Setting as SettingResource;
 use App\Models\NewYorkCity;
 use App\Rules\MatchOldPassword;
+use Brick\Geo\Engine\GeosEngine;
+use Brick\Geo\Point;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -402,6 +404,7 @@ class UserController extends Controller
             }
         }
 
+        $geos = new GeosEngine();
         // Need to get sum from column and then divide
         $answers = Answer::where('user_id', $userId)
             ->whereIn('correct', [0, 1])
@@ -411,9 +414,9 @@ class UserController extends Controller
         $count = count($answers);
         for ($i = 0; $i < $count; $i++) {
             $a = $answers[$i];
-            $answerLocation = $nyc->locationToObject('Point', $a->lng, $a->lat);
-            $quizLocation = $nyc->locationToObject('Point', $a->quiz->lng, $a->quiz->lat);
-            $margin += $answerLocation->distance($quizLocation);
+            $answerLocation = Point::xy($a->lng, $a->lat);
+            $quizLocation = Point::xy($a->quiz->lng, $a->quiz->lat);
+            $margin += $geos->distance($answerLocation, $quizLocation);
         }
         $marginOfError = $count === 0 ? $margin : $margin / $count;
 
