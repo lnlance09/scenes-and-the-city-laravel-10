@@ -3,9 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\Answer;
-use App\Models\NewYorkCity;
 use App\Models\Quiz;
 use App\Models\User;
+use Brick\Geo\Engine\GeosEngine;
+use Brick\Geo\Point;
 use Illuminate\Database\Seeder;
 
 class AnswerSeeder extends Seeder
@@ -15,6 +16,7 @@ class AnswerSeeder extends Seeder
      */
     public function run(): void
     {
+        $geos = new GeosEngine();
         $quizzes = Quiz::all();
         $users = User::all();
 
@@ -27,13 +29,12 @@ class AnswerSeeder extends Seeder
 
                 if (mt_rand(2, 3) % 2 === 0) {
                     // Create values that aren't correct
-                    $nyc = new NewYorkCity();
                     $newLat = (float)$quiz->lat + mt_rand(1, 8) / 100;
                     $newLng = (float)$quiz->lng + mt_rand(1, 8) / 100;
                     $status = 0;
-                    $loc1 = $nyc->locationToObject('Point', $quiz->lng, $quiz->lat);
-                    $loc2 = $nyc->locationToObject('Point', $newLng, $newLat);
-                    $distance = $loc1->distance($loc2);
+                    $loc1 = Point::xy($quiz->lng, $quiz->lat);
+                    $loc2 = Point::xy($newLng, $newLat);
+                    $distance = $geos->distance($loc1, $loc2);
                 } else {
                     // Use identical coordinates as the quiz's answer
                     $newLat = $quiz->lat;
