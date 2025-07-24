@@ -1,10 +1,9 @@
 import { Button, Container, Divider, Header, Label, Placeholder, Segment } from "semantic-ui-react"
 import { useDispatch, useSelector } from "react-redux"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { setAnswerGeoData, setHasAnswered } from "@reducers/home"
-import { formatMargin, formatPlural, timeout } from "@utils/general"
+import { formatMargin, timeout } from "@utils/general"
 import { GeoData, LocationPoint, ReduxState } from "@interfaces/index"
-import { useTimer } from "react-timer-hook"
 import { toast } from "react-toastify"
 import { toastConfig } from "@options/toast"
 import { dateFormat, nyc } from "@utils/date"
@@ -30,7 +29,6 @@ const AnswerSection = ({
     loading = true
 }: Props) => {
     const dispatch = useDispatch()
-
     const inverted = useSelector((state: ReduxState) => state.app.inverted)
     const language = useSelector((state: ReduxState) => state.app.language)
     const units = useSelector((state: ReduxState) => state.app.units)
@@ -38,40 +36,25 @@ const AnswerSection = ({
     const answer = useSelector((state: ReduxState) => state.home.answer)
     const isAuth = useSelector((state: ReduxState) => state.app.auth)
     const lang = translations[language]
-    const { hour, minute, second } = lang.time
 
     const { geoData, hasAnswered } = answer
+    const { lat, lng } = geoData
+
     const [flashOpen, setFlashOpen] = useState(false)
     const [modalVisible, setModalVisible] = useState(false)
     const [formDisabled, setFormDisabled] = useState(true)
 
-    const expirationDate = moment(date).tz(nyc).add(1, "days").startOf("day").toDate()
+    const expiry = moment(date).tz(nyc).add(1, "days").startOf("day").fromNow()
     const isToday = moment(date).tz(nyc).isSameOrAfter(moment().subtract(1, "days"))
     const canSubmit = isToday && !hasAnswered
     const displayForm = isToday || hasAnswered
     const revealAnswer = quiz.geoData !== null
 
-    useEffect(() => {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [modalVisible])
-
-    const { seconds, minutes, hours } = useTimer({
-        expiryTimestamp: moment(expirationDate).tz(nyc).toDate(),
-        interval: 1000,
-        onExpire: () => console.warn("onExpire called")
-    })
-    const secs = parseInt(`${seconds}`.padStart(1, "0"), 10)
-    const mins = parseInt(`${minutes}`.padStart(1, "0"), 10)
-    const hoursLeft = parseInt(`${hours}`.padStart(1, "0"), 10)
-
     const submitAnswer = () => {
-        if (geoData.lat === null || geoData.lng === null) {
+        if (lat === null || lng === null) {
             return
         }
-        const formData: LocationPoint = {
-            lat: geoData.lat,
-            lng: geoData.lng
-        }
+        const formData: LocationPoint = { lat, lng }
         const url = `${process.env.REACT_APP_API_BASE_URL}quiz/answer/${quiz.id}`
         axios
             .post(url, formData, {
@@ -92,36 +75,39 @@ const AnswerSection = ({
             })
     }
 
-    const showLocationDetails = (data: GeoData) => {
-        dispatch(setAnswerGeoData({ geoData: data }))
-    }
+    const showLocationDetails = (geoData: GeoData) => dispatch(setAnswerGeoData({ geoData }))
 
     const mapForm = (
         <Segment inverted={inverted} secondary={!inverted} stacked>
-            {geoData.lat !== null && geoData.lng !== null && (
+            {lat !== null && lng !== null && (
                 <MapComponent
                     callback={(data) => showLocationDetails(data)}
                     draggable={!hasAnswered}
-                    lat={geoData.lat}
-                    lng={geoData.lng}
+                    lat={lat}
+                    lng={lng}
                 />
             )}
             {hasAnswered && (
                 <>
-                    {!isToday && (
-                        <>
-                            <Divider hidden />
-                            <Label
-                                basic={!inverted}
-                                ribbon="right"
-                                color={answer.correct ? (inverted ? "green" : "blue") : "red"}
-                                size="large"
-                            >
-                                <i>
-                                    {answer.correct ? lang.answer.correct : lang.answer.incorrect}!
-                                </i>
-                            </Label>
-                        </>
+                    <Divider hidden />
+                    {!isToday ? (
+                        <Label
+                            basic={!inverted}
+                            ribbon="right"
+                            color={answer.correct ? (inverted ? "green" : "blue") : "red"}
+                            size="large"
+                        >
+                            <i>{answer.correct ? lang.answer.correct : lang.answer.incorrect}!</i>
+                        </Label>
+                    ) : (
+                        <Label
+                            basic={!inverted}
+                            ribbon="right"
+                            color={inverted ? "green" : "blue"}
+                            size="large"
+                        >
+                            <i>Pending</i>
+                        </Label>
                     )}
                     <Header
                         className="myAnswerHeader"
@@ -190,9 +176,7 @@ const AnswerSection = ({
                             {canSubmit && (
                                 <Header as="h2" inverted={inverted} textAlign="center">
                                     <Header.Content>{lang.answer.title}</Header.Content>
-                                    <Header.Subheader>
-                                        {`${hoursLeft} ${formatPlural(hoursLeft, hour)} ${mins} ${formatPlural(mins, minute)} ${secs} ${formatPlural(secs, second)}`}
-                                    </Header.Subheader>
+                                    <Header.Subheader>expires {expiry}</Header.Subheader>
                                 </Header>
                             )}
                             {!displayForm && (
@@ -208,7 +192,7 @@ const AnswerSection = ({
                             {canSubmit && (
                                 <Button
                                     className="submitQuizBtn"
-                                    color={inverted ? "green" : "black"}
+                                    color={inverted ? "green" : "blue"}
                                     content={lang.answer.submit}
                                     disabled={hasAnswered && geoData.hood !== null}
                                     fluid
@@ -257,7 +241,7 @@ const AnswerSection = ({
                     <Divider hidden />
                     <Button.Group fluid size="large" widths="eight">
                         <Button
-                            color="red"
+                            color={inverted ? "red" : "black"}
                             content={lang.main.finalAnswerDeny}
                             inverted={inverted}
                             disabled={formDisabled}

@@ -50,11 +50,6 @@
                     top: -28%;
                     left: 39%;
 
-                    @media only screen and (min-width: 320px) and (max-width: 767px) {
-                        top: -18%;
-                        left: 32%;
-                    }
-
                     .ui.segment {
                         border-radius: 50%;
                         padding: 0.5em;
@@ -65,6 +60,24 @@
                             border-radius: 50% !important;
                             height: 160px !important;
                             width: 160px !important;
+                        }
+                    }
+
+                    @media only screen and (min-width: 320px) and (max-width: 1024px) {
+                        top: -18%;
+                        left: 40%;
+
+                        .ui.segment {
+                            border-radius: 50%;
+                            padding: 0.5em;
+                            height: 80px !important;
+                            width: 80px !important;
+
+                            img, .ui.placeholder {
+                                border-radius: 50% !important;
+                                height: 80px !important;
+                                width: 80px !important;
+                            }
                         }
                     }
                 }

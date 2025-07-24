@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux"
 import { setDarkMode, setLanguage } from "@reducers/app"
 import { languages } from "@options/languages"
 import { ClassNames, Language, ReduxState, UnitsUpdate } from "@interfaces/index"
+import { TranslationBlock } from "@/interfaces/translations"
 import axios from "axios"
 import avatarPic from "@images/avatar/small/zoe.jpg"
 import avatarPicInverted from "@images/avatar/small/nan.jpg"
@@ -41,16 +42,14 @@ const HeaderComponent = ({
     const points = useSelector((state: ReduxState) => state.app.user.points)
     const inverted = useSelector((state: ReduxState) => state.app.inverted)
     const language = useSelector((state: ReduxState) => state.app.language)
-    const lang = translations[language]
+    const lang: TranslationBlock = translations[language]
 
     const [uploadModalOpen, setUploadModalOpen] = useState(false)
     const [sidebarVisible, setSidebarVisible] = useState(false)
-
+    const [logo, setLogo] = useState("")
     const [statsVisible, setStatsVisible] = useState(false)
     const [historyVisible, setHistoryVisible] = useState(false)
     const [historyItem, setHistoryItem] = useState("answers")
-
-    const [logo, setLogo] = useState("")
 
     const btnColor = inverted ? "green" : "blue"
 
@@ -143,7 +142,7 @@ const HeaderComponent = ({
                             className="menuItem"
                             onClick={() => {
                                 if (isAuth) {
-                                    updateSettings({ darkMode: !inverted ? true : false })
+                                    updateSettings({ darkMode: !inverted })
                                 }
                                 dispatch(setDarkMode({ darkMode: !inverted }))
                                 localStorage.setItem("inverted", !inverted ? "1" : "0")

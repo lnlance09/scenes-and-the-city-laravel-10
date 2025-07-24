@@ -2,10 +2,7 @@
 
 use App\Models\Quiz;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\URL;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,13 +15,10 @@ use Illuminate\Support\Facades\URL;
 |
 */
 
-$awsUrl = env('AWS_URL', 'https://blather-new.s3.us-west-2.amazonaws.com/');
+$awsUrl = env('AWS_URL', 'https://scenes-and-the-city.s3.us-west-2.amazonaws.com/');
 $baseUrl = env('APP_URL', 'https://scenesandthecity.com/');
 $siteName = env('APP_NAME', 'Scenes and the City');
-
 $seo = [
-    'author' => null,
-    'authorUrl' => null,
     'awsUrl' => $awsUrl,
     'baseUrl' => $baseUrl,
     'description' => $siteName . ' is a visual based trivia game where players guess the locations of scenes from movies, tv shows, and music videos',
@@ -33,50 +27,91 @@ $seo = [
         'width' => 313,
         'src' => $awsUrl . 'public/film.png'
     ],
-    'keywords' => 'sex and the city,trivia,pop culture,movies,tv shows,music videos,jeopardy',
+    'keywords' => 'sex and the city, trivia, pop culture, movies, tv shows, music videos, jeopardy',
     'schema' => '',
     'siteName' => $siteName,
     'title' => $siteName,
     'url' => $baseUrl
 ];
+$phrase = "Can you guess where in the city this scene was filmed?";
 
-Route::get('/', function () use ($seo) {
-    $seo['title'] = $seo['siteName'];
-    return view('index', $seo);
-});
+function validateDate($date, $format = 'Y-m-d')
+{
+    $d = DateTime::createFromFormat($format, $date);
+    return $d && strtolower($d->format($format)) === strtolower($date);
+}
 
-Route::get('/{quizId}', function ($quizId) use ($seo) {
-    $quiz = Quiz::where('quiz_id', $quizId)->first();
+function formatSeo(Quiz $quiz, string $slug, array $seo)
+{
+    $img = $seo['awsUrl'] . $quiz->scene->pics[0]->s3_url;
+    $data = @getimagesize($img);
+    if (!empty($data)) {
+        $seo['img'] = [
+            'src' => $img,
+            'height' => $data[1],
+            'width' => $data[0]
+        ];
+    }
+    $seo['url'] = $seo['baseUrl'] . $slug;
+    return $seo;
+}
+
+// Index page
+Route::get('/', function () use ($seo, $siteName, $phrase) {
+    $now = Carbon::now();
+    $today = $now->format('Y-m-d');
+    $quiz = Quiz::where([
+        'user_id' => 1,
+        'is_official' => true
+    ])
+        ->whereBetween('created_at', [
+            $today . ' 00:00:00',
+            $today . ' 23:59:59'
+        ])
+        ->with(['partTwo.partTwo'])
+        ->first();
     if (empty($quiz)) {
         return view('index', $seo);
     }
-
-    $img = $seo['awsUrl'] . $quiz->img;
-    $imgData = getimagesize($img);
-    $seo['img'] = [
-        'src' => $img,
-        'height' => $imgData[1],
-        'width' => $imgData[0]
-    ];
-    $seo['description'] = '';
-    $seo['url'] = $seo['baseUrl']  . $quizId;
+    $question = $quiz->generateQuestion();
+    $seo = formatSeo($quiz, $today, $seo);
+    $seo['title'] = $now->format('l, F j, Y') . ' - ' . $siteName;
+    $seo['description'] = $question . " " . $phrase;
     return view('index', $seo);
 });
 
-Route::get('sitemap', function () {
-    $sitemap = App::make('sitemap');
-    $sitemap->setCache('laravel.sitemap', 60);
+// Quiz id or date
+Route::get('/{quizId}', function ($quizId) use ($seo, $siteName, $phrase) {
+    $validQuizId = Quiz::isValidId($quizId);
+    if ($validQuizId) {
+        $quiz = Quiz::where('quiz_id', $quizId)->first();
+    }
+    if (validateDate($quizId, 'n-j-y')) {
+        $now = Carbon::createFromFormat('n-j-y', $quizId);
+        $today = $now->format('Y-m-d');
+        $quiz = Quiz::where([
+            'user_id' => 1,
+            'is_official' => true
+        ])
+            ->whereBetween('created_at', [
+                $today . ' 00:00:00',
+                $today . ' 23:59:59'
+            ])
+            ->with(['partTwo.partTwo'])
+            ->first();
+    }
+    if (empty($quiz)) {
+        return view('index', $seo);
+    }
+    $question = $quiz->generateQuestion();
+    $seo = formatSeo($quiz, $quizId, $seo);
 
-    if (!$sitemap->isCached()) {
-        // home page
-        $sitemap->add(URL::to('/'), Carbon::now()->subMinutes(52), '1.0', 'daily');
-
-        // quizzes
-        $quizzes = DB::table('quizzes')->orderBy('id', 'asc')->get();
-        foreach ($quizzes as $q) {
-            $sitemap->add(URL::to('/quizzes/' . $q->quiz_id), $q->updated_at, '0.8', 'daily');
-        }
+    if ($validQuizId) {
+        $seo['title'] = 'Quiz by ' . $quiz->user->username . ' - ' . $siteName;
+    } else {
+        $seo['title'] = $now->format('l, F j, Y') . ' - ' . $siteName;
     }
 
-    return $sitemap->render('xml');
+    $seo['description'] = $question . " " . $phrase;
+    return view('index', $seo);
 });

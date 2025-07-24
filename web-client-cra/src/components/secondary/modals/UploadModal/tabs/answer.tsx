@@ -43,7 +43,6 @@ const AnswerTab = ({
 }: Props) => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
-
     const user = useSelector((state: ReduxState) => state.app.user)
     const inverted = useSelector((state: ReduxState) => state.app.inverted)
     const language = useSelector((state: ReduxState) => state.app.language)

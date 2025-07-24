@@ -17,22 +17,20 @@ const LocationInfo = ({ answer, headerSize = "medium" }: Props) => {
     const language = useSelector((state: ReduxState) => state.app.language)
     const lang = translations[language]
 
+    const btnColor = inverted ? "green" : "blue"
+
     return (
         <Segment className="locationInfoSegment" inverted={inverted}>
             {answer.hood !== null && (
                 <Header inverted={inverted} size={headerSize}>
                     <Header.Content>
-                        <a href="#" onClick={(e) => e.preventDefault()}>
-                            {answer.streets[0]}
-                        </a>{" "}
-                        {lang.main.inBetween}{" "}
-                        <a href="#" onClick={(e) => e.preventDefault()}>
-                            {answer.streets[1]}
-                        </a>{" "}
-                        {lang.main.and}{" "}
-                        <a href="#" onClick={(e) => e.preventDefault()}>
-                            {answer.streets[2]}
-                        </a>
+                        {answer.streets.map((s) => (
+                            <>
+                                <a href="#" onClick={(e) => e.preventDefault()}>
+                                    {s}
+                                </a>{" "}
+                            </>
+                        ))}
                     </Header.Content>
                     <Header.Subheader>
                         <i>{lang.main.estimatedLocation}</i>
@@ -41,36 +39,25 @@ const LocationInfo = ({ answer, headerSize = "medium" }: Props) => {
             )}
             <List inverted={inverted}>
                 <List.Item>
-                    <List.Icon
-                        color={inverted ? "green" : "blue"}
-                        inverted={inverted}
-                        name="map marker"
-                    />
+                    <List.Icon color={btnColor} inverted={inverted} name="map marker" />
                     <List.Content>
                         {answer.lat}, {answer.lng}
                     </List.Content>
                 </List.Item>
                 <List.Item>
-                    <List.Icon
-                        color={inverted ? "green" : "blue"}
-                        inverted={inverted}
-                        name="building"
-                    />
+                    <List.Icon color={btnColor} inverted={inverted} name="building" />
                     <List.Content>{`${answer.hood}, ${capitalize(answer.borough)}`}</List.Content>
                 </List.Item>
                 <List.Item>
-                    <List.Icon
-                        color={inverted ? "green" : "blue"}
-                        inverted={inverted}
-                        name="google"
-                    />
+                    <List.Icon color={btnColor} inverted={inverted} name="google" />
                     <List.Content>
                         <a
                             className="streetViewLink"
                             onClick={(e) => {
+                                const { lat, lng } = answer
                                 e.preventDefault()
                                 window.open(
-                                    `http://maps.google.com/maps?q=&layer=c&cbll=${answer.lat},${answer.lng}`,
+                                    `http://maps.google.com/maps?q=&layer=c&cbll=${lat},${lng}`,
                                     "_blank"
                                 )
                             }}

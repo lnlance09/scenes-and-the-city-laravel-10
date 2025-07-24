@@ -191,7 +191,7 @@ class QuizController extends Controller
 
         $manager = new ImageManager(new Driver());
         $img = $manager->read($file);
-        $img->resize(320, 320);
+        // $img->resize(320, 320);
         $img->save($file);
 
         $s3Url = "quizzes/" . $quizId . ".jpg";

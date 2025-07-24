@@ -127,7 +127,15 @@
             "estimatedLocation": "Estimated Location",
             "away": "away"
         },
-        "months": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+        "months": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+        "aboutBlockOne": "Scenes and the City was created in 2025 after I unintentionally viewed a then 21 year old clip from the TV show Law & Order. A perennial favorite amongst fans of the cop drama genre, it's certainly no secret to longtime viewers that the show has been filmed in NYC. It's been on the air for well over year thirty years and thoughout the years an astonishingly large number of both famous and infamous acrors and actresses have appeared as cast members on the show.",
+        "aboutBlockTwo": "The particular clip that inspired me to create this app doesn't really feature any good actors or actresses though - unless you consider Ice-T a good actor and he's more of a rapper than an actor anyways. Despite the incredibly cheesy dialogue and the overly dramatic sound effects that accompany it, the most glaring thing that stood out to me was the red skyscraper in tbe background. I had seen it before. I knew it. I was 100% positive. It was on the Upper West Side. I just wasn't quite sure where yet...",
+        "aboutBlockThree": "And then I sort of had an epiphany moment. And, no. In case you're wondering, I'm not gay. Anyways, though... it began to dawn on me that so many movies and TV shows have been filmed in NYC even dating back to the 50's. There's something about the concrete jungle and its grit and its grime that simply cannot be replicated by any of the Hollywood studios. That's why the opening shots of the TV show Friends prominently feature an old building in the West Village but they only film the interior scenes in LA. Same with All in the Family.There's an energy and an atmoshphere in Manhattan than can't be replicated anywhere else.",
+        "privacy": "The only information that this app collects are your quizzes, guesses, and some very basic information about each user (username, email, and their settings like dark mode, hard mode, language, etc...) There is no advertising on this site.",
+        "rulesBlockOne": "The rules of the game are very simple - you are shown a picture of a scene from either a music video, movie, or TV show that was filmed in New York City and you have to guess the picture's location within a 0.15 mile radius.",
+        "rulesBlockTwo": "There is a new question from the official Scenes and the City account every day. Quizzes on weekdays are worth ten points. On weekends, there will be just one quiz for both Saturday and Sunday. The weekend quiz will be worth twenty points and will consist of two parts.",
+        "rulesBlockThree": "Each quiz has two hints. The first hint will be the neighborhood of thecscene's location. The second hint will be supplied by the creator of the quiz. Taking a hint will remove two points from the maximum ten point total that gets awarded upon providing a correct answer.",
+        "rulesBlockFour": "When hard mode is enabled, the margin of error goes from 0.15 miles to 0.075 miles and only one hint will be available instead of two."
     },
     "es": {
         "auth": {
@@ -257,7 +265,15 @@
             "estimatedLocation": "Ubicación Estimada",
             "away": "A {distance} de distancia"
         },
-        "months": ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+        "months": ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+        "aboutBlockOne": "Scenes and the City se creó en 2025 después de que vi sin querer un clip de hace 21 años de la serie de televisión 'Law & Order'. Un clásico entre los fans del género policial, no es ningún secreto para los espectadores de toda la vida que la serie se filmó en Nueva York. Lleva más de treinta años en antena y, a lo largo de estos años, una cantidad asombrosa de actores y actrices, tanto famosos como infames, han aparecido en el reparto.",
+        "aboutBlockTwo": "El clip en particular que me inspiró a crear esta aplicación no tiene buenos actores ni actrices, a menos que consideres a Ice-T un buen actor, y además es más rapero que actor. A pesar de los diálogos increíblemente cursis y los efectos de sonido exageradamente dramáticos que los acompañan, lo que más me llamó la atención fue el rascacielos rojo al fondo. Lo había visto antes. Lo conocía. Estaba completamente seguro. Estaba en el Upper West Side. Simplemente no estaba seguro de dónde...",
+        "aboutBlockThree": "Y entonces tuve una especie de epifanía. Y no. Por si se lo preguntan, no soy gay. En fin... empecé a darme cuenta de que tantas películas y series se han filmado en Nueva York, incluso desde los años 50. Hay algo en la jungla de asfalto, su suciedad y su mugre que ningún estudio de Hollywood puede replicar. Por eso, en las primeras tomas de la serie Friends, aparece un viejo edificio en el West Village, pero solo filman las escenas de interiores en Los Ángeles. Lo mismo ocurre con 'All in the Family'. Hay una energía y una atmósfera en Manhattan que no se pueden replicar en ningún otro lugar.",
+        "privacy": "La única información que recopila esta aplicación son tus cuestionarios, conjeturas y información muy básica sobre cada usuario (nombre de usuario, correo electrónico y su configuración como modo oscuro, modo difícil, idioma, etc.) No hay publicidad en este sitio.",
+        "rulesBlockOne": "Las reglas del juego son muy simples: se te muestra una imagen de una escena de un video musical, una película o un programa de televisión filmado en la ciudad de Nueva York y tienes que adivinar la ubicación de la imagen dentro de un radio de 0,15 millas.",
+        "rulesBlockTwo": "Cada día hay una nueva pregunta de la cuenta oficial de Scenes and the City. Los cuestionarios entre semana valen diez puntos. Los fines de semana, solo habrá un cuestionario, tanto el sábado como el domingo. El cuestionario del fin de semana vale veinte puntos y consta de dos partes.",
+        "rulesBlockThree": "Cada cuestionario tiene dos pistas. La primera será el vecindario donde se ubica la escena. La segunda la proporcionará el creador del cuestionario. Aceptar una pista restará dos puntos del total máximo de diez puntos que se otorgan por responder correctamente.",
+        "rulesBlockFour": "Cuando el modo difícil está habilitado, el margen de error pasa de 0,15 millas a 0,075 millas y solo estará disponible una pista en lugar de dos."
     },
     "cn": {
         "auth": {
@@ -387,6 +403,14 @@
             "estimatedLocation": "预计位置",
             "away": "离开"
         },
-        "months": ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"]
+        "months": ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
+        "aboutBlockOne": "《城市与场景》创作于2025年，源于我无意中看到了一段21年前的电视剧《法律与秩序》的片段。这部剧一直是警匪剧迷的最爱，而对于长期观众来说，这部剧是在纽约拍摄的，这早已不是什么秘密。该剧播出至今已超过30年，多年来，众多知名和不为人知的演员都曾出演过该剧。",
+        "aboutBlockTwo": "不过，激发我创作这款应用的那个片段，其实没什么出色的演员——除非你认为 Ice-T 是个好演员，而他其实更像个说唱歌手而不是演员。尽管对话极其俗气，音效也过于夸张，但最让我印象深刻的是背景中那座红色的摩天大楼。我以前见过它。我知道它。我百分之百肯定。它就在上西区。只是我还不太确定具体位置……",
+        "aboutBlockThree": "然后我突然顿悟了。而且，不。如果你想知道的话，我不是同性恋。不过，无论如何……我开始明白，早在上世纪50年代，纽约就有很多电影和电视剧拍摄。这片水泥丛林的粗粝和污秽，是任何好莱坞电影公司都无法复制的。这就是为什么电视剧《老友记》的开场镜头突出了西村的一栋老建筑，但他们只在洛杉矶拍摄了室内场景。《一家子》也是如此。曼哈顿的活力和氛围是其他任何地方都无法复制的。",
+        "privacy": "该应用程序收集的唯一信息是您的测验、猜测以及有关每个用户的一些非常基本的信息（用户名、电子邮件及其设置，如暗模式、硬模式、语言等......）本网站上没有广告。",
+        "rulesBlockOne": "游戏规则非常简单——向你展示一张在纽约市拍摄的音乐视频、电影或电视节目场景的图片，你必须猜出图片在 0.15 英里半径范围内的位置。",
+        "rulesBlockTwo": "每日都会有来自“Scenes and the City”官方账号的新题目。工作日的测验每题10分。周末周六和周日各有一道测验。周末测验每题20分，包含两部分。",
+        "rulesBlockThree": "每个测验有两个提示。第一个提示是场景所在地附近的地点。第二个提示由测验创建者提供。答对提示将扣除两分，最高可获得十分（答对后可获得）。",
+        "rulesBlockFour": "启用困难模式时，误差范围从 0.15 英里变为 0.075 英里，并且仅提供一个提示而不是两个。"
     }
 }

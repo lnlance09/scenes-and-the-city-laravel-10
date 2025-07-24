@@ -4,6 +4,8 @@ import { useCallback } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { ReduxState } from "@interfaces/index"
 import { FileWithPath, useDropzone } from "react-dropzone"
+import { accept } from "@/options/files"
+import { onDrop } from "@/utils/files"
 import classNames from "classnames"
 import translations from "@assets/translate.json"
 
@@ -13,7 +15,6 @@ type Props = {
 
 const ImageUpload = ({ callback }: Props) => {
     const dispatch = useDispatch()
-
     const img = useSelector((state: ReduxState) => state.form.img)
     const inverted = useSelector((state: ReduxState) => state.app.inverted)
     const language = useSelector((state: ReduxState) => state.app.language)
@@ -28,44 +29,19 @@ const ImageUpload = ({ callback }: Props) => {
         }
     }
 
-    const onDrop = useCallback((files: FileWithPath[]) => {
-        if (files.length !== 1) {
-            return
-        }
-
-        const file = files[0]
-        dispatch(setFile({ file }))
-
-        const reader = new FileReader()
-        reader.onabort = () => console.error("file reading was aborted")
-        reader.onerror = () => console.error("file reading has failed")
-        reader.onload = () => {
-            const img = document.createElement("img")
-            img.src = typeof reader.result === "string" ? reader.result : ""
-            img.onload = () => {
-                const data = {
-                    dimensions: {
-                        height: img.height,
-                        width: img.width
-                    },
-                    path: file.path,
-                    src: img.src
-                }
-                dispatch(setImg({ data }))
-            }
-        }
-        reader.readAsDataURL(file)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-
     const { getRootProps, getInputProps, open } = useDropzone({
-        accept: {
-            "image/png": [".png"],
-            "image/jpg": [".jpg", ".jpeg"],
-            "image/gif": [".gif"]
-        },
+        accept,
         maxFiles: 1,
-        onDrop
+        onDrop: useCallback(
+            (files: FileWithPath[]) =>
+                onDrop(
+                    files,
+                    (file) => dispatch(setFile({ file })),
+                    (data) => dispatch(setImg({ data }))
+                ),
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+            []
+        )
     })
 
     const monroeClass = classNames({

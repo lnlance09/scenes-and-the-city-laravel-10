@@ -28,7 +28,6 @@ const QuizSearch = ({
     setQuizzesVisible
 }: Props) => {
     const dispatch = useDispatch()
-
     const partTwo = useSelector((state: ReduxState) => state.form.partTwo)
     const quizzes = useSelector((state: ReduxState) => state.form.quizzes)
     const inverted = useSelector((state: ReduxState) => state.app.inverted)
@@ -48,7 +47,7 @@ const QuizSearch = ({
                 }
             })
             .then((response) => {
-                const { quizzes } = response.data
+                const { quizzes } = response.data.data
                 dispatch(setQuizzes({ quizzes }))
                 setQuizzesVisible(true)
             })
@@ -67,15 +66,15 @@ const QuizSearch = ({
                         }}
                     >
                         <Table.Cell>
-                            <Header inverted={inverted} size="small">
+                            <Header inverted={inverted} size="tiny">
                                 <ImageComponent
                                     alt={`Scene from ${quiz.video.title} (${quiz.video.year})`}
                                     inverted={inverted}
-                                    size="small"
+                                    size="large"
                                     src={quiz.img}
                                 />
                                 <Header.Content>
-                                    {`Scene from ${quiz.video.title} (${quiz.video.year})`}
+                                    {`${quiz.video.title} (${quiz.video.year})`}
                                     <Header.Subheader>
                                         {translateDate(quiz.createdAt, language)}
                                     </Header.Subheader>
@@ -94,7 +93,7 @@ const QuizSearch = ({
         icon: true,
         input: true,
         fluid: true,
-        big: true,
+        large: true,
         inverted
     })
 
@@ -116,7 +115,7 @@ const QuizSearch = ({
             </div>
             {!partTwoEmpty && (
                 <Segment className="activePartTwoHeader" inverted={inverted}>
-                    <Header inverted={inverted} size="small">
+                    <Header inverted={inverted} size="tiny">
                         <ImageComponent
                             alt={`Scene from ${partTwo.video.title} (${partTwo.video.year})`}
                             inverted={inverted}

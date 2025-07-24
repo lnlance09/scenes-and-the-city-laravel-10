@@ -15,7 +15,7 @@ import translations from "@assets/translate.json"
 import queryString from "query-string"
 
 const animation = "fade"
-const duration = 600
+const duration = 1600
 
 type StateType = "form" | "admin"
 type Props = {
@@ -40,10 +40,8 @@ const VideoSearch = ({
     setVideosVisible
 }: Props) => {
     const dispatch = useDispatch()
-
     const video = useSelector((state: ReduxState) => state[initialState].video)
     const videos = useSelector((state: ReduxState) => state[initialState].videos)
-
     const inverted = useSelector((state: ReduxState) => state.app.inverted)
     const language = useSelector((state: ReduxState) => state.app.language)
     const lang: TranslationBlock = translations[language]

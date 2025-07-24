@@ -1,6 +1,7 @@
 import { Button, Dimmer, Grid, Header, Placeholder, Segment } from "semantic-ui-react"
 import { useDispatch, useSelector } from "react-redux"
 import { ReduxState } from "@interfaces/index"
+import { useRef } from "react"
 import { LoremIpsum } from "lorem-ipsum"
 import { toast } from "react-toastify"
 import { toastConfig } from "@options/toast"
@@ -9,6 +10,7 @@ import axios from "axios"
 import Typewriter from "typewriter-effect"
 import translations from "@assets/translate.json"
 import ImageComponent from "../primary/Image"
+import audioFile from "@assets/satc-jingle.m4a"
 
 type Props = {
     callback: () => any
@@ -17,7 +19,6 @@ type Props = {
 
 const HintsSection = ({ callback = () => null, loading = true }: Props) => {
     const dispatch = useDispatch()
-
     const hintsUsed = useSelector((state: ReduxState) => state.home.answer.hintsUsed)
     const quiz = useSelector((state: ReduxState) => state.home.quiz)
     const partTwo = useSelector((state: ReduxState) => state.home.partTwo)
@@ -29,6 +30,8 @@ const HintsSection = ({ callback = () => null, loading = true }: Props) => {
 
     const showCharOne = quiz.char.img !== null
     const showCharTwo = partTwo === null ? false : partTwo.char.img
+
+    const audioRef = useRef<HTMLAudioElement>(null)
 
     const getHint = (quizId: string, number: number) => {
         const url = `${process.env.REACT_APP_API_BASE_URL}quiz/hint/${quizId}`
@@ -43,14 +46,18 @@ const HintsSection = ({ callback = () => null, loading = true }: Props) => {
                 }
             )
             .then((response) => {
-                // const toastMsg = `${hintsUsed === 0 ? "First" : "Second"} hint has been used!`
-                dispatch(setHintsUsed({ amount: hintsUsed + 1 }))
+                dispatch(setHintsUsed({ hintsUsed: hintsUsed + 1 }))
                 if (number === 1) {
                     dispatch(setHintOne({ hint: response.data.hint }))
                 }
                 if (number === 2) {
                     dispatch(setHintTwo({ hint: response.data.hint }))
                 }
+                if (audioRef.current !== null) {
+                    audioRef.current.play()
+                }
+                const toastMsg = `${hintsUsed === 0 ? "First" : "Second"} hint has been used! -2 point.`
+                toast.success(toastMsg, toastConfig)
             })
             .catch((error) => {
                 toast.error(error.response.data.message, toastConfig)
@@ -180,6 +187,7 @@ const HintsSection = ({ callback = () => null, loading = true }: Props) => {
                     </Grid.Row>
                 </Grid>
             </Segment>
+            <audio ref={audioRef} src={audioFile} />
         </div>
     )
 }

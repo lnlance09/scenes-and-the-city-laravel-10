@@ -19,12 +19,6 @@ const QuestionSection = ({ loading = true, quiz404 = false }: Props) => {
     const language = useSelector((state: ReduxState) => state.app.language)
     const lang = translations[language]
 
-    const questionContainerClass = classNames({
-        questionSectionComponent: true,
-        quiz404,
-        inverted
-    })
-
     const generateQuestion = () => {
         const { action, char, video } = quiz
         const year = video.year === null ? 2000 : video.year
@@ -39,7 +33,7 @@ const QuestionSection = ({ loading = true, quiz404 = false }: Props) => {
         const partTwoYear = partTwo.video.year
         const timing = partTwoYear > year ? "later" : "earlier"
         const phrase = partTwoYear > year ? "would be" : "was"
-        const yearsDiff = partTwoYear > year ? partTwoYear - year : partTwoYear - year
+        const yearsDiff = partTwoYear > year ? partTwoYear - year : year - partTwoYear
 
         if (distance) {
             const distanceFormat = formatMargin(distance, units)
@@ -47,7 +41,7 @@ const QuestionSection = ({ loading = true, quiz404 = false }: Props) => {
             text = `${text} - approximately ${distanceEl} away from`
         }
 
-        text = ` where ${wrapText(charName2)} ${phrase} seen ${action2}`
+        text = `${text} where ${wrapText(charName2)} ${phrase} seen ${action2}`
 
         if (partTwoYear === year) {
             return `${text} during the same year.`
@@ -55,6 +49,14 @@ const QuestionSection = ({ loading = true, quiz404 = false }: Props) => {
 
         return `${text} ${wrapText(`${yearsDiff} ${formatPlural(yearsDiff, "year")} ${timing}`)}.`
     }
+
+    const text = quiz404 ? lang.main.errorMessage : generateQuestion()
+
+    const questionContainerClass = classNames({
+        questionSectionComponent: true,
+        quiz404,
+        inverted
+    })
 
     return (
         <div className={questionContainerClass}>
@@ -68,13 +70,7 @@ const QuestionSection = ({ loading = true, quiz404 = false }: Props) => {
                         textAlign="center"
                     >
                         <Typewriter
-                            onInit={(typewriter) => {
-                                typewriter
-                                    .typeString(
-                                        quiz404 ? lang.main.errorMessage : generateQuestion()
-                                    )
-                                    .start()
-                            }}
+                            onInit={(typewriter) => typewriter.typeString(text).start()}
                             options={{ delay: 75 }}
                         />
                     </Header>

@@ -52,7 +52,7 @@ const ImageSection = ({
         mainContainer: true,
         quiz: validQuizId,
         afterToday: isInFuture,
-        quiz404: quiz404
+        quiz404
     })
 
     return (
@@ -67,7 +67,7 @@ const ImageSection = ({
                     </>
                 ) : (
                     <Header className="dateHeader" inverted={inverted} size="large">
-                        {title}
+                        {((!quiz404 && validQuizId) || !validQuizId) && title}
                         {!validQuizId && (
                             <Header.Subheader>
                                 <div className="navigatePrev" onClick={() => goToLastWeek(date)}>
@@ -83,7 +83,7 @@ const ImageSection = ({
                                 <div className="clearfix"></div>
                             </Header.Subheader>
                         )}
-                        {validQuizId && quiz.id && (
+                        {validQuizId && !quiz404 && quiz.id && (
                             <Header.Subheader>
                                 {capitalize(lang.main.by)} {quiz.username} -{" "}
                                 {moment(quiz.createdAt).tz(nyc).fromNow()}

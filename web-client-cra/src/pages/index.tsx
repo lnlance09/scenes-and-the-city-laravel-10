@@ -15,10 +15,8 @@ import {
 import { dateFormat, isSunday, isWeekend, nyc } from "@utils/date"
 import { timeout } from "@utils/general"
 import { useNavigate, useParams } from "react-router-dom"
-import { toast, ToastContainer } from "react-toastify"
-import { toastConfig } from "@options/toast"
+import { ToastContainer } from "react-toastify"
 import { ReduxState } from "../interfaces"
-import { TranslationBlock } from "../interfaces/translations"
 import axios from "axios"
 import classNames from "classnames"
 import isAlphanumeric from "validator/lib/isAlphanumeric"
@@ -30,7 +28,6 @@ import AnswerSection from "@/components/secondary/Answer"
 import HintsSection from "@/components/secondary/Hints"
 import ImageSection from "@/components/secondary/Image"
 import QuestionSection from "@/components/secondary/Question"
-import translations from "@assets/translate.json"
 import { Segment } from "semantic-ui-react"
 
 const defaultDate = moment().tz(nyc).format(dateFormat)
@@ -47,8 +44,6 @@ const IndexPage = () => {
     const hasAnswered = useSelector((state: ReduxState) => state.home.answer.hasAnswered)
     const inverted = useSelector((state: ReduxState) => state.app.inverted)
     const verify = useSelector((state: ReduxState) => state.app.verify)
-    const language = useSelector((state: ReduxState) => state.app.language)
-    const lang: TranslationBlock = translations[language]
 
     const [animation, setAnimation] = useState("fly left")
     const [date, setDate] = useState("")
@@ -75,16 +70,9 @@ const IndexPage = () => {
             getQuiz(`/${quizId}`)
             return
         }
-
         if (validDate && typeof slug === "string") {
             setDate(slug)
-            if (!isAfterToday(slug)) {
-                getQuiz(`/show/date?date=${slug}`)
-                return
-            }
-
-            setLoading(false)
-            setQuiz404(true)
+            getQuiz(`/show/date?date=${slug}`)
             return
         }
         navigate(`/${defaultDate}`)
@@ -114,18 +102,19 @@ const IndexPage = () => {
                 dispatch(setQuiz({ quiz }))
                 dispatch(setPartTwo({ partTwo }))
 
-                dispatch(setHasAnswered({ hasAnswered: answer.hasAnswered }))
-                dispatch(setHintsUsed({ amount: answer.hintsUsed }))
-                dispatch(setAnswerGeoData({ geoData: answer.geoData }))
-                dispatch(setCorrect({ correct: answer.correct }))
-                if (answer.hasAnswered) {
+                const { correct, hasAnswered, geoData, hintsUsed } = answer
+                dispatch(setHasAnswered({ hasAnswered }))
+                dispatch(setHintsUsed({ hintsUsed }))
+                dispatch(setAnswerGeoData({ geoData }))
+                dispatch(setCorrect({ correct }))
+
+                if (hasAnswered) {
                     dispatch(setMarginOfError({ margin: answer.marginOfError }))
                 }
             })
             .catch(() => {
                 setQuiz404(true)
                 dispatch(clearQuiz())
-                toast.error(lang.main.toastErrorMessage, toastConfig)
             })
 
         await timeout(700)
@@ -142,6 +131,14 @@ const IndexPage = () => {
         })
     }
 
+    const goToToday = () => {
+        const today = isSunday()
+            ? moment().tz(nyc).subtract(1, "days").format(dateFormat)
+            : moment().tz(nyc).format(dateFormat)
+        setDate(today)
+        navigate(`/${today}`)
+    }
+
     const homePageClass = classNames({
         homePage: true,
         inverted
@@ -153,25 +150,17 @@ const IndexPage = () => {
                 date={date}
                 loginModalOpen={loginModal}
                 onClickDate={(d: string) => {
-                    setAnimation(
-                        moment(d, dateFormat).isAfter(moment(date, dateFormat))
-                            ? "fly left"
-                            : "fly right"
-                    )
+                    const direction = moment(d, dateFormat).isAfter(moment(date, dateFormat))
+                        ? "left"
+                        : "right"
+                    setAnimation(`fly ${direction}`)
                     setDate(d)
                     navigate(`/${moment(d).tz(nyc).format(dateFormat)}`)
                 }}
-                onClickLogo={() => {
-                    const d = isSunday()
-                        ? moment().tz(nyc).subtract(1, "days").format(dateFormat)
-                        : moment().tz(nyc).format(dateFormat)
-                    setDate(d)
-                    navigate(`/${d}`)
-                }}
+                onClickLogo={() => goToToday()}
                 showDates={!validQuizId}
                 toggleLoginModal={() => toggleLoginModal(true)}
             />
-
             <ImageSection
                 animation={animation}
                 date={date}
@@ -180,13 +169,7 @@ const IndexPage = () => {
                     setDate(lastWeek)
                     navigate(`/${lastWeek}`)
                 }}
-                goToToday={() => {
-                    const today = isSunday()
-                        ? moment().tz(nyc).subtract(1, "days").format(dateFormat)
-                        : moment().tz(nyc).format(dateFormat)
-                    setDate(today)
-                    navigate(`/${today}`)
-                }}
+                goToToday={() => goToToday()}
                 imgVisible={imgVisible}
                 isInFuture={isInFuture}
                 isWeekend={isWeekend(date)}
