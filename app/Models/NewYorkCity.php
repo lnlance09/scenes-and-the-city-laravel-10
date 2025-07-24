@@ -38,7 +38,6 @@ class NewYorkCity extends Model
     {
         $json = File::json(resource_path('geoJSON/nyc-boroughs.geojson'));
         $key = array_search($borough, $this->boroughs);
-
         $location = Point::xy($lng, $lat);
         $polygon = $this->reader->read(json_encode($json['features'][$key]['geometry']));
         return $this->geosEngine->contains($polygon, $location);
@@ -49,7 +48,6 @@ class NewYorkCity extends Model
         $json = File::json(resource_path('geoJSON/boroughs/' . $borough . '.geojson'));
         $hoods = $json['features'];
         $location = Point::xy($lng, $lat);
-
         foreach ($hoods as $hood) {
             $area = $this->reader->read(json_encode($hood['geometry']));
             if ($this->geosEngine->contains($area, $location)) {
@@ -61,7 +59,12 @@ class NewYorkCity extends Model
 
     public function getClosestStreet($lng, $lat, $borough, $ignore = [], $intersectsWith = null)
     {
-        $file = File::json(resource_path('./geoJSON/boroughs/streets/' . $borough . '.geojson'));
+        if ($borough === 'bridges') {
+            $file = File::json(resource_path('./geoJSON/nyc-bridges-and-tunnels.json'));
+        } else {
+            $file = File::json(resource_path('./geoJSON/boroughs/streets/' . $borough . '.geojson'));
+        }
+
         $location = Point::xy($lng, $lat);
         $streets = $file['features'];
         $shortestDistance = 0;
@@ -95,19 +98,17 @@ class NewYorkCity extends Model
 
     private function findClosestPoint($coords, $lat, $lng)
     {
-        $location1 = $this->locationToObject('Point', $lng, $lat);
+        $location1 = Point::xy($lng, $lat);
         $shortestDistance = 0;
         $index = 0;
         for ($i = 0; $i < count($coords); $i++) {
             $item = $coords[$i];
             $location2 = Point::xy($item[1], $item[0]);
             $distance = $this->geosEngine->distance($location1, $location2);
-
             if ($i === 0) {
                 $shortestDistance = $distance;
                 continue;
             }
-
             if ($distance < $shortestDistance) {
                 $shortestDistance = $distance;
                 $index = $i;
@@ -215,7 +216,15 @@ class NewYorkCity extends Model
             ];
         }
 
-        return false;
+        $street = $this->getClosestStreet($lng, $lat, 'bridges');
+        $streetName = $street['properties']['FULLNAME'];
+        return [
+            'borough' => null,
+            'hood' => null,
+            'streets' => [
+                $streetName
+            ]
+        ];
     }
 
     public static function parseStreetName($name)

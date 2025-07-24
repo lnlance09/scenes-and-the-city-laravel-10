@@ -1,5 +1,6 @@
 import { Button, Divider, Form, Grid, Header, TextArea } from "semantic-ui-react"
 import { setLocation, setHint } from "@reducers/form"
+import { TranslationBlock } from "@interfaces/translations"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useSelector, useDispatch } from "react-redux"
@@ -46,7 +47,7 @@ const AnswerTab = ({
     const user = useSelector((state: ReduxState) => state.app.user)
     const inverted = useSelector((state: ReduxState) => state.app.inverted)
     const language = useSelector((state: ReduxState) => state.app.language)
-    const lang = translations[language]
+    const lang: TranslationBlock = translations[language]
 
     const action = useSelector((state: ReduxState) => state.form.action)
     const file = useSelector((state: ReduxState) => state.form.file)
@@ -55,6 +56,7 @@ const AnswerTab = ({
     const location = useSelector((state: ReduxState) => state.form.location)
     const hint = useSelector((state: ReduxState) => state.form.hint)
     const partTwo = useSelector((state: ReduxState) => state.form.partTwo)
+    const { lat, lng } = location
 
     const [formLoading, setFormLoading] = useState(false)
 
@@ -65,8 +67,8 @@ const AnswerTab = ({
             file: file === null ? "" : file,
             videoId: video.id === null ? "" : `${video.id}`,
             charId: char.id === null ? "" : `${char.id}`,
-            lat: location.lat === null ? "" : `${location.lat}`,
-            lng: location.lng === null ? "" : `${location.lng}`,
+            lat: lat === null ? "" : `${lat}`,
+            lng: lng === null ? "" : `${lng}`,
             hint
         }
         if (partTwo && partTwo.id) {
@@ -174,16 +176,14 @@ const AnswerTab = ({
                 </Grid.Row>
                 <Grid.Row>
                     <Grid.Column>
-                        {location.lat && location.lng && (
+                        {lat && lng && (
                             <MapComponent
                                 callback={(data) => showLocationDetails(data)}
-                                lat={location.lat}
-                                lng={location.lng}
+                                lat={lat}
+                                lng={lng}
                             />
                         )}
-                        {location.hood !== null && (
-                            <LocationInfo answer={location} headerSize="medium" />
-                        )}
+                        <LocationInfo answer={location} headerSize="medium" />
                     </Grid.Column>
                     <Grid.Column>
                         <Form size="large">

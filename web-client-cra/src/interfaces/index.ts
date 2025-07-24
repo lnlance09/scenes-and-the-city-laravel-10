@@ -66,8 +66,8 @@ export type CharPicPayload = {
 export type GeoData = {
     lat: Nullable<number>
     lng: Nullable<number>
-    hood: string
-    borough: string
+    hood: Nullable<string>
+    borough: Nullable<string>
     streets: string[]
 }
 

@@ -115,7 +115,7 @@ const AnswerSection = ({
                         inverted={inverted}
                         size="large"
                     />
-                    {geoData !== null && <LocationInfo answer={geoData} />}
+                    <LocationInfo answer={geoData} />
                     {!isToday && (
                         <Segment color={inverted ? "green" : "blue"} inverted placeholder>
                             <Header
