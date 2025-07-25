@@ -5,7 +5,6 @@ import { setDarkMode, setLanguage } from "@reducers/app"
 import { languages } from "@options/languages"
 import { ClassNames, Language, ReduxState, UnitsUpdate } from "@interfaces/index"
 import { TranslationBlock } from "@/interfaces/translations"
-import { ReactSVG } from "react-svg"
 import axios from "axios"
 import avatarPic from "@images/avatar/small/zoe.jpg"
 import avatarPicInverted from "@images/avatar/small/nan.jpg"
@@ -90,9 +89,7 @@ const HeaderComponent = ({
             <Menu className="headerMenu" inverted={inverted} pointing secondary>
                 <Container>
                     <div className="brandName">
-                        {logo !== "" && (
-                            <ReactSVG onClick={() => onClickLogo()} src={`${logo}.svg`} />
-                        )}
+                        {logo !== "" && <img id="logo" src={`${logo}.png`} />}
                         {inverted ? (
                             <Icon
                                 color="green"
