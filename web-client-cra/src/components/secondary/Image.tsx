@@ -102,7 +102,7 @@ const ImageSection = ({
                     </Placeholder>
                 )}
                 <Transition animation={animation} duration={400} visible={imgVisible}>
-                    <div>
+                    <div style={{ width: "100%", minHeight: "360px" }}>
                         {imgVisible && (
                             <ImageComponent
                                 callback={() => {
@@ -113,7 +113,6 @@ const ImageSection = ({
                                 }}
                                 centered
                                 inverted={inverted}
-                                style={{ minHeight: "360px" }}
                                 src={quiz.img}
                             />
                         )}
