@@ -1,9 +1,9 @@
 import { Grid, Segment } from "semantic-ui-react"
 import { useSelector } from "react-redux"
-import { dateFormat, isSunday, nyc } from "@utils/date"
+import { dateFormat, nyc } from "@utils/date"
 import { ReduxState } from "@interfaces/index"
+import { DateTime } from "luxon"
 import classNames from "classnames"
-import moment from "moment-timezone"
 import translations from "@assets/translate.json"
 
 type Props = {
@@ -20,14 +20,12 @@ const DateGrid = ({ date, onClickDate = () => null }: Props) => {
     const lastIndex = days.length - 1
     const weekend = days[lastIndex]
 
-    const m = moment(date).tz(nyc)
-    const startWeek = (isSunday(date) ? m.subtract(1, "days") : m).startOf("week").add(1, "days")
-    const sat = moment(startWeek, dateFormat).add(5, "days")
-    const sun = moment(startWeek, dateFormat).add(6, "days")
+    const dt = DateTime.fromFormat(date, dateFormat).setZone(nyc)
+    const startWeek = dt.startOf("week")
+    const sat = startWeek.plus({ days: 5 })
+    const sun = startWeek.plus({ days: 6 })
 
-    const gridClass = classNames({
-        dateGridComponent: true
-    })
+    const gridClass = classNames({ dateGridComponent: true })
 
     return (
         <div className={gridClass}>
@@ -47,27 +45,27 @@ const DateGrid = ({ date, onClickDate = () => null }: Props) => {
                         if (i === lastIndex) {
                             return false
                         }
-                        const weekdate = moment(startWeek).tz(nyc).add(i, "days")
+                        const weekdate = startWeek.plus({ days: i })
                         return (
                             <Grid.Column
-                                className={weekdate.isSame(date, "day") ? "active" : ""}
+                                className={dt.hasSame(weekdate, "day") ? "active" : ""}
                                 key={d}
-                                onClick={() => onClickDate(weekdate.format(dateFormat))}
+                                onClick={() => onClickDate(weekdate.toFormat(dateFormat))}
                             >
                                 {d}
-                                <p className="dateSubHeader">{weekdate.format("MM/DD")}</p>
+                                <p className="dateSubHeader">
+                                    {weekdate.month}/{weekdate.day}
+                                </p>
                             </Grid.Column>
                         )
                     })}
                     <Grid.Column
-                        className={
-                            sat.isSame(date, "day") || sun.isSame(date, "day") ? "active" : ""
-                        }
-                        onClick={() => onClickDate(sat.format(dateFormat))}
+                        className={dt.hasSame(sat, "day") || dt.hasSame(sun, "day") ? "active" : ""}
+                        onClick={() => onClickDate(sat.toFormat(dateFormat))}
                     >
                         {weekend}
                         <p className="dateSubHeader">
-                            {sat.format("MM/DD")} + {sun.format("MM/DD")}
+                            {sat.month}/{sat.day} + {sun.month}/{sun.day}
                         </p>
                     </Grid.Column>
                 </Grid.Row>

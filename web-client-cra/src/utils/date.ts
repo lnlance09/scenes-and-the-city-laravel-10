@@ -1,36 +1,42 @@
-import { Language, Nullable } from "../interfaces"
+import { Language } from "../interfaces"
+import { DateTime } from "luxon"
 import { translateWeekday, translateMonth } from "./translate"
-import moment from "moment-timezone"
 
-export const dateFormat = "M-D-YY"
-
+export const dateFormat = "M-d-yyyy"
+export const tsFormat = "yyyy-MM-dd HH:mm:ss"
 export const nyc = "America/New_York"
 
-export const isSunday = (d: Nullable<string> = null) =>
-    d ? moment(d).tz(nyc).day() === 0 : moment().tz(nyc).day() === 0
+export const isAfterToday = (date: DateTime) => date.ordinal > DateTime.now().setZone(nyc).ordinal
 
-export const isWeekend = (d: Nullable<string> = null) =>
-    isSunday(d) || (d ? moment(d).tz(nyc).day() === 6 : moment().tz(nyc).day() === 6)
+export const isValidDate = (date: string, format = tsFormat) =>
+    DateTime.fromFormat(date, format).isValid
 
-export const isValidDate = (date: string) => moment(date, "YYYY-MM-DD HH:mm:ss", true).isValid()
-
-export const translateDate = (date: string, lang: Language, isWeekend = false, weekendOf = "") => {
-    const day = moment(date).format("dddd")
-    const month = moment(date).format("MMMM")
-    const dayOfMonth = moment(date).format("D")
-    const yearFormat = moment(date).format("YYYY")
-
-    if (!isWeekend) {
-        return `${translateWeekday(day, lang)}, ${translateMonth(month, lang)} ${dayOfMonth}, ${yearFormat}`
+export const translateDate = (
+    date: string,
+    lang: Language,
+    weekendOf = "",
+    format = dateFormat
+) => {
+    const dateLuxon = DateTime.fromFormat(date, format).setZone(nyc)
+    const day = dateLuxon.weekdayLong
+    const month = dateLuxon.monthLong
+    const dayOfMonth = dateLuxon.day
+    const year = dateLuxon.toFormat("yyyy")
+    if (!dateLuxon.isWeekend && day && month) {
+        return `${translateWeekday(day, lang)}, ${translateMonth(month, lang)} ${dayOfMonth}, ${year}`
     }
 
-    const nycDate = moment(date).tz(nyc)
-    const minusOneDay = moment(date).tz(nyc).subtract(1, "days")
-    const plusOneDay = moment(date).tz(nyc).add(1, "days")
-    const saturday = isSunday(date) ? minusOneDay : nycDate
-    const sunday = isSunday(date) ? nycDate : plusOneDay
-    const satMonth = translateMonth(saturday.format("MMMM"), lang)
-    const sunMonth = translateMonth(sunday.format("MMMM"), lang)
-    const dateRange = `${satMonth} ${saturday.format("D")} - ${sunMonth} ${sunday.format("D")}`
-    return `${weekendOf} ${dateRange}, ${yearFormat}`
+    let saturday = dateLuxon
+    let sunday = dateLuxon.plus({ days: 1 })
+    if (dateLuxon.weekday === 7 && month) {
+        saturday = dateLuxon.minus({ days: 1 })
+        sunday = dateLuxon
+    }
+
+    if (saturday.monthLong && sunday.monthLong) {
+        const dateRange = `${translateMonth(saturday.monthLong, lang)} ${saturday.day} - ${translateMonth(sunday.monthLong, lang)} ${sunday.day}`
+        return `${weekendOf} ${dateRange}, ${year}`
+    }
+
+    return null
 }

@@ -8,6 +8,7 @@ type Params = {
     callback?: () => any
     centered?: boolean
     circular?: boolean
+    fluid?: boolean
     inverted: boolean
     rounded?: boolean
     src?: string | null
@@ -20,6 +21,7 @@ const ImageComponent = ({
     callback,
     centered = false,
     circular = false,
+    fluid = false,
     inverted,
     rounded = true,
     src,
@@ -33,6 +35,7 @@ const ImageComponent = ({
             alt={alt}
             centered={centered}
             circular={circular}
+            fluid={fluid}
             onClick={() => {
                 if (callback === undefined) {
                     return

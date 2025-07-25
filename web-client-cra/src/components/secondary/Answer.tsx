@@ -7,12 +7,12 @@ import { GeoData, LocationPoint, ReduxState } from "@interfaces/index"
 import { toast } from "react-toastify"
 import { toastConfig } from "@options/toast"
 import { dateFormat, nyc } from "@utils/date"
+import { DateTime } from "luxon"
 import axios from "axios"
 import giphy from "@images/regis-philbin.gif"
 import FlashScreen from "../primary/FlashScreen"
 import LocationInfo from "../primary/LocationInfo"
 import MapComponent from "../primary/Map"
-import moment from "moment-timezone"
 import ModalComponent from "../primary/Modal"
 import Typewriter from "typewriter-effect"
 import translations from "@assets/translate.json"
@@ -23,11 +23,7 @@ type Props = {
     loading?: boolean
 }
 
-const AnswerSection = ({
-    callback,
-    date = moment().tz(nyc).format(dateFormat),
-    loading = true
-}: Props) => {
+const AnswerSection = ({ callback, date, loading = true }: Props) => {
     const dispatch = useDispatch()
     const inverted = useSelector((state: ReduxState) => state.app.inverted)
     const language = useSelector((state: ReduxState) => state.app.language)
@@ -44,8 +40,9 @@ const AnswerSection = ({
     const [modalVisible, setModalVisible] = useState(false)
     const [formDisabled, setFormDisabled] = useState(true)
 
-    const expiry = moment(date).tz(nyc).add(1, "days").startOf("day").fromNow()
-    const isToday = moment(date).tz(nyc).isSameOrAfter(moment().subtract(1, "days"))
+    const dt = DateTime.fromFormat(date, dateFormat).setZone(nyc)
+    const expiry = dt.plus({ days: 1 }).startOf("day").toRelative()
+    const isToday = dt.hasSame(DateTime.local(), "day")
     const canSubmit = isToday && !hasAnswered
     const displayForm = isToday || hasAnswered
     const revealAnswer = quiz.geoData !== null

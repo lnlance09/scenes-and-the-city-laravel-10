@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { setActions } from "@reducers/form"
+import { Segment } from "semantic-ui-react"
 import {
     clearAnswer,
     clearQuiz,
@@ -12,15 +13,15 @@ import {
     setMarginOfError,
     setCorrect
 } from "../reducers/home"
-import { dateFormat, isSunday, isWeekend, nyc } from "@utils/date"
+import { dateFormat, isAfterToday, isValidDate, nyc, tsFormat } from "@utils/date"
 import { timeout } from "@utils/general"
 import { useNavigate, useParams } from "react-router-dom"
 import { ToastContainer } from "react-toastify"
 import { ReduxState } from "../interfaces"
+import { DateTime } from "luxon"
 import axios from "axios"
 import classNames from "classnames"
 import isAlphanumeric from "validator/lib/isAlphanumeric"
-import moment from "moment-timezone"
 import ModalComponent from "@/components/primary/Modal"
 import AuthenticationForm from "@/components/primary/Authentication"
 import HeaderComponent from "@/components/secondary/Header"
@@ -28,9 +29,8 @@ import AnswerSection from "@/components/secondary/Answer"
 import HintsSection from "@/components/secondary/Hints"
 import ImageSection from "@/components/secondary/Image"
 import QuestionSection from "@/components/secondary/Question"
-import { Segment } from "semantic-ui-react"
 
-const defaultDate = moment().tz(nyc).format(dateFormat)
+const defaultDate = DateTime.now().setZone(nyc).toFormat(dateFormat)
 
 const IndexPage = () => {
     const dispatch = useDispatch()
@@ -38,7 +38,7 @@ const IndexPage = () => {
     const { slug } = useParams()
 
     const validQuizId = typeof slug === "string" && isAlphanumeric(slug) && slug.length === 8
-    const validDate = moment(slug, dateFormat, true).isValid()
+    const validDate = typeof slug === "string" ? isValidDate(slug, dateFormat) : false
     const quizId = validQuizId ? slug : null
 
     const hasAnswered = useSelector((state: ReduxState) => state.home.answer.hasAnswered)
@@ -52,10 +52,9 @@ const IndexPage = () => {
     const [loginModal, toggleLoginModal] = useState(false)
     const [quiz404, setQuiz404] = useState(false)
 
-    const isToday = moment(date).tz(nyc).isSameOrAfter(moment().subtract(1, "days"))
-    const isAfterToday = (date: string) =>
-        moment(date, dateFormat).tz(nyc).isAfter(moment().tz(nyc))
-    const isInFuture = isAfterToday(date)
+    const dt = DateTime.fromFormat(date, dateFormat).setZone(nyc)
+    const isToday = dt.hasSame(DateTime.local(), "day")
+    const isInFuture = isAfterToday(dt)
 
     useEffect(() => {
         getActions()
@@ -93,9 +92,10 @@ const IndexPage = () => {
             })
             .then((response) => {
                 const { answer, partTwo, quiz } = response.data
-                const createdAt = moment(quiz.createdAt, "YYYY-MM-DD HH:mm:ss")
-                    .tz(nyc)
-                    .format(dateFormat)
+                const createdAt = DateTime.fromFormat(quiz.createdAt, tsFormat)
+                    .setZone(nyc)
+                    .toFormat(dateFormat)
+                console.log("created at", createdAt)
 
                 setDate(createdAt)
                 setQuiz404(false)
@@ -132,9 +132,7 @@ const IndexPage = () => {
     }
 
     const goToToday = () => {
-        const today = isSunday()
-            ? moment().tz(nyc).subtract(1, "days").format(dateFormat)
-            : moment().tz(nyc).format(dateFormat)
+        const today = DateTime.now().setZone(nyc).toFormat(dateFormat)
         setDate(today)
         navigate(`/${today}`)
     }
@@ -150,12 +148,14 @@ const IndexPage = () => {
                 date={date}
                 loginModalOpen={loginModal}
                 onClickDate={(d: string) => {
-                    const direction = moment(d, dateFormat).isAfter(moment(date, dateFormat))
+                    const direction = isAfterToday(DateTime.fromFormat(d, dateFormat).setZone(nyc))
                         ? "left"
                         : "right"
                     setAnimation(`fly ${direction}`)
                     setDate(d)
-                    navigate(`/${moment(d).tz(nyc).format(dateFormat)}`)
+                    navigate(
+                        `/${DateTime.fromFormat(d, dateFormat).setZone(nyc).toFormat(dateFormat)}`
+                    )
                 }}
                 onClickLogo={() => goToToday()}
                 showDates={!validQuizId}
@@ -165,14 +165,17 @@ const IndexPage = () => {
                 animation={animation}
                 date={date}
                 goToLastWeek={(d: string) => {
-                    const lastWeek = moment(d).tz(nyc).subtract(7, "days").format(dateFormat)
+                    const lastWeek = DateTime.fromFormat(d, dateFormat)
+                        .setZone(nyc)
+                        .minus({ days: 7 })
+                        .toFormat(dateFormat)
                     setDate(lastWeek)
                     navigate(`/${lastWeek}`)
                 }}
                 goToToday={() => goToToday()}
                 imgVisible={imgVisible}
                 isInFuture={isInFuture}
-                isWeekend={isWeekend(date)}
+                isWeekend={dt.isWeekend}
                 loading={loading}
                 quiz404={quiz404}
                 validQuizId={validQuizId}

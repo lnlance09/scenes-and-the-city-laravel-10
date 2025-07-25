@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -27,9 +28,10 @@ class Answer extends JsonResource
                     'title' => $this->quiz->scene->video->title,
                     'year' => $this->quiz->scene->video->year
                 ],
+                'createdAt' => Carbon::createFromFormat('Y-m-d H:i:s', $this->quiz->created_at, 'America/New_York')->toDateTimeString()
 
             ],
-            'createdAt' => $this->created_at
+            'createdAt' => Carbon::createFromFormat('Y-m-d H:i:s', $this->created_at, 'America/New_York')->toDateTimeString()
         ];
     }
 }

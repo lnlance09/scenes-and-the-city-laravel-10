@@ -1,10 +1,11 @@
 import { Button, Dimmer, Grid, Header, Menu, Placeholder, Segment } from "semantic-ui-react"
-import { translateDate } from "@utils/date"
+import { translateDate, tsFormat } from "@utils/date"
 import { timeout } from "@utils/general"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useSelector, useDispatch } from "react-redux"
 import { AnswerWithQuiz, Quiz, ReduxState } from "@interfaces/index"
+import { TranslationBlock } from "@interfaces/translations"
 import {
     setHistoryAnswers,
     setHistoryQuizzes,
@@ -38,7 +39,7 @@ const HistoryModal = ({
     const answers = useSelector((state: ReduxState) => state.home.history.answers)
     const inverted = useSelector((state: ReduxState) => state.app.inverted)
     const language = useSelector((state: ReduxState) => state.app.language)
-    const lang = translations[language]
+    const lang: TranslationBlock = translations[language]
 
     const [historyFilter, setHistoryFilter] = useState("answers")
     useEffect(() => {
@@ -131,8 +132,8 @@ const HistoryModal = ({
                                 ) : (
                                     <ImageComponent
                                         alt={`${lang.history.sceneFrom} ${q.video.title} (${q.video.year})`}
+                                        fluid
                                         inverted={inverted}
-                                        size="small"
                                         src={q.img}
                                     />
                                 )}
@@ -150,7 +151,12 @@ const HistoryModal = ({
                                             {`${lang.history.sceneFrom} ${q.video.title} (${q.video.year})`}
                                         </Header.Content>
                                         <Header.Subheader>
-                                            {translateDate(q.createdAt, language)}
+                                            {translateDate(
+                                                q.createdAt,
+                                                language,
+                                                lang.main.weekendOf,
+                                                tsFormat
+                                            )}
                                         </Header.Subheader>
                                     </Header>
                                 )}
@@ -195,6 +201,7 @@ const HistoryModal = ({
                                 ) : (
                                     <ImageComponent
                                         alt={`${lang.history.sceneFrom} ${a.quiz.video.title} (${a.quiz.video.year})`}
+                                        fluid
                                         inverted={inverted}
                                         src={a.quiz.img}
                                     />
@@ -214,7 +221,12 @@ const HistoryModal = ({
                                                 {`${lang.history.sceneFrom} ${a.quiz.video.title} (${a.quiz.video.year})`}
                                             </Header.Content>
                                             <Header.Subheader>
-                                                {translateDate(a.createdAt, language)}
+                                                {translateDate(
+                                                    a.quiz.createdAt,
+                                                    language,
+                                                    lang.main.weekendOf,
+                                                    tsFormat
+                                                )}
                                             </Header.Subheader>
                                         </Header>
                                         {a.correct && (
