@@ -7,6 +7,7 @@
 	.menu.pointing.secondary.headerMenu {
 		// background-image: linear-gradient(#1f1f1f 25%, colors.$blackBackgroundNormal 50%, #1f1f1f 75%);
 		background: colors.$blackBackgroundNormal;
+		border-bottom: solid 1px #ddd;
 		height: 65px;
 		margin-bottom: 0;
 
@@ -128,6 +129,7 @@
 	
 		&.inverted {
 			background: colors.$blackBackgroundDark;
+			border-bottom: colors.$invertedBorder !important;
 
 			@media only screen and (min-width: 320px) and (max-width: 767px) {
 				border-bottom: colors.$invertedBorder !important;
@@ -171,8 +173,8 @@
 		.row {
 			.column {
 				background: colors.$whiteBackgroundDark;
-				border-bottom: solid 1px #ddd;
-				border-top: solid 1px #ddd;
+				border-top: none !important;
+				border-bottom: solid 1px #ccc;
 				cursor: pointer;
 				font-family: fonts.$cheltenham700 !important;
 
@@ -183,6 +185,13 @@
 				&.active {
 					background: colors.$whiteBackgroundNormal;
 					border-bottom: none;
+					border-top: none;
+				}
+
+				@media only screen and (min-width: 320px) and (max-width: 767px) {
+					&.active {
+						border-bottom: solid 1px #ccc;
+					}
 				}
 			}
 		}
@@ -201,6 +210,16 @@
 
 				&:first-of-type {
 					border-left: none;
+				}
+
+				@media only screen and (min-width: 320px) and (max-width: 767px) {
+					border-left: none;
+					border-right: none;
+
+					&.active {
+						background: #181818 !important;
+						border-bottom: colors.$invertedBorder;
+					}
 				}
 			}
 		}

@@ -59,10 +59,10 @@ class QuizController extends Controller
     {
         $user = $request->user('api');
         $request->validate([
-            'date' => 'required|date_format:n-j-y',
+            'date' => 'required|date_format:n-j-Y',
         ]);
         $date = $request->input('date');
-        $today = Carbon::createFromFormat('n-j-y', $date)->format('Y-m-d');
+        $today = Carbon::createFromFormat('n-j-Y', $date)->format('Y-m-d');
 
         $quiz = Quiz::where([
             'user_id' => Self::OFFICIAL_USER_ID,

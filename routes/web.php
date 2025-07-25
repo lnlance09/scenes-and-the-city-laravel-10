@@ -76,8 +76,8 @@ Route::get('/{quizId}', function ($quizId) use ($seo, $siteName) {
     if ($validQuizId) {
         $quiz = Quiz::where('quiz_id', $quizId)->first();
     }
-    if (Quiz::isValidDate($quizId, 'n-j-y')) {
-        $now = Carbon::createFromFormat('n-j-y', $quizId);
+    if (Quiz::isValidDate($quizId, 'n-j-Y')) {
+        $now = Carbon::createFromFormat('n-j-Y', $quizId);
         $today = $now->format('Y-m-d');
         $quiz = Quiz::where([
             'user_id' => 1,
