@@ -81,7 +81,7 @@ Route::get('/{quizId}', function ($quizId) use ($seo, $siteName) {
         $today = $now->format('Y-m-d');
         $quiz = Quiz::where([
             'user_id' => 1,
-            'is_official' => true
+            'is_official' => 1
         ])
             ->whereBetween('created_at', [
                 $today . ' 00:00:00',
