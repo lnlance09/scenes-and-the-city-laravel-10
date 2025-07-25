@@ -46,7 +46,7 @@ class Quiz extends Model
 
     static function isValidDate($date, $format)
     {
-        $d = DateTime::createFromFormat($format, $date);
+        $d = \DateTime::createFromFormat($format, $date);
         return $d && strtolower($d->format($format)) === strtolower($date);
     }
 
