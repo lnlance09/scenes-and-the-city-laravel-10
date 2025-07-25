@@ -30,8 +30,12 @@
 
         h2.ui.header {
             font-family: fonts.$cheltenham700 !important;
-            font-size: 2em;
+            font-size: 1.75em;
             margin-bottom: 0.75em !important;
+
+            &.inverted {
+                color: colors.$terminalGreen !important;
+            }
         }
 
         p {
