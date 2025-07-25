@@ -37,12 +37,6 @@ $seo = [
 ];
 $phrase = "Can you guess where in the city this scene was filmed?";
 
-function validateDate($date, $format = 'Y-m-d')
-{
-    $d = DateTime::createFromFormat($format, $date);
-    return $d && strtolower($d->format($format)) === strtolower($date);
-}
-
 function formatSeo(Quiz $quiz, string $slug, array $seo)
 {
     $s3Url = $seo['awsUrl'] . $quiz->scene->pics[0]->s3_url;
@@ -87,7 +81,7 @@ Route::get('/{quizId}', function ($quizId) use ($seo, $siteName, $phrase) {
     if ($validQuizId) {
         $quiz = Quiz::where('quiz_id', $quizId)->first();
     }
-    if (validateDate($quizId, 'n-j-y')) {
+    if (Quiz::isValidDate($quizId, 'n-j-y')) {
         $now = Carbon::createFromFormat('n-j-y', $quizId);
         $today = $now->format('Y-m-d');
         $quiz = Quiz::where([

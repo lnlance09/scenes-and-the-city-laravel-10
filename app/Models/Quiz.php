@@ -44,6 +44,12 @@ class Quiz extends Model
         return strlen($str) === 8 && ctype_alnum($str);
     }
 
+    static function isValidDate($date, $format)
+    {
+        $d = DateTime::createFromFormat($format, $date);
+        return $d && strtolower($d->format($format)) === strtolower($date);
+    }
+
     public function generateQuestion()
     {
         $scene = $this->scene;
@@ -84,6 +90,8 @@ class Quiz extends Model
         }
         return $data->first_name . ' ' . $data->last_name;
     }
+
+
 
     public function scene()
     {
