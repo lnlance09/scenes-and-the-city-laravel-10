@@ -150,7 +150,7 @@ const IndexPage = () => {
                     const direction = isAfterToday(DateTime.fromFormat(d, dateFormat).setZone(nyc))
                         ? "left"
                         : "right"
-                    setAnimation(`fade ${direction}`)
+                    setAnimation(`fly ${direction}`)
                     setDate(d)
                     navigate(
                         `/${DateTime.fromFormat(d, dateFormat).setZone(nyc).toFormat(dateFormat)}`
