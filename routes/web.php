@@ -45,7 +45,7 @@ function formatSeo(Quiz $quiz, string $slug, array $seo)
 {
     $img = $seo['awsUrl'] . $quiz->scene->pics[0]->s3_url;
     $data = @getimagesize($img);
-    if (!empty($data)) {
+    if ($data) {
         $seo['img'] = [
             'src' => $img,
             'height' => $data[1],
