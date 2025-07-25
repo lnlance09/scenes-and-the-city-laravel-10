@@ -46,7 +46,7 @@ const IndexPage = () => {
     const verify = useSelector((state: ReduxState) => state.app.verify)
 
     const [animation, setAnimation] = useState("fly left")
-    const [date, setDate] = useState("")
+    const [date, setDate] = useState(defaultDate)
     const [imgVisible, setImgVisible] = useState(true)
     const [loading, setLoading] = useState(true)
     const [loginModal, toggleLoginModal] = useState(false)
