@@ -3,6 +3,8 @@
 use App\Models\Quiz;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Route;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,15 +45,14 @@ function validateDate($date, $format = 'Y-m-d')
 
 function formatSeo(Quiz $quiz, string $slug, array $seo)
 {
-    $img = $seo['awsUrl'] . $quiz->scene->pics[0]->s3_url;
-    $data = @getimagesize($img);
-    if ($data) {
-        $seo['img'] = [
-            'src' => $img,
-            'height' => $data[1],
-            'width' => $data[0]
-        ];
-    }
+    $s3Url = $seo['awsUrl'] . $quiz->scene->pics[0]->s3_url;
+    $manager = new ImageManager(new Driver());
+    $img = $manager->read(file_get_contents($s3Url));
+    $seo['img'] = [
+        'src' => $s3Url,
+        'height' => $img->height(),
+        'width' => $img->width()
+    ];
     $seo['url'] = $seo['baseUrl'] . $slug;
     return $seo;
 }
