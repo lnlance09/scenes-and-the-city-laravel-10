@@ -12,7 +12,7 @@ const verify = localStorage.getItem("verify")
 export const initialAppState: InitialAppState = {
     auth: auth === "1",
     hardMode: hardMode === "1",
-    inverted: inverted === "1",
+    inverted: inverted === "1" || inverted === null,
     language: lang === "en" || lang === "es" || lang === "cn" ? lang : "en",
     reveal: reveal === "1",
     units: units === "miles" || units === "kilometers" ? units : "miles",
