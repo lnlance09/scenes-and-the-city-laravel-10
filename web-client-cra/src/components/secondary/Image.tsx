@@ -101,21 +101,23 @@ const ImageSection = ({
                         <Placeholder.Image style={{ height: "360px" }} />
                     </Placeholder>
                 )}
-                <Transition animation={animation} duration={400} visible={imgVisible}>
+                <Transition
+                    animation={animation}
+                    duration={loading ? 0 : 700}
+                    visible={imgVisible && !loading}
+                >
                     <div style={{ width: "100%", minHeight: "360px" }}>
-                        {imgVisible && (
-                            <ImageComponent
-                                callback={() => {
-                                    if (useDefaultImg) {
-                                        return
-                                    }
-                                    setModalOpen(true)
-                                }}
-                                centered
-                                inverted={inverted}
-                                src={quiz.img}
-                            />
-                        )}
+                        <ImageComponent
+                            callback={() => {
+                                if (useDefaultImg) {
+                                    return
+                                }
+                                setModalOpen(true)
+                            }}
+                            centered
+                            inverted={inverted}
+                            src={quiz.img}
+                        />
                     </div>
                 </Transition>
             </Container>

@@ -95,7 +95,6 @@ const IndexPage = () => {
                 const createdAt = DateTime.fromFormat(quiz.createdAt, tsFormat)
                     .setZone(nyc)
                     .toFormat(dateFormat)
-                console.log("created at", createdAt)
 
                 setDate(createdAt)
                 setQuiz404(false)
@@ -117,7 +116,7 @@ const IndexPage = () => {
                 dispatch(clearQuiz())
             })
 
-        await timeout(700)
+        await timeout(400)
         setLoading(false)
         await timeout(300)
         setImgVisible(true)
