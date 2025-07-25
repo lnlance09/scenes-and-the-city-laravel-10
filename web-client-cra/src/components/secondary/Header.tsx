@@ -5,6 +5,7 @@ import { setDarkMode, setLanguage } from "@reducers/app"
 import { languages } from "@options/languages"
 import { ClassNames, Language, ReduxState, UnitsUpdate } from "@interfaces/index"
 import { TranslationBlock } from "@/interfaces/translations"
+import { ReactSVG } from "react-svg"
 import axios from "axios"
 import avatarPic from "@images/avatar/small/zoe.jpg"
 import avatarPicInverted from "@images/avatar/small/nan.jpg"
@@ -14,10 +15,6 @@ import HistoryModal from "./modals/HistoryModal"
 import SidebarComponent from "./Sidebar"
 import StatsModal from "./modals/StatsModal"
 import UploadModal from "./modals/UploadModal"
-import WordsLogo from "@images/logos/logo.svg"
-import WordsLogoInverted from "@images/logos/logo-inverted.svg"
-import WordsLogoEs from "@images/logos/logo-es.svg"
-import WordsLogoInvertedEs from "@images/logos/logo-es-inverted.svg"
 import translations from "@assets/translate.json"
 
 type Props = {
@@ -55,10 +52,10 @@ const HeaderComponent = ({
 
     useEffect(() => {
         if (language === "en" || language === "cn") {
-            setLogo(inverted ? WordsLogoInverted : WordsLogo)
+            setLogo(inverted ? "logo-inverted" : "logo")
         }
         if (language === "es") {
-            setLogo(inverted ? WordsLogoInvertedEs : WordsLogoEs)
+            setLogo(inverted ? "logo-es-inverted" : "logo-es")
         }
     }, [inverted, language])
 
@@ -94,12 +91,7 @@ const HeaderComponent = ({
                 <Container>
                     <div className="brandName">
                         {logo !== "" && (
-                            <img
-                                alt="Scenes and the City"
-                                id="logo"
-                                onClick={() => onClickLogo()}
-                                src={logo}
-                            />
+                            <ReactSVG onClick={() => onClickLogo()} src={`${logo}.svg`} />
                         )}
                         {inverted ? (
                             <Icon
