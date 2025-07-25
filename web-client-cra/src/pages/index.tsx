@@ -45,7 +45,7 @@ const IndexPage = () => {
     const inverted = useSelector((state: ReduxState) => state.app.inverted)
     const verify = useSelector((state: ReduxState) => state.app.verify)
 
-    const [animation, setAnimation] = useState("fly left")
+    const [animation, setAnimation] = useState("fade")
     const [date, setDate] = useState(defaultDate)
     const [imgVisible, setImgVisible] = useState(true)
     const [loading, setLoading] = useState(true)
@@ -147,7 +147,10 @@ const IndexPage = () => {
                 date={date}
                 loginModalOpen={loginModal}
                 onClickDate={(d: string) => {
-                    setAnimation(`fade`)
+                    const direction = isAfterToday(DateTime.fromFormat(d, dateFormat).setZone(nyc))
+                        ? "left"
+                        : "right"
+                    setAnimation(`fade ${direction}`)
                     setDate(d)
                     navigate(
                         `/${DateTime.fromFormat(d, dateFormat).setZone(nyc).toFormat(dateFormat)}`
