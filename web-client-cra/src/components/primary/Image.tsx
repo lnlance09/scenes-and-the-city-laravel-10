@@ -1,6 +1,4 @@
 import { Image } from "semantic-ui-react"
-import NotFoundSvg from "@images/not-found.svg"
-import NotFoundSvgInverted from "@images/not-found-inverted.svg"
 
 type ImageSize = "small" | "medium" | "large"
 type Params = {
@@ -28,7 +26,8 @@ const ImageComponent = ({
     size,
     style = {}
 }: Params) => {
-    const notFoundImg = inverted ? NotFoundSvgInverted : NotFoundSvg
+    const notFoundImg = inverted ? "not-found-inverted" : "not-found"
+    const imgSrc = src ? src : `images/${notFoundImg}.png`
 
     return (
         <Image
@@ -45,7 +44,7 @@ const ImageComponent = ({
             onError={(e: any) => (e.target.src = notFoundImg)}
             rounded={rounded}
             size={size}
-            src={src === undefined || src === null ? notFoundImg : src}
+            src={imgSrc}
             style={style}
         />
     )

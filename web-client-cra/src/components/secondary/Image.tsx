@@ -11,7 +11,7 @@ import ModalComponent from "../primary/Modal"
 import translations from "@assets/translate.json"
 
 type Props = {
-    animation?: string
+    animation: string
     date: string
     goToLastWeek: (date: string) => any
     goToToday: (date: string) => any
@@ -24,7 +24,7 @@ type Props = {
 }
 
 const ImageSection = ({
-    animation = "fly left",
+    animation,
     date,
     goToLastWeek,
     goToToday,

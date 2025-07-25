@@ -12,7 +12,7 @@ import {
     setPartTwo,
     setMarginOfError,
     setCorrect
-} from "../reducers/home"
+} from "@reducers/home"
 import { dateFormat, isAfterToday, isValidDate, nyc, tsFormat } from "@utils/date"
 import { timeout } from "@utils/general"
 import { useNavigate, useParams } from "react-router-dom"
@@ -148,10 +148,7 @@ const IndexPage = () => {
                 date={date}
                 loginModalOpen={loginModal}
                 onClickDate={(d: string) => {
-                    const direction = isAfterToday(DateTime.fromFormat(d, dateFormat).setZone(nyc))
-                        ? "left"
-                        : "right"
-                    setAnimation(`fly ${direction}`)
+                    setAnimation(`fade`)
                     setDate(d)
                     navigate(
                         `/${DateTime.fromFormat(d, dateFormat).setZone(nyc).toFormat(dateFormat)}`

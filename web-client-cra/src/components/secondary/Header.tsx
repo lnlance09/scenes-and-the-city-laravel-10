@@ -89,7 +89,14 @@ const HeaderComponent = ({
             <Menu className="headerMenu" inverted={inverted} pointing secondary>
                 <Container>
                     <div className="brandName">
-                        {logo !== "" && <img id="logo" src={`${logo}.png`} />}
+                        {logo !== "" && (
+                            <img
+                                alt="Scenes and the City"
+                                id="logo"
+                                onClick={() => onClickLogo()}
+                                src={`images/logos/${logo}.png`}
+                            />
+                        )}
                         {inverted ? (
                             <Icon
                                 color="green"
