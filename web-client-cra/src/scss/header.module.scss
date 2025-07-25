@@ -62,6 +62,9 @@
 
 		.brandName {
 			float: left;
+			height: 65px;
+			display: flex;
+			align-items: center;
 
 			.icon {
 				display: none;
@@ -80,10 +83,8 @@
 				}
 			}
 
-			svg {
+			img#logo {
 				cursor: pointer;
-				height: 60px;
-				position: relative;
 				width: 250px;
 			}
 		}
