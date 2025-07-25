@@ -30,29 +30,15 @@ $seo = [
         'src' => $awsUrl . 'public/film.png'
     ],
     'keywords' => 'sex and the city, trivia, pop culture, movies, tv shows, music videos, jeopardy',
+    'phrase' => "Can you guess where in the city this scene was filmed?",
     'schema' => '',
     'siteName' => $siteName,
     'title' => $siteName,
     'url' => $baseUrl
 ];
-$phrase = "Can you guess where in the city this scene was filmed?";
-
-function formatSeo(Quiz $quiz, string $slug, array $seo)
-{
-    $s3Url = $seo['awsUrl'] . $quiz->scene->pics[0]->s3_url;
-    $manager = new ImageManager(new Driver());
-    $img = $manager->read(file_get_contents($s3Url));
-    $seo['img'] = [
-        'src' => $s3Url,
-        'height' => $img->height(),
-        'width' => $img->width()
-    ];
-    $seo['url'] = $seo['baseUrl'] . $slug;
-    return $seo;
-}
 
 // Index page
-Route::get('/', function () use ($seo, $siteName, $phrase) {
+Route::get('/', function () use ($seo, $siteName) {
     $now = Carbon::now();
     $today = $now->format('Y-m-d');
     $quiz = Quiz::where([
@@ -68,15 +54,24 @@ Route::get('/', function () use ($seo, $siteName, $phrase) {
     if (empty($quiz)) {
         return view('index', $seo);
     }
-    $question = $quiz->generateQuestion();
-    $seo = formatSeo($quiz, $today, $seo);
     $seo['title'] = $now->format('l, F j, Y') . ' - ' . $siteName;
-    $seo['description'] = $question . " " . $phrase;
+    $question = $quiz->generateQuestion();
+    $seo['description'] = $question . " " . $seo['phrase'];
+
+    $s3Url = $seo['awsUrl'] . $quiz->scene->pics[0]->s3_url;
+    $manager = new ImageManager(new Driver());
+    $img = $manager->read(file_get_contents($s3Url));
+    $seo['img'] = [
+        'src' => $s3Url,
+        'height' => $img->height(),
+        'width' => $img->width()
+    ];
+    $seo['url'] = $seo['baseUrl'] . $today;
     return view('index', $seo);
 });
 
 // Quiz id or date
-Route::get('/{quizId}', function ($quizId) use ($seo, $siteName, $phrase) {
+Route::get('/{quizId}', function ($quizId) use ($seo, $siteName) {
     $validQuizId = Quiz::isValidId($quizId);
     if ($validQuizId) {
         $quiz = Quiz::where('quiz_id', $quizId)->first();
@@ -98,15 +93,23 @@ Route::get('/{quizId}', function ($quizId) use ($seo, $siteName, $phrase) {
     if (empty($quiz)) {
         return view('index', $seo);
     }
-    $question = $quiz->generateQuestion();
-    $seo = formatSeo($quiz, $quizId, $seo);
 
     if ($validQuizId) {
         $seo['title'] = 'Quiz by ' . $quiz->user->username . ' - ' . $siteName;
     } else {
         $seo['title'] = $now->format('l, F j, Y') . ' - ' . $siteName;
     }
+    $question = $quiz->generateQuestion();
+    $seo['description'] = $question . " " . $seo['phrase'];
 
-    $seo['description'] = $question . " " . $phrase;
+    $s3Url = $seo['awsUrl'] . $quiz->scene->pics[0]->s3_url;
+    $manager = new ImageManager(new Driver());
+    $img = $manager->read(file_get_contents($s3Url));
+    $seo['img'] = [
+        'src' => $s3Url,
+        'height' => $img->height(),
+        'width' => $img->width()
+    ];
+    $seo['url'] = $seo['baseUrl'] . $quizId;
     return view('index', $seo);
 });
