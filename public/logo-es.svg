@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Logo" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 575 69.5">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+        font-family: TrajanPro-Regular, 'Trajan Pro';
+        font-size: 21px;
+      }
+
+      .cls-1, .cls-2, .cls-3 {
+        isolation: isolate;
+      }
+
+      .cls-3 {
+        fill: #0310bb;
+        font-family: TrajanPro-Bold, 'Trajan Pro';
+        font-size: 60px;
+        font-weight: 700;
+        stroke: #00a;
+        stroke-miterlimit: 10;
+        stroke-width: 2px;
+      }
+    </style>
+  </defs>
+  <g class="cls-2">
+    <g class="cls-2">
+      <g class="cls-2">
+        <g class="cls-2">
+          <g class="cls-2">
+            <g class="cls-2">
+              <text class="cls-3" transform="translate(6.5 52.5)"><tspan x="0" y="0">Escenes</tspan></text>
+            </g>
+            <g class="cls-2">
+              <text class="cls-3" transform="translate(6.5 52.5)"><tspan x="0" y="0">Escenes</tspan></text>
+              <text class="cls-3" transform="translate(6.5 52.5)"><tspan x="0" y="0">Escenes</tspan></text>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+  <g class="cls-2">
+    <g class="cls-2">
+      <g class="cls-2">
+        <g class="cls-2">
+          <g class="cls-2">
+            <g class="cls-2">
+              <text class="cls-1" transform="translate(290.4 29.3)"><tspan x="0" y="0">Y</tspan></text>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+  <g class="cls-2">
+    <g class="cls-2">
+      <g class="cls-2">
+        <g class="cls-2">
+          <g class="cls-2">
+            <g class="cls-2">
+              <text class="cls-1" transform="translate(283.9 52.6)"><tspan x="0" y="0">LA</tspan></text>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+  <g class="cls-2">
+    <g class="cls-2">
+      <g class="cls-2">
+        <g class="cls-2">
+          <g class="cls-2">
+            <g class="cls-2">
+              <text class="cls-3" transform="translate(321.2 53.8)"><tspan x="0" y="0">Cuidad</tspan></text>
+            </g>
+            <g class="cls-2">
+              <text class="cls-3" transform="translate(321.2 53.8)"><tspan x="0" y="0">Cuidad</tspan></text>
+              <text class="cls-3" transform="translate(321.2 53.8)"><tspan x="0" y="0">Cuidad</tspan></text>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
