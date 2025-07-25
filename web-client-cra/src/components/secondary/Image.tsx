@@ -2,17 +2,17 @@ import { Container, Divider, Header, Icon, Image, Placeholder, Transition } from
 import { useState } from "react"
 import { useSelector } from "react-redux"
 import { ReduxState } from "@interfaces/index"
-import { dateFormat, isSunday, nyc, translateDate } from "@utils/date"
+import { dateFormat, nyc, translateDate, tsFormat } from "@utils/date"
+import { DateTime } from "luxon"
 import { capitalize } from "@utils/general"
 import classNames from "classnames"
 import ImageComponent from "../primary/Image"
 import ModalComponent from "../primary/Modal"
-import moment from "moment-timezone"
 import translations from "@assets/translate.json"
 
 type Props = {
     animation?: string
-    date?: string
+    date: string
     goToLastWeek: (date: string) => any
     goToToday: (date: string) => any
     imgVisible: boolean
@@ -25,12 +25,11 @@ type Props = {
 
 const ImageSection = ({
     animation = "fly left",
-    date = moment().tz(nyc).format(dateFormat),
+    date,
     goToLastWeek,
     goToToday,
     imgVisible = false,
     isInFuture = false,
-    isWeekend = false,
     loading = true,
     quiz404 = false,
     validQuizId = false
@@ -42,10 +41,10 @@ const ImageSection = ({
 
     const [modalOpen, setModalOpen] = useState(false)
 
-    const title = translateDate(date, language, isWeekend, lang.main.weekendOf)
-    const olderThanWeek = isSunday()
-        ? moment().subtract(1, "days").week() - moment(date).subtract(1, "days").week() > 0
-        : moment().week() - moment(date).week() > 0
+    const { createdAt } = quiz
+    const title = translateDate(date, language, lang.main.weekendOf)
+    const now = DateTime.now().setZone(nyc)
+    const dateWeekYear = DateTime.fromFormat(date, dateFormat).setZone(nyc).weekNumber
     const useDefaultImg = quiz.img === null || quiz404
 
     const mainContainerClass = classNames({
@@ -74,7 +73,7 @@ const ImageSection = ({
                                     <Icon inverted={inverted} name="arrow left" size="small" />
                                     {lang.main.seeLastWeek}
                                 </div>
-                                {olderThanWeek && (
+                                {now.weekNumber > dateWeekYear && !loading && (
                                     <div className="navigateToday" onClick={() => goToToday(date)}>
                                         <span>{lang.main.seeToday}</span>
                                         <Icon inverted={inverted} name="arrow right" size="small" />
@@ -86,7 +85,13 @@ const ImageSection = ({
                         {validQuizId && !quiz404 && quiz.id && (
                             <Header.Subheader>
                                 {capitalize(lang.main.by)} {quiz.username} -{" "}
-                                {moment(quiz.createdAt).tz(nyc).fromNow()}
+                                {createdAt && (
+                                    <>
+                                        {DateTime.fromFormat(createdAt, tsFormat)
+                                            .setZone(nyc)
+                                            .toRelative()}
+                                    </>
+                                )}
                             </Header.Subheader>
                         )}
                     </Header>

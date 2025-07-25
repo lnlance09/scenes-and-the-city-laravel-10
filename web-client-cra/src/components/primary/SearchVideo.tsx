@@ -6,10 +6,10 @@ import { setVideo, setVideos } from "@reducers/form"
 import { useSelector, useDispatch } from "react-redux"
 import { DebounceInput } from "react-debounce-input"
 import { filterTypes } from "@options/filters"
-import { isValidDate } from "@utils/date"
+import { isValidDate, nyc, tsFormat } from "@utils/date"
+import { DateTime } from "luxon"
 import axios from "axios"
 import classNames from "classnames"
-import moment from "moment-timezone"
 import ImageComponent from "./Image"
 import translations from "@assets/translate.json"
 import queryString from "query-string"
@@ -95,7 +95,7 @@ const VideoSearch = ({
                                 <Header.Content>
                                     {v.title}
                                     <Header.Subheader>
-                                        {`${v.year}${isValidDate(v.releaseDate) ? ` • ${moment(v.releaseDate).fromNow()}` : ""}`}
+                                        {`${v.year}${isValidDate(v.releaseDate) ? ` • ${DateTime.fromFormat(v.releaseDate, tsFormat).setZone(nyc).toRelative()}` : ""}`}
                                     </Header.Subheader>
                                 </Header.Content>
                             </Header>
