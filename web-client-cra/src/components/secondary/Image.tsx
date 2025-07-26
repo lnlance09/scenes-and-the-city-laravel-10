@@ -134,18 +134,20 @@ const ImageSection = ({
                                 <Divider inverted={inverted} section />
                                 <Segment inverted={inverted}>
                                     {youtubeId && (
-                                        <iframe
-                                            width="100%"
-                                            height="315"
-                                            src={`https://www.youtube.com/embed/${youtubeId}?si=WsHl5CdIHUtlEg3X&amp;controls=0`}
-                                            title="YouTube video player"
-                                            frameBorder="0"
-                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                            referrerPolicy="strict-origin-when-cross-origin"
-                                            allowFullScreen
-                                        ></iframe>
+                                        <>
+                                            <iframe
+                                                width="100%"
+                                                height="315"
+                                                src={`https://www.youtube.com/embed/${youtubeId}?si=WsHl5CdIHUtlEg3X&amp;controls=0`}
+                                                title="YouTube video player"
+                                                frameBorder="0"
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                                referrerPolicy="strict-origin-when-cross-origin"
+                                                allowFullScreen
+                                            ></iframe>
+                                            <Divider inverted={inverted} />
+                                        </>
                                     )}
-                                    <Divider inverted={inverted} />
                                     <Segment inverted={inverted} size="small">
                                         <Header className="videoItemHeader" inverted={inverted}>
                                             <ImageComponent
