@@ -77,12 +77,15 @@ const AnswerSection = ({ callback, date, loading = true }: Props) => {
     const mapForm = (
         <Segment inverted={inverted} secondary={!inverted} stacked>
             {lat !== null && lng !== null && (
-                <MapComponent
-                    callback={(data) => showLocationDetails(data)}
-                    draggable={!hasAnswered}
-                    lat={lat}
-                    lng={lng}
-                />
+                <>
+                    <MapComponent
+                        callback={(data) => showLocationDetails(data)}
+                        draggable={!hasAnswered}
+                        lat={lat}
+                        lng={lng}
+                    />
+                    <LocationInfo answer={geoData} headerSize="medium" />
+                </>
             )}
             {hasAnswered && (
                 <>
