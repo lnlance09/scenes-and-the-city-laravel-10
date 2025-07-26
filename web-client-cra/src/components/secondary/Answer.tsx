@@ -75,92 +75,126 @@ const AnswerSection = ({ callback, date, loading = true }: Props) => {
     const showLocationDetails = (geoData: GeoData) => dispatch(setAnswerGeoData({ geoData }))
 
     const mapForm = (
-        <Segment inverted={inverted} secondary={!inverted} stacked>
-            {lat !== null && lng !== null && (
-                <>
-                    <MapComponent
-                        callback={(data) => showLocationDetails(data)}
-                        draggable={!hasAnswered}
-                        lat={lat}
-                        lng={lng}
-                    />
-                    <LocationInfo answer={geoData} headerSize="medium" />
-                </>
+        <>
+            {canSubmit && (
+                <Header as="h2" attached="top" inverted={inverted} textAlign="center">
+                    <Header.Content>{lang.answer.title}</Header.Content>
+                    <Header.Subheader>expires {expiry}</Header.Subheader>
+                </Header>
             )}
-            {hasAnswered && (
-                <>
-                    <Divider hidden />
-                    {!isToday ? (
-                        <Label
-                            basic={!inverted}
-                            ribbon="right"
-                            color={answer.correct ? (inverted ? "green" : "blue") : "red"}
-                            size="large"
-                        >
-                            <i>{answer.correct ? lang.answer.correct : lang.answer.incorrect}!</i>
-                        </Label>
-                    ) : (
-                        <Label
-                            basic={!inverted}
-                            ribbon="right"
-                            color={inverted ? "green" : "blue"}
-                            size="large"
-                        >
-                            <i>Pending</i>
-                        </Label>
-                    )}
-                    <Header
-                        className="myAnswerHeader"
-                        content={lang.answer.myGuess}
-                        inverted={inverted}
-                        size="large"
-                    />
-                    <LocationInfo answer={geoData} />
-                    {!isToday && (
-                        <Segment color={inverted ? "green" : "blue"} inverted placeholder>
-                            <Header
-                                className="myAnswerHeader"
-                                inverted
-                                size="huge"
-                                textAlign="center"
-                            >
-                                <Header.Content>
-                                    {answer.marginOfError !== null && (
-                                        <>
-                                            {language === "es"
-                                                ? lang.main.away.replace(
-                                                      "{distance}",
-                                                      `${formatMargin(answer.marginOfError, units).toPrecision(3)} ${units === "kilometers" ? "km" : "mi"}`
-                                                  )
-                                                : `${formatMargin(answer.marginOfError, units).toPrecision(3)} ${units === "kilometers" ? "km" : "mi"} ${lang.main.away}`}
-                                            {answer.correct && (
-                                                <Header.Subheader>
-                                                    +{10 - answer.hintsUsed * 2}{" "}
-                                                    {lang.answer.points} 🥳
-                                                </Header.Subheader>
-                                            )}
-                                        </>
-                                    )}
-                                </Header.Content>
-                            </Header>
-                        </Segment>
-                    )}
-                    {revealAnswer && (
-                        <>
-                            <Header
-                                className="myAnswerHeader"
-                                content={lang.answer.actualAnswer}
-                                inverted={inverted}
+            <Segment
+                attached={canSubmit}
+                className="segmentForm"
+                inverted={inverted}
+                secondary={!inverted}
+                stacked
+            >
+                {lat !== null && lng !== null && (
+                    <>
+                        <MapComponent
+                            callback={(data) => showLocationDetails(data)}
+                            draggable={!hasAnswered}
+                            lat={lat}
+                            lng={lng}
+                        />
+                        <LocationInfo answer={geoData} headerSize="medium" />
+                    </>
+                )}
+                {hasAnswered && (
+                    <>
+                        <Divider hidden />
+                        {!isToday ? (
+                            <Label
+                                basic={!inverted}
+                                ribbon="right"
+                                color={answer.correct ? (inverted ? "green" : "blue") : "red"}
                                 size="large"
-                            />
-                            {quiz.geoData && (
-                                <LocationInfo answer={quiz.geoData} headerSize="medium" />
-                            )}
-                        </>
-                    )}
-                </>
-            )}
-        </Segment>
+                            >
+                                <i>
+                                    {answer.correct ? lang.answer.correct : lang.answer.incorrect}!
+                                </i>
+                            </Label>
+                        ) : (
+                            <Label
+                                basic={!inverted}
+                                ribbon="right"
+                                color={inverted ? "green" : "blue"}
+                                size="large"
+                            >
+                                <i>Pending</i>
+                            </Label>
+                        )}
+                        <Header
+                            className="myAnswerHeader"
+                            content={lang.answer.myGuess}
+                            inverted={inverted}
+                            size="large"
+                        />
+                        <LocationInfo answer={geoData} />
+                        {!isToday && (
+                            <Segment color={inverted ? "green" : "blue"} inverted placeholder>
+                                <Header
+                                    className="myAnswerHeader"
+                                    inverted
+                                    size="huge"
+                                    textAlign="center"
+                                >
+                                    <Header.Content>
+                                        {answer.marginOfError !== null && (
+                                            <>
+                                                {language === "es"
+                                                    ? lang.main.away.replace(
+                                                          "{distance}",
+                                                          `${formatMargin(answer.marginOfError, units).toPrecision(3)} ${units === "kilometers" ? "km" : "mi"}`
+                                                      )
+                                                    : `${formatMargin(answer.marginOfError, units).toPrecision(3)} ${units === "kilometers" ? "km" : "mi"} ${lang.main.away}`}
+                                                {answer.correct && (
+                                                    <Header.Subheader>
+                                                        +{10 - answer.hintsUsed * 2}{" "}
+                                                        {lang.answer.points} 🥳
+                                                    </Header.Subheader>
+                                                )}
+                                            </>
+                                        )}
+                                    </Header.Content>
+                                </Header>
+                            </Segment>
+                        )}
+                        {revealAnswer && (
+                            <>
+                                <Header
+                                    className="myAnswerHeader"
+                                    content={lang.answer.actualAnswer}
+                                    inverted={inverted}
+                                    size="large"
+                                />
+                                {quiz.geoData && (
+                                    <LocationInfo answer={quiz.geoData} headerSize="medium" />
+                                )}
+                            </>
+                        )}
+                    </>
+                )}
+                {canSubmit && (
+                    <Button
+                        className="submitQuizBtn"
+                        color={inverted ? "green" : "blue"}
+                        content={lang.answer.submit}
+                        disabled={hasAnswered && geoData.hood !== null}
+                        fluid
+                        inverted={inverted}
+                        onClick={() => {
+                            if (isAuth) {
+                                setModalVisible(true)
+                                return
+                            }
+                            callback()
+                        }}
+                        size="big"
+                    />
+                )}
+            </Segment>
+        </>
     )
 
     return (
@@ -173,12 +207,6 @@ const AnswerSection = ({ callback, date, loading = true }: Props) => {
                         </Placeholder>
                     ) : (
                         <>
-                            {canSubmit && (
-                                <Header as="h2" inverted={inverted} textAlign="center">
-                                    <Header.Content>{lang.answer.title}</Header.Content>
-                                    <Header.Subheader>expires {expiry}</Header.Subheader>
-                                </Header>
-                            )}
                             {!displayForm && (
                                 <Header
                                     as="h2"
@@ -189,24 +217,6 @@ const AnswerSection = ({ callback, date, loading = true }: Props) => {
                                 />
                             )}
                             {displayForm && mapForm}
-                            {canSubmit && (
-                                <Button
-                                    className="submitQuizBtn"
-                                    color={inverted ? "green" : "blue"}
-                                    content={lang.answer.submit}
-                                    disabled={hasAnswered && geoData.hood !== null}
-                                    fluid
-                                    inverted={inverted}
-                                    onClick={() => {
-                                        if (isAuth) {
-                                            setModalVisible(true)
-                                            return
-                                        }
-                                        callback()
-                                    }}
-                                    size="big"
-                                />
-                            )}
                         </>
                     )}
                 </Container>
