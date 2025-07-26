@@ -38,6 +38,9 @@ const homeSlice = createSlice({
         setHintsUsed: (state, action) => {
             state.answer.hintsUsed = action.payload.hintsUsed
         },
+        setYouTubeId: (state, action) => {
+            state.quiz.youtubeId = action.payload.id
+        },
         setMarginOfError: (state, action) => {
             state.answer.marginOfError = action.payload.margin
         },
@@ -77,6 +80,7 @@ export const {
     resetHistoryAnswers,
     resetHistoryQuizzes,
     setQuiz,
+    setYouTubeId,
     setPartTwo
 } = homeSlice.actions
 

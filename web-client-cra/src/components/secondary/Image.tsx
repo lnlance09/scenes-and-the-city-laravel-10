@@ -51,7 +51,7 @@ const ImageSection = ({
 
     const [modalOpen, setModalOpen] = useState(false)
 
-    const { createdAt, video } = quiz
+    const { createdAt, video, youtubeId } = quiz
     const title = translateDate(date, language, lang.main.weekendOf)
     const now = DateTime.now().setZone(nyc)
     const dateWeekYear = DateTime.fromFormat(date, dateFormat).setZone(nyc).weekNumber
@@ -131,19 +131,34 @@ const ImageSection = ({
                         />
                         {!hardMode && video.title && video.img && video.year && (
                             <>
-                                <Divider inverted={inverted} />
-                                <Segment inverted={inverted} size="small">
-                                    <Header className="videoItemHeader" inverted={inverted}>
-                                        <ImageComponent
-                                            alt={video.title}
-                                            inverted={inverted}
-                                            src={video.img}
-                                        />
-                                        <Header.Content>
-                                            {video.title}
-                                            <Header.Subheader>{video.year}</Header.Subheader>
-                                        </Header.Content>
-                                    </Header>
+                                <Divider inverted={inverted} section />
+                                <Segment inverted={inverted}>
+                                    {youtubeId && (
+                                        <iframe
+                                            width="100%"
+                                            height="315"
+                                            src={`https://www.youtube.com/embed/${youtubeId}?si=WsHl5CdIHUtlEg3X&amp;controls=0`}
+                                            title="YouTube video player"
+                                            frameBorder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                            referrerPolicy="strict-origin-when-cross-origin"
+                                            allowFullScreen
+                                        ></iframe>
+                                    )}
+                                    <Divider inverted={inverted} />
+                                    <Segment inverted={inverted} size="small">
+                                        <Header className="videoItemHeader" inverted={inverted}>
+                                            <ImageComponent
+                                                alt={video.title}
+                                                inverted={inverted}
+                                                src={video.img}
+                                            />
+                                            <Header.Content>
+                                                {video.title}
+                                                <Header.Subheader>{video.year}</Header.Subheader>
+                                            </Header.Content>
+                                        </Header>
+                                    </Segment>
                                 </Segment>
                             </>
                         )}
