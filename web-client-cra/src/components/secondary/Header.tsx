@@ -82,7 +82,7 @@ const HeaderComponent = ({
         localStorage.setItem("lang", lang)
     }
 
-    const headerClass = classNames({ headerComponent: true })
+    const headerClass = classNames({ headerComponent: true, solo: !showDates })
 
     return (
         <div className={headerClass}>

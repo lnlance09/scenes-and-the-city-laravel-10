@@ -165,6 +165,12 @@
 		}
 	}
 
+	&.solo {
+		.menu.pointing.secondary.headerMenu.inverted {
+			border-bottom: 0 !important;
+		}
+	}
+
 	.ui.stackable.headerGrid {
 		border-radius: 0 !important;
 		font-family: fonts.$franklin600 !important;
