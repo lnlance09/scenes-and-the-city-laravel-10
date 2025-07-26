@@ -58,11 +58,10 @@ const UploadModal = ({ modalOpen = false, setModalOpen }: Props) => {
     const actionEmpty = action.id === null
     const answerStepDisabled = imgEmpty || videoEmpty || charEmpty || actionEmpty
 
-    const modalClass = {
-        submitSceneModal: true
-    }
+    const modalClass = { submitSceneModal: true }
     const stepClass = classNames({ inverted })
 
+    /*
     const showConfetti = () => {
         confetti({
             ...defaults,
@@ -77,6 +76,7 @@ const UploadModal = ({ modalOpen = false, setModalOpen }: Props) => {
             shapes: ["circle"]
         })
     }
+    */
 
     return (
         <>

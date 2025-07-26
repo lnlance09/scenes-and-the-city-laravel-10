@@ -41,7 +41,7 @@ const ImageComponent = ({
                 }
                 callback()
             }}
-            onError={(e: any) => (e.target.src = notFoundImg)}
+            onError={(e: any) => (e.target.src = `images/${notFoundImg}.png`)}
             rounded={rounded}
             size={size}
             src={imgSrc}

@@ -27,6 +27,7 @@ class Quiz extends JsonResource
             'geoData' => $this->reveal_answer ? $this->geo_data : null,
             'hintOne' => $this->reveal_hint_one ? $this->hint_one : null,
             'hintTwo' => $this->reveal_hint_two ? $this->hint_two : null,
+            'youtubeId' => $scene->youtube_id,
             'video' => [
                 'title' => $scene->video->title,
                 'year' => $scene->video->year,

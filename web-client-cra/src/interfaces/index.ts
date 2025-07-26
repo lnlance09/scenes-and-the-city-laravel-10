@@ -77,6 +77,7 @@ export type Quiz = {
     geoData: GeoData
     hintOne: string
     hintTwo: string
+    youtubeId: string
     video: {
         title: string
         year: number
@@ -99,6 +100,7 @@ export type DefaultQuiz = {
     geoData: Nullable<GeoData>
     hintOne: Nullable<string>
     hintTwo: Nullable<string>
+    youtubeId: Nullable<string>
     video: {
         title: Nullable<string>
         year: Nullable<number>

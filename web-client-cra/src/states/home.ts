@@ -6,6 +6,7 @@ export const defaultQuiz = {
     geoData: null,
     hintOne: null,
     hintTwo: null,
+    youtubeId: null,
     video: {
         title: null,
         year: null,
