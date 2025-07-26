@@ -1,4 +1,13 @@
-import { Container, Divider, Header, Icon, Image, Placeholder, Transition } from "semantic-ui-react"
+import {
+    Container,
+    Divider,
+    Header,
+    Icon,
+    Image,
+    Placeholder,
+    Segment,
+    Transition
+} from "semantic-ui-react"
 import { useState } from "react"
 import { useSelector } from "react-redux"
 import { ReduxState } from "@interfaces/index"
@@ -34,6 +43,7 @@ const ImageSection = ({
     quiz404 = false,
     validQuizId = false
 }: Props) => {
+    const hardMode = useSelector((state: ReduxState) => state.app.hardMode)
     const inverted = useSelector((state: ReduxState) => state.app.inverted)
     const language = useSelector((state: ReduxState) => state.app.language)
     const quiz = useSelector((state: ReduxState) => state.home.quiz)
@@ -41,7 +51,7 @@ const ImageSection = ({
 
     const [modalOpen, setModalOpen] = useState(false)
 
-    const { createdAt } = quiz
+    const { createdAt, video } = quiz
     const title = translateDate(date, language, lang.main.weekendOf)
     const now = DateTime.now().setZone(nyc)
     const dateWeekYear = DateTime.fromFormat(date, dateFormat).setZone(nyc).weekNumber
@@ -118,6 +128,24 @@ const ImageSection = ({
                             inverted={inverted}
                             src={quiz.img}
                         />
+                        {!hardMode && video.title && video.img && video.year && (
+                            <>
+                                <Divider inverted={inverted} />
+                                <Segment inverted={inverted} size="small">
+                                    <Header className="videoItemHeader" inverted={inverted}>
+                                        <ImageComponent
+                                            alt={video.title}
+                                            inverted={inverted}
+                                            src={video.img}
+                                        />
+                                        <Header.Content>
+                                            {video.title}
+                                            <Header.Subheader>{video.year}</Header.Subheader>
+                                        </Header.Content>
+                                    </Header>
+                                </Segment>
+                            </>
+                        )}
                     </div>
                 </Transition>
             </Container>

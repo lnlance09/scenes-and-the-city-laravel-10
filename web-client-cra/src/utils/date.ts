@@ -23,7 +23,8 @@ export const translateDate = (
     const dayOfMonth = dateLuxon.day
     const year = dateLuxon.toFormat("yyyy")
     if (!dateLuxon.isWeekend && day && month) {
-        return `${translateWeekday(day, lang)}, ${translateMonth(month, lang)} ${dayOfMonth}, ${year}`
+        const weekday = lang === "cn" ? day : translateWeekday(day, lang).substring(0, 3)
+        return `${weekday}, ${translateMonth(month, lang)} ${dayOfMonth}, ${year}`
     }
 
     let saturday = dateLuxon

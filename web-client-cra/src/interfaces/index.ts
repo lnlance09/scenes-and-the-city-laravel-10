@@ -80,6 +80,7 @@ export type Quiz = {
     video: {
         title: string
         year: number
+        img: string
     }
     char: {
         firstName: string
@@ -101,6 +102,7 @@ export type DefaultQuiz = {
     video: {
         title: Nullable<string>
         year: Nullable<number>
+        img: Nullable<string>
     }
     char: {
         firstName: Nullable<string>

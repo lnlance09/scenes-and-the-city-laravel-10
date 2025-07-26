@@ -42,7 +42,7 @@ const ModalComponent = ({
                 className={modalClass}
                 onClose={() => callback()}
                 open={open}
-                closeIcon={false}
+                closeIcon="close"
                 size={size}
             >
                 {title && (
