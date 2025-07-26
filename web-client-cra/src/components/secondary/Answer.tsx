@@ -77,7 +77,7 @@ const AnswerSection = ({ callback, date, loading = true }: Props) => {
     const mapForm = (
         <>
             {canSubmit && (
-                <Header as="h2" attached="top" inverted={inverted} size="large" textAlign="center">
+                <Header as="h2" attached="top" inverted={inverted} size="huge" textAlign="center">
                     <Header.Content>{lang.answer.title}</Header.Content>
                     <Header.Subheader>expires {expiry}</Header.Subheader>
                 </Header>
