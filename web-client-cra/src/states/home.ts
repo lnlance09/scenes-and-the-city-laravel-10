@@ -8,7 +8,8 @@ export const defaultQuiz = {
     hintTwo: null,
     video: {
         title: null,
-        year: null
+        year: null,
+        img: null
     },
     char: {
         firstName: null,

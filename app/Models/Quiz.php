@@ -85,10 +85,10 @@ class Quiz extends Model
 
     private function formatName($data)
     {
-        if (is_null($data->first_name)) {
+        if (is_null($data->last_name)) {
             return $data->first_name;
         }
-        return $data->first_name . ' ' . $data->last_name;
+        return trim($data->first_name . ' ' . $data->last_name);
     }
 
 

@@ -29,9 +29,9 @@
         <div id="root"></div>
     </body>
     <script>
-        var sc_project=12573241; 
+        var sc_project=13154329;
         var sc_invisible=1; 
-        var sc_security="508ca5d5"; 
+        var sc_security="cd76c3d0"; 
     </script>
     <script src="https://www.statcounter.com/counter/counter.js" async></script>
     <script src="/static/js/bundle.js"></script>

@@ -147,10 +147,7 @@ const IndexPage = () => {
                 date={date}
                 loginModalOpen={loginModal}
                 onClickDate={(d: string) => {
-                    const direction = isAfterToday(DateTime.fromFormat(d, dateFormat).setZone(nyc))
-                        ? "left"
-                        : "right"
-                    setAnimation(`fly ${direction}`)
+                    setAnimation("scale")
                     setDate(d)
                     navigate(
                         `/${DateTime.fromFormat(d, dateFormat).setZone(nyc).toFormat(dateFormat)}`

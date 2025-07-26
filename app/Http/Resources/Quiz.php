@@ -29,7 +29,8 @@ class Quiz extends JsonResource
             'hintTwo' => $this->reveal_hint_two ? $this->hint_two : null,
             'video' => [
                 'title' => $scene->video->title,
-                'year' => $scene->video->year
+                'year' => $scene->video->year,
+                'img' => $scene->video->img,
             ],
             'char' => [
                 'firstName' => $character->first_name,
