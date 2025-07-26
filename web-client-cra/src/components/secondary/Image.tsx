@@ -125,6 +125,7 @@ const ImageSection = ({
                                 setModalOpen(true)
                             }}
                             centered
+                            fluid
                             inverted={inverted}
                             src={quiz.img}
                         />
