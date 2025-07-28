@@ -1,20 +1,27 @@
-import { Button, Container, Divider, Header, Label, Placeholder, Segment } from "semantic-ui-react"
+import {
+    Button,
+    Container,
+    Divider,
+    Header,
+    Label,
+    Menu,
+    Placeholder,
+    Segment
+} from "semantic-ui-react"
 import { useDispatch, useSelector } from "react-redux"
-import { useState } from "react"
+import { Reducer, useEffect, useReducer, useState } from "react"
 import { setAnswerGeoData, setHasAnswered } from "@reducers/home"
 import { formatMargin, timeout } from "@utils/general"
-import { GeoData, LocationPoint, ReduxState } from "@interfaces/index"
+import { GeoData, LocationPoint, Nullable, Quiz, ReduxState } from "@interfaces/index"
 import { toast } from "react-toastify"
 import { toastConfig } from "@options/toast"
 import { dateFormat, nyc } from "@utils/date"
 import { DateTime } from "luxon"
 import axios from "axios"
-import giphy from "@images/regis-philbin.gif"
+import FinalAnswerModal from "./modals/FinalAnswerModal"
 import FlashScreen from "../primary/FlashScreen"
 import LocationInfo from "../primary/LocationInfo"
-import MapComponent from "../primary/Map"
-import ModalComponent from "../primary/Modal"
-import Typewriter from "typewriter-effect"
+import MapComponent, { MarkerProps } from "../primary/Map"
 import translations from "@assets/translate.json"
 
 type Props = {
@@ -23,19 +30,61 @@ type Props = {
     loading?: boolean
 }
 
+type AnswerState = {
+    markers: MarkerProps[]
+}
+
+type AnswerActionType = "SET_MARKER" | "CLEAR_MARKERS"
+
+export type AnswerAction = {
+    type: AnswerActionType
+    payload?: MarkerProps
+}
+
+export const initialAnswerState: AnswerState = {
+    markers: []
+}
+
+export const reducer: Reducer<AnswerState, AnswerAction> = (state, action) => {
+    switch (action.type) {
+        case "CLEAR_MARKERS":
+            return {
+                ...state,
+                markers: []
+            }
+        case "SET_MARKER":
+            return {
+                ...state,
+                markers: action?.payload ? [...state.markers, action.payload] : [...state.markers]
+            }
+        default:
+            throw new Error()
+    }
+}
+
+type SubmitPayload = {
+    answer: LocationPoint
+    partTwo?: LocationPoint
+}
+
 const AnswerSection = ({ callback, date, loading = true }: Props) => {
     const dispatch = useDispatch()
+    const [internalState, dispatchInternal] = useReducer(reducer, initialAnswerState)
+
     const inverted = useSelector((state: ReduxState) => state.app.inverted)
     const language = useSelector((state: ReduxState) => state.app.language)
     const units = useSelector((state: ReduxState) => state.app.units)
     const quiz = useSelector((state: ReduxState) => state.home.quiz)
-    const answer = useSelector((state: ReduxState) => state.home.answer)
+    const partTwo = useSelector((state: ReduxState) => state.home.partTwo)
+    const answers = useSelector((state: ReduxState) => state.home.answers)
     const isAuth = useSelector((state: ReduxState) => state.app.auth)
     const lang = translations[language]
 
-    const { geoData, hasAnswered } = answer
-    const { lat, lng } = geoData
+    const answer = answers[0]
+    const answerPartTwo = answers.length === 2 ? answers[1] : undefined
+    const { correct, hasAnswered, hintsUsed, marginOfError } = answer
 
+    const [activeItem, setActiveItem] = useState(1)
     const [flashOpen, setFlashOpen] = useState(false)
     const [modalVisible, setModalVisible] = useState(false)
     const [formDisabled, setFormDisabled] = useState(true)
@@ -46,12 +95,96 @@ const AnswerSection = ({ callback, date, loading = true }: Props) => {
     const canSubmit = isToday && !hasAnswered
     const displayForm = isToday || hasAnswered
     const revealAnswer = quiz.geoData !== null
+    const abbrev = units === "kilometers" ? "km" : "mi"
+    const formattedMargin = marginOfError ? formatMargin(marginOfError, units).toPrecision(3) : 0
 
-    const submitAnswer = () => {
+    useEffect(() => {
+        dispatchInternal({ type: "CLEAR_MARKERS" })
+        dispatchInternal({
+            type: "SET_MARKER",
+            payload: {
+                callback: (data: GeoData) => {
+                    showLocationDetails(data, 0)
+                    setActiveItem(1)
+                },
+                draggable: !hasAnswered,
+                lat: answer.geoData.lat ? answer.geoData.lat : 40.758896,
+                lng: answer.geoData.lng ? answer.geoData.lng : -73.98513,
+                text: quiz.char.firstName
+            }
+        })
+        if (answerPartTwo !== undefined) {
+            dispatchInternal({
+                type: "SET_MARKER",
+                payload: {
+                    callback: (data: GeoData) => {
+                        showLocationDetails(data, 1)
+                        setActiveItem(2)
+                    },
+                    draggable: !hasAnswered,
+                    lat: answerPartTwo.geoData.lat ? answerPartTwo.geoData.lat : 40.758896,
+                    lng: answerPartTwo.geoData.lng ? answerPartTwo.geoData.lng : -73.98513,
+                    text: partTwo?.char.firstName
+                }
+            })
+        }
+
+        if (!hasAnswered) {
+            return
+        }
+        // These won't be returned from the API until the day after the quiz has been created
+        // See the Quiz resource
+        if (quiz.geoData === null) {
+            return
+        }
+        if (quiz.geoData.lat === null || quiz.geoData.lng === null) {
+            return
+        }
+        dispatchInternal({
+            type: "SET_MARKER",
+            payload: {
+                callback: () => null,
+                draggable: false,
+                lat: quiz.geoData?.lat,
+                lng: quiz.geoData?.lng,
+                text: `${quiz.char.firstName}'s Actual Location`
+            }
+        })
+
+        if (partTwo === null) {
+            return
+        }
+        if (partTwo.geoData === null) {
+            return
+        }
+        if (partTwo.geoData.lat === null || partTwo.geoData.lng === null) {
+            return
+        }
+        dispatchInternal({
+            type: "SET_MARKER",
+            payload: {
+                callback: () => null,
+                draggable: false,
+                lat: partTwo.geoData?.lat,
+                lng: partTwo.geoData?.lng,
+                text: `${partTwo?.char.firstName}'s Actual Location`
+            }
+        })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [quiz])
+
+    const showLocationDetails = (geoData: GeoData, index: 0 | 1) =>
+        dispatch(setAnswerGeoData({ geoData, index }))
+
+    const submitAnswer = (data: GeoData, partTwo?: GeoData) => {
+        const { lat, lng } = data
         if (lat === null || lng === null) {
             return
         }
-        const formData: LocationPoint = { lat, lng }
+        const formData: SubmitPayload = { answer: { lat, lng } }
+        if (partTwo && partTwo.lat && partTwo.lng) {
+            formData.partTwo = { lat: partTwo.lat, lng: partTwo.lng }
+        }
         const url = `${process.env.REACT_APP_API_BASE_URL}quiz/answer/${quiz.id}`
         axios
             .post(url, formData, {
@@ -62,7 +195,7 @@ const AnswerSection = ({ callback, date, loading = true }: Props) => {
             .then(async () => {
                 setFlashOpen(true)
                 await timeout(9000)
-                dispatch(setHasAnswered({ hasAnswered: true }))
+                dispatch(setHasAnswered({ hasAnswered: true, index: 0 }))
                 setModalVisible(false)
                 setFormDisabled(false)
                 setFlashOpen(false)
@@ -72,16 +205,119 @@ const AnswerSection = ({ callback, date, loading = true }: Props) => {
             })
     }
 
-    const showLocationDetails = (geoData: GeoData) => dispatch(setAnswerGeoData({ geoData }))
-
-    const mapForm = (
+    const myAnswer = (
+        correct: Nullable<number>,
+        hintsUsed: number,
+        marginOfError: Nullable<number>,
+        geoData: GeoData
+    ) => (
         <>
-            {canSubmit && (
-                <Header as="h2" attached="top" inverted={inverted} size="huge" textAlign="center">
-                    <Header.Content>{lang.answer.title}</Header.Content>
-                    <Header.Subheader>expires {expiry}</Header.Subheader>
-                </Header>
+            <Header
+                className="myAnswerHeader"
+                content={lang.answer.myGuess}
+                inverted={inverted}
+                size="large"
+            />
+            <LocationInfo answer={geoData} />
+            {!isToday && marginOfError !== null && correct !== null && (
+                <Segment color={inverted ? "green" : "blue"} inverted placeholder>
+                    <Header className="myAnswerHeader" inverted size="huge" textAlign="center">
+                        <Header.Content>
+                            {language === "es"
+                                ? lang.main.away.replace(
+                                      "{distance}",
+                                      `${formattedMargin} ${abbrev}`
+                                  )
+                                : `${formattedMargin} ${abbrev} ${lang.main.away}`}
+                            {correct > 0 && (
+                                <Header.Subheader>
+                                    {`+${10 - hintsUsed * 2} ${lang.answer.points} 🥳`}
+                                </Header.Subheader>
+                            )}
+                        </Header.Content>
+                    </Header>
+                </Segment>
             )}
+            {revealAnswer && (
+                <>
+                    <Header
+                        className="myAnswerHeader"
+                        content={lang.answer.actualAnswer}
+                        inverted={inverted}
+                        size="large"
+                    />
+                    {geoData && <LocationInfo answer={geoData} headerSize="medium" />}
+                </>
+            )}
+        </>
+    )
+
+    const statusLabel = (
+        <>
+            <Divider hidden />
+            {!isToday && answer.correct !== null ? (
+                <Label
+                    basic={!inverted}
+                    ribbon="right"
+                    color={answer.correct ? (inverted ? "green" : "blue") : "red"}
+                    size="large"
+                >
+                    <i>{answer.correct ? lang.answer.correct : lang.answer.incorrect}!</i>
+                </Label>
+            ) : (
+                <Label
+                    basic={!inverted}
+                    ribbon="right"
+                    color={inverted ? "green" : "blue"}
+                    size="large"
+                >
+                    <i>Pending</i>
+                </Label>
+            )}
+        </>
+    )
+
+    const submissionHeader = (
+        <Header as="h2" attached="top" inverted={inverted} size="huge" textAlign="center">
+            <Header.Content>{lang.answer.title}</Header.Content>
+            <Header.Subheader>expires {expiry}</Header.Subheader>
+        </Header>
+    )
+
+    const partTwoMenu = (partTwo: Quiz) => (
+        <Menu inverted={inverted} pointing secondary size="huge">
+            <Menu.Item active={activeItem === 1} onClick={() => setActiveItem(1)}>
+                {quiz.char.firstName}
+            </Menu.Item>
+            <Menu.Item active={activeItem === 2} onClick={() => setActiveItem(2)}>
+                {partTwo.char.firstName}
+            </Menu.Item>
+        </Menu>
+    )
+
+    const submitBtn = (
+        <Button
+            className="submitQuizBtn"
+            color={inverted ? "green" : "blue"}
+            content={lang.answer.submit}
+            disabled={hasAnswered && answer.geoData.hood !== null}
+            fluid
+            inverted={inverted}
+            onClick={() => {
+                if (isAuth) {
+                    setModalVisible(true)
+                    return
+                }
+                callback()
+            }}
+            size="big"
+        />
+    )
+
+    const mapGeoData = activeItem === 1 ? answer.geoData : answerPartTwo?.geoData
+    const fullForm = (
+        <>
+            {canSubmit && <>{submissionHeader}</>}
             <Segment
                 attached={canSubmit}
                 className="segmentForm"
@@ -89,110 +325,40 @@ const AnswerSection = ({ callback, date, loading = true }: Props) => {
                 secondary={!inverted}
                 stacked
             >
-                {lat !== null && lng !== null && (
-                    <>
-                        <MapComponent
-                            callback={(data) => showLocationDetails(data)}
-                            draggable={!hasAnswered}
-                            lat={lat}
-                            lng={lng}
-                        />
-                        <LocationInfo answer={geoData} headerSize="medium" />
-                    </>
-                )}
+                {mapGeoData !== undefined &&
+                    mapGeoData?.lat !== null &&
+                    mapGeoData?.lng !== null && (
+                        <>
+                            <MapComponent
+                                lat={mapGeoData?.lat}
+                                lng={mapGeoData?.lng}
+                                markers={internalState.markers}
+                            />
+                            {!hasAnswered && (
+                                <LocationInfo answer={mapGeoData} headerSize="medium" />
+                            )}
+                        </>
+                    )}
+                {hasAnswered && <>{statusLabel}</>}
+                {partTwo && <>{partTwoMenu(partTwo)}</>}
                 {hasAnswered && (
-                    <>
-                        <Divider hidden />
-                        {!isToday ? (
-                            <Label
-                                basic={!inverted}
-                                ribbon="right"
-                                color={answer.correct ? (inverted ? "green" : "blue") : "red"}
-                                size="large"
-                            >
-                                <i>
-                                    {answer.correct ? lang.answer.correct : lang.answer.incorrect}!
-                                </i>
-                            </Label>
-                        ) : (
-                            <Label
-                                basic={!inverted}
-                                ribbon="right"
-                                color={inverted ? "green" : "blue"}
-                                size="large"
-                            >
-                                <i>Pending</i>
-                            </Label>
+                    <Segment inverted={inverted}>
+                        {activeItem === 1 && (
+                            <>{myAnswer(correct, hintsUsed, marginOfError, answer.geoData)}</>
                         )}
-                        <Header
-                            className="myAnswerHeader"
-                            content={lang.answer.myGuess}
-                            inverted={inverted}
-                            size="large"
-                        />
-                        <LocationInfo answer={geoData} />
-                        {!isToday && (
-                            <Segment color={inverted ? "green" : "blue"} inverted placeholder>
-                                <Header
-                                    className="myAnswerHeader"
-                                    inverted
-                                    size="huge"
-                                    textAlign="center"
-                                >
-                                    <Header.Content>
-                                        {answer.marginOfError !== null && (
-                                            <>
-                                                {language === "es"
-                                                    ? lang.main.away.replace(
-                                                          "{distance}",
-                                                          `${formatMargin(answer.marginOfError, units).toPrecision(3)} ${units === "kilometers" ? "km" : "mi"}`
-                                                      )
-                                                    : `${formatMargin(answer.marginOfError, units).toPrecision(3)} ${units === "kilometers" ? "km" : "mi"} ${lang.main.away}`}
-                                                {answer.correct && (
-                                                    <Header.Subheader>
-                                                        +{10 - answer.hintsUsed * 2}{" "}
-                                                        {lang.answer.points} 🥳
-                                                    </Header.Subheader>
-                                                )}
-                                            </>
-                                        )}
-                                    </Header.Content>
-                                </Header>
-                            </Segment>
-                        )}
-                        {revealAnswer && (
+                        {activeItem === 2 && answerPartTwo && (
                             <>
-                                <Header
-                                    className="myAnswerHeader"
-                                    content={lang.answer.actualAnswer}
-                                    inverted={inverted}
-                                    size="large"
-                                />
-                                {quiz.geoData && (
-                                    <LocationInfo answer={quiz.geoData} headerSize="medium" />
+                                {myAnswer(
+                                    answerPartTwo.correct,
+                                    answerPartTwo.hintsUsed,
+                                    answerPartTwo.marginOfError,
+                                    answerPartTwo.geoData
                                 )}
                             </>
                         )}
-                    </>
+                    </Segment>
                 )}
-                {canSubmit && (
-                    <Button
-                        className="submitQuizBtn"
-                        color={inverted ? "green" : "blue"}
-                        content={lang.answer.submit}
-                        disabled={hasAnswered && geoData.hood !== null}
-                        fluid
-                        inverted={inverted}
-                        onClick={() => {
-                            if (isAuth) {
-                                setModalVisible(true)
-                                return
-                            }
-                            callback()
-                        }}
-                        size="big"
-                    />
-                )}
+                {canSubmit && <>{submitBtn}</>}
             </Segment>
         </>
     )
@@ -207,7 +373,7 @@ const AnswerSection = ({ callback, date, loading = true }: Props) => {
                         </Placeholder>
                     ) : (
                         <>
-                            {!displayForm && (
+                            {!displayForm ? (
                                 <Header
                                     as="h2"
                                     className="expiredHeader"
@@ -216,58 +382,23 @@ const AnswerSection = ({ callback, date, loading = true }: Props) => {
                                     textAlign="center"
                                     size="large"
                                 />
+                            ) : (
+                                <>{fullForm}</>
                             )}
-                            {displayForm && mapForm}
                         </>
                     )}
                 </Container>
             </Segment>
 
-            <ModalComponent
-                className={{ finalAnswerModal: true }}
-                callback={() => {
-                    setModalVisible(false)
-                    setFormDisabled(true)
+            <FinalAnswerModal
+                callback={async () => {
+                    submitAnswer(answer.geoData, answerPartTwo?.geoData)
                 }}
-                open={modalVisible}
-                size="small"
-            >
-                <Segment basic={!inverted} fluid inverted={inverted}>
-                    <img
-                        alt="Is that your final answer?"
-                        className="ui image fluid rounded bordered centered"
-                        src={giphy}
-                    />
-                    <Header as="p" id="typeMessage" size="large" textAlign="center">
-                        <Typewriter
-                            onInit={(typewriter) => {
-                                typewriter
-                                    .typeString(lang.main.finalAnswerHeader)
-                                    .start()
-                                    .callFunction(() => setFormDisabled(false))
-                            }}
-                            options={{ delay: 75 }}
-                        />
-                    </Header>
-                    <Divider hidden />
-                    <Button.Group fluid size="large" widths="eight">
-                        <Button
-                            color={inverted ? "red" : "black"}
-                            content={lang.main.finalAnswerDeny}
-                            inverted={inverted}
-                            disabled={formDisabled}
-                            onClick={() => setModalVisible(false)}
-                        />
-                        <Button
-                            color={inverted ? "green" : "blue"}
-                            content={lang.main.finalAnswerConfirm}
-                            inverted={inverted}
-                            disabled={formDisabled}
-                            onClick={() => submitAnswer()}
-                        />
-                    </Button.Group>
-                </Segment>
-            </ModalComponent>
+                formDisabled={formDisabled}
+                setFormDisabled={(disabled) => setFormDisabled(disabled)}
+                setVisible={(visible) => setModalVisible(visible)}
+                visible={modalVisible}
+            />
             <FlashScreen clip="jingle" open={flashOpen} text={lang.answer.successMsg} />
         </div>
     )

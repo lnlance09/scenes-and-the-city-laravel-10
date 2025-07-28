@@ -3,7 +3,7 @@ import { Marker, Popup, TileLayer } from "react-leaflet"
 import { useMapEvents } from "react-leaflet"
 import { Icon } from "leaflet"
 import { useMemo, useRef, useState } from "react"
-import { GeoData, ReduxState } from "../../interfaces"
+import { GeoData, Nullable, ReduxState } from "@interfaces/index"
 import { useSelector } from "react-redux"
 import { MapContainer } from "react-leaflet"
 import { mapTheme, invertedMapTheme } from "@options/maps"
@@ -25,19 +25,31 @@ const empireIconInverted = new Icon({
     iconUrl: empireStateInvertedIcon
 })
 
-type MarkerProps = {
+export type MarkerProps = {
     callback: (data: GeoData) => any
     draggable: boolean
     lat: number
     lng: number
+    text?: Nullable<string>
 }
 
-const DraggableMarker = ({ callback = () => null, draggable = true, lat, lng }: MarkerProps) => {
+const DraggableMarker = ({
+    callback = () => null,
+    draggable = true,
+    lat,
+    lng,
+    text = null
+}: MarkerProps) => {
     const inverted = useSelector((state: ReduxState) => state.app.inverted)
     const markerRef = useRef<any>(null)
-    const [position, setPosition] = useState({
-        lat,
-        lng
+    const [position, setPosition] = useState({ lat, lng })
+    const map = useMapEvents({
+        click: () => {
+            map.locate()
+        },
+        locationfound: (location: any) => {
+            console.log("location found:", location)
+        }
     })
 
     const getLocationInfo = (lat: number, lng: number) => {
@@ -80,48 +92,20 @@ const DraggableMarker = ({ callback = () => null, draggable = true, lat, lng }: 
             position={position}
             ref={markerRef}
         >
-            <Popup>Text</Popup>
+            {text && <Popup>{text}</Popup>}
         </Marker>
     )
 }
 
-type LayerProps = {
-    callback: (data: GeoData) => any
-    draggable: boolean
-    lat: number
-    lng: number
-    url: string
-}
-
-const MapLayers = ({ callback = () => null, draggable = true, lat, lng, url }: LayerProps) => {
-    const map = useMapEvents({
-        click: () => {
-            map.locate()
-        },
-        locationfound: (location: any) => {
-            console.log("location found:", location)
-        }
-    })
-
-    return (
-        <>
-            <DraggableMarker callback={callback} draggable={draggable} lat={lat} lng={lng} />
-            <TileLayer url={url} />
-        </>
-    )
-}
-
 type MapProps = {
-    callback: (data: GeoData) => any
-    draggable?: boolean
     lat: number
     lng: number
+    markers: MarkerProps[]
     style?: any
 }
 
-const MapComponent = ({ callback = () => null, draggable = true, lat, lng, style }: MapProps) => {
+const MapComponent = ({ lat, lng, markers, style }: MapProps) => {
     const inverted = useSelector((state: ReduxState) => state.app.inverted)
-
     const mapClassName = classNames({
         mapWrapper: true,
         inverted
@@ -130,13 +114,16 @@ const MapComponent = ({ callback = () => null, draggable = true, lat, lng, style
     return (
         <div className={mapClassName} style={style}>
             <MapContainer center={[lat, lng]} style={{ height: "375px", width: "100%" }} zoom={13}>
-                <MapLayers
-                    callback={callback}
-                    draggable={draggable}
-                    lat={lat}
-                    lng={lng}
-                    url={inverted ? invertedMapTheme : mapTheme}
-                />
+                {markers.map((m) => (
+                    <DraggableMarker
+                        callback={m.callback}
+                        draggable={m.draggable}
+                        lat={m.lat}
+                        lng={m.lng}
+                        text={m.text}
+                    />
+                ))}
+                <TileLayer url={inverted ? invertedMapTheme : mapTheme} />
             </MapContainer>
         </div>
     )

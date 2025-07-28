@@ -178,9 +178,16 @@ const AnswerTab = ({
                     <Grid.Column>
                         {lat && lng && (
                             <MapComponent
-                                callback={(data) => showLocationDetails(data)}
                                 lat={lat}
                                 lng={lng}
+                                markers={[
+                                    {
+                                        callback: (data) => showLocationDetails(data),
+                                        draggable: true,
+                                        lat,
+                                        lng
+                                    }
+                                ]}
                             />
                         )}
                         <LocationInfo answer={location} headerSize="medium" />
