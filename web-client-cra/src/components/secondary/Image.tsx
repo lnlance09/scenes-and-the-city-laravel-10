@@ -68,7 +68,7 @@ const ImageSection = ({
 
     const notFoundImg = inverted ? `not-found-inverted` : `not-found`
 
-    const mainImg = (img: string, size: ImageSize) => (
+    const mainImg = (img: string, fluid = false, size?: ImageSize) => (
         <ImageComponent
             callback={() => {
                 if (useDefaultImg) {
@@ -78,6 +78,7 @@ const ImageSection = ({
                 setModalImg(img)
             }}
             centered
+            fluid={fluid}
             inverted={inverted}
             size={size}
             src={img}
@@ -146,20 +147,20 @@ const ImageSection = ({
                                 <div className="photoStack">
                                     {quiz.img && (
                                         <Segment className="imageWrapper" inverted={inverted}>
-                                            {mainImg(quiz.img, "large")}
+                                            {mainImg(quiz.img, false, "large")}
                                         </Segment>
                                     )}
                                     {partTwo.img && (
                                         <Segment className="imageWrapper" inverted={inverted}>
-                                            {mainImg(partTwo.img, "large")}
+                                            {mainImg(partTwo.img, false, "large")}
                                         </Segment>
                                     )}
                                 </div>
                             ) : (
-                                <Segment className="imageWrapper" inverted={inverted} padded="very">
+                                <Segment className="imageWrapper" inverted={inverted}>
                                     {mainImg(
                                         quiz.img ? quiz.img : `images/${notFoundImg}.png`,
-                                        "large"
+                                        true
                                     )}
                                 </Segment>
                             )}
