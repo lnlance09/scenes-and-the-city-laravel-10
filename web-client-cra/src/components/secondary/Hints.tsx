@@ -19,7 +19,7 @@ type Props = {
 
 const HintsSection = ({ callback = () => null, loading = true }: Props) => {
     const dispatch = useDispatch()
-    const hintsUsed = useSelector((state: ReduxState) => state.home.answer.hintsUsed)
+    const hintsUsed = useSelector((state: ReduxState) => state.home.answers[0].hintsUsed)
     const quiz = useSelector((state: ReduxState) => state.home.quiz)
     const partTwo = useSelector((state: ReduxState) => state.home.partTwo)
     const isAuth = useSelector((state: ReduxState) => state.app.auth)
@@ -46,7 +46,7 @@ const HintsSection = ({ callback = () => null, loading = true }: Props) => {
                 }
             )
             .then((response) => {
-                dispatch(setHintsUsed({ hintsUsed: hintsUsed + 1 }))
+                dispatch(setHintsUsed({ hintsUsed: hintsUsed + 1, index: 0 }))
                 if (number === 1) {
                     dispatch(setHintOne({ hint: response.data.hint }))
                 }

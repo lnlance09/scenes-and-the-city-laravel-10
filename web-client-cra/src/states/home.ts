@@ -47,7 +47,7 @@ export const defaultHistoryData = {
 export const initialHomeState: InitialHomeState = {
     quiz: defaultQuiz,
     partTwo: null,
-    answer: defaultAnswer,
+    answers: [defaultAnswer],
     history: {
         answers: defaultHistoryData,
         quizzes: defaultHistoryData

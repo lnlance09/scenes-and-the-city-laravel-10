@@ -1,4 +1,4 @@
-import { Divider, Header, Icon, Radio, Segment, Table, Transition } from "semantic-ui-react"
+import { Divider, Header, Icon, Radio, Segment, Table } from "semantic-ui-react"
 import { setVideo as setAdminVideo, setVideos as setAdminVideos } from "@reducers/admin"
 import { ReduxState, Video } from "@interfaces/index"
 import { TranslationBlock } from "@interfaces/translations"
@@ -13,9 +13,6 @@ import classNames from "classnames"
 import ImageComponent from "./Image"
 import translations from "@assets/translate.json"
 import queryString from "query-string"
-
-const animation = "fade"
-const duration = 1600
 
 type StateType = "form" | "admin"
 type Props = {
@@ -167,16 +164,12 @@ const VideoSearch = ({
                 </Segment>
             )}
             {!videoEmpty && videosVisible && <Divider hidden />}
-            <Transition animation={animation} duration={duration} unmountOnHide visible={visible}>
-                <div>
-                    {visible && displayVideos(videos)}
-                    {videos.length === 0 && videosVisible && (
-                        <Segment basic className="noResults" inverted={inverted} textAlign="center">
-                            <Header content={step.noResults} size="small" />
-                        </Segment>
-                    )}
-                </div>
-            </Transition>
+            <div>{visible && displayVideos(videos)}</div>
+            {videos.length === 0 && videosVisible && (
+                <Segment className="noResults" inverted={inverted} placeholder textAlign="center">
+                    <Header content={step.noResults} size="small" />
+                </Segment>
+            )}
         </div>
     )
 }

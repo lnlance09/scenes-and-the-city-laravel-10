@@ -1,4 +1,4 @@
-import { Divider, Header, Icon, Segment, Table, Transition } from "semantic-ui-react"
+import { Divider, Header, Icon, Segment, Table } from "semantic-ui-react"
 import { setPartTwo, setQuizzes } from "@reducers/form"
 import { translateDate } from "@utils/date"
 import { useSelector, useDispatch } from "react-redux"
@@ -8,9 +8,6 @@ import axios from "axios"
 import classNames from "classnames"
 import ImageComponent from "./Image"
 import translations from "@assets/translate.json"
-
-const animation = "fade"
-const duration = 600
 
 type Props = {
     onSelectQuiz: () => any
@@ -135,7 +132,7 @@ const QuizSearch = ({
             )}
             {!partTwoEmpty && quizzesVisible && <Divider hidden />}
             {/* Quizzes Drop Down */}
-            <Transition animation={animation} duration={duration} unmountOnHide visible={visible}>
+            {visible && (
                 <div>
                     {visible && displayQuizzes(quizzes)}
                     {quizzes.length === 0 && quizzesVisible && (
@@ -144,7 +141,7 @@ const QuizSearch = ({
                         </Segment>
                     )}
                 </div>
-            </Transition>
+            )}
         </div>
     )
 }

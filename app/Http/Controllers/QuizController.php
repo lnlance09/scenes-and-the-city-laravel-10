@@ -92,32 +92,38 @@ class QuizController extends Controller
     {
         $nyc = new NewYorkCity();
         $geos = new GeosEngine();
-
-        $answerData = [
-            'correct' => null,
-            'geoData' => [
-                'lat' => 40.758896,
-                'lng' => -73.98513,
-                'hood' => 'Theater District',
-                'borough' => 'Manhattan',
-                'streets' => ['Broadway', '7th Ave', 'W 46th St']
-            ],
-            'marginOfError' => null,
-            'hintsUsed' => 0,
-            'hasAnswered' => false
-        ];
+        $answerData = Answer::DEFAULT_PARAMS;
+        $partTwoAnswerData = Answer::DEFAULT_PARAMS;
+        $createdAt = new Carbon($quiz->created_at);
+        $answers = [$answerData];
 
         $partTwo = null;
         $partTwoResource = null;
         $hasPartTwo = !is_null($quiz->partTwo);
 
         if ($hasPartTwo) {
+            // Get the distance between parts one and two
             $partTwo = $quiz->partTwo->partTwo;
             $quizLocation = Point::xy($quiz->lng, $quiz->lat);
             $partTwoLocation = Point::xy($partTwo->lng, $partTwo->lat);
             $partTwo->distance = $geos->distance($quizLocation, $partTwoLocation);
+
+            // Set the geo data
+            $geoData = $nyc->getLocationDetails($partTwo->lng, $partTwo->lat);
+            $geoData['lng'] = (float)$partTwo->lng;
+            $geoData['lat'] = (float)$partTwo->lat;
+            $partTwo->geo_data = $geoData;
+            $partTwo->reveal_answer = Carbon::now()->diffInDays($createdAt->startOfDay()) > 0;
+
             $partTwoResource = new QuizResource($partTwo);
+            $answers[] = $answerData;
         }
+
+        $defaultData = [
+            'quiz' => new QuizResource($quiz),
+            'partTwo' => $partTwoResource,
+            'answers' => $answers
+        ];
 
         // If the user's logged in, see if they've answered it
         if ($user) {
@@ -126,34 +132,19 @@ class QuizController extends Controller
                 'quiz_id' => $quiz->id
             ])->first();
             if (empty($answer)) {
-                return response([
-                    'quiz' => new QuizResource($quiz),
-                    'partTwo' => $partTwoResource,
-                    'answer' => $answerData
-                ]);
+                return response($defaultData);
             }
 
+            // Set the answer data
+            $answerData = Answer::setAnswerData($answer, $answerData);
+            $answers = [$answerData];
+
+            // Set the geo data
             $geoData = $nyc->getLocationDetails($quiz->lng, $quiz->lat);
             $geoData['lng'] = (float)$quiz->lng;
             $geoData['lat'] = (float)$quiz->lat;
-
             $quiz->geo_data = $geoData;
-            $createdAt = new Carbon($quiz->created_at);
             $quiz->reveal_answer = Carbon::now()->diffInDays($createdAt->startOfDay()) > 0;
-
-            $lng = $answer->lng;
-            $lat = $answer->lat;
-            if ($lng != 0 && $lat != 0) {
-                $geoData = $nyc->getLocationDetails($lng, $lat);
-                $geoData['lng'] = $lng;
-                $geoData['lat'] = $lat;
-                $answerData['geoData'] = $geoData;
-            }
-
-            $answerData['correct'] = $answer->correct === 1;
-            $answerData['hintsUsed'] = $answer->hints_used;
-            $answerData['marginOfError'] = $answer->margin_of_error;
-            $answerData['hasAnswered'] = true;
 
             if ($answer->hints_used == 2) {
                 $quiz->hint_two = $quiz->hint_one;
@@ -165,12 +156,27 @@ class QuizController extends Controller
                 $quiz->hint_one = $details['hood'];
                 $quiz->reveal_hint_one = true;
             }
+
+            if ($hasPartTwo) {
+                $partTwoAnswer = Answer::where([
+                    'user_id' => $user->id,
+                    'quiz_id' => $partTwo->id
+                ])->first();
+                if (empty($partTwoAnswer)) {
+                    return response([
+                        'quiz' => new QuizResource($quiz),
+                        'partTwo' => $partTwoResource,
+                        'answers' => [$answerData]
+                    ]);
+                }
+                $answers[] = Answer::setAnswerData($partTwoAnswer, $partTwoAnswerData);
+            }
         }
 
         return response([
             'quiz' => new QuizResource($quiz),
             'partTwo' => $partTwoResource,
-            'answer' => $answerData
+            'answers' => $answers
         ]);
     }
 
@@ -330,24 +336,44 @@ class QuizController extends Controller
     {
         $userId = $request->user()?->id;
         $valid = $this->validateQuiz($request, $quizId);
-
         if ($valid['error']) {
             return response([
                 'message' => $valid['message']
             ], $valid['code']);
         }
+        $quizId = $valid['id'];
 
-        $lat = $request->input('lat');
-        $lng = $request->input('lng');
+        $request->validate([
+            'answer.lat' => 'bail|required|numeric|between:40.4989,40.9130',
+            'answer.lng' => 'bail|required|numeric|between:-74.2527,-73.70165',
+            'partTwo.lat' => 'bail|numeric|between:40.4989,40.9130',
+            'partTwo.lng' => 'bail|numeric|between:-74.2527,-73.70165',
+        ]);
+        $answer = $request->input('answer');
+        $partTwo = $request->input('partTwo', false);
+        // Log::alert('Answer submit: ' . print_r($answer, true));
+        // Log::alert('Part two submit: ' . print_r($partTwo, true));
 
         Answer::updateOrCreate([
-            'quiz_id' => $valid['id'],
+            'quiz_id' => $quizId,
             'user_id' => $userId
         ], [
-            'lat' => $lat,
-            'lng' => $lng,
+            'lat' => $answer['lat'],
+            'lng' => $answer['lng'],
             'answer' => ''
         ]);
+
+        $quiz = Quiz::find($quizId);
+        if ($quiz->partTwo && $partTwo) {
+            Answer::updateOrCreate([
+                'quiz_id' => $quiz->partTwo->quiz_id_two,
+                'user_id' => $userId
+            ], [
+                'lat' => $partTwo['lat'],
+                'lng' => $partTwo['lng'],
+                'answer' => ''
+            ]);
+        }
 
         return response([
             'message' => 'Success'

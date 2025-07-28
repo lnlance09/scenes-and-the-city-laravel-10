@@ -5,6 +5,9 @@ const homeSlice = createSlice({
     name: "home",
     initialState: initialHomeState,
     reducers: {
+        addAnswer: (state) => {
+            state.answers = [...state.answers, defaultAnswer]
+        },
         clearQuiz: (state) => {
             state.quiz = defaultQuiz
         },
@@ -12,10 +15,10 @@ const homeSlice = createSlice({
             state.partTwo = null
         },
         clearAnswer: (state) => {
-            state.answer = defaultAnswer
+            state.answers = [defaultAnswer]
         },
         setAnswerGeoData: (state, action) => {
-            state.answer.geoData = {
+            state.answers[action.payload.index].geoData = {
                 lat: action.payload.geoData.lat,
                 lng: action.payload.geoData.lng,
                 hood: action.payload.geoData.hood,
@@ -24,10 +27,10 @@ const homeSlice = createSlice({
             }
         },
         setCorrect: (state, action) => {
-            state.answer.correct = action.payload.correct
+            state.answers[action.payload.index].correct = action.payload.correct
         },
         setHasAnswered: (state, action) => {
-            state.answer.hasAnswered = action.payload.hasAnswered
+            state.answers[action.payload.index].hasAnswered = action.payload.hasAnswered
         },
         setHintOne: (state, action) => {
             state.quiz.hintOne = action.payload.hint
@@ -36,13 +39,13 @@ const homeSlice = createSlice({
             state.quiz.hintTwo = action.payload.hint
         },
         setHintsUsed: (state, action) => {
-            state.answer.hintsUsed = action.payload.hintsUsed
+            state.answers[action.payload.index].hintsUsed = action.payload.hintsUsed
         },
         setYouTubeId: (state, action) => {
             state.quiz.youtubeId = action.payload.id
         },
         setMarginOfError: (state, action) => {
-            state.answer.marginOfError = action.payload.margin
+            state.answers[action.payload.index].marginOfError = action.payload.margin
         },
         setHistoryAnswers: (state, action) => {
             state.history.answers = action.payload.answers
@@ -66,8 +69,10 @@ const homeSlice = createSlice({
 })
 
 export const {
+    addAnswer,
     clearAnswer,
     clearQuiz,
+    clearPartTwo,
     setAnswerGeoData,
     setCorrect,
     setHasAnswered,

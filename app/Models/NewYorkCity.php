@@ -13,7 +13,7 @@ use Brick\Geo\Io\GeoJsonReader;
 
 class NewYorkCity extends Model
 {
-    public $boroughs = ['manhattan', 'brooklyn', 'queens', 'bronx', 'staten'];
+    public $boroughs = ['manhattan', 'brooklyn', 'queens', 'bronx'];
     public $parks = [];
     public $bridges = [];
     public $tunnels = [];
@@ -96,6 +96,9 @@ class NewYorkCity extends Model
         return $streets[$index];
     }
 
+    /**
+     * 
+     */
     private function findClosestPoint($coords, $lat, $lng)
     {
         $location1 = Point::xy($lng, $lat);
@@ -125,18 +128,23 @@ class NewYorkCity extends Model
             }
 
             $hood = $this->getNeighborhood($lng, $lat, $borough);
+
             $street1 = $this->getClosestStreet($lng, $lat, $borough);
             $streetName1 = $street1['properties']['FULLNAME'];
             $geometry1 = $street1['geometry'];
             $streetGeo = $this->reader->read(json_encode($geometry1));
 
+            // Get the 2nd closest street
             $ignore = [
                 $streetName1
             ];
             $street2 = $this->getClosestStreet($lng, $lat, $borough, $ignore, $streetGeo);
             $streetName2 = $street2['properties']['FULLNAME'];
 
+            // Add the 2nd closest street to the ignore group
             $ignore[] = $streetName2;
+            // Get the opposite of both streets and exclude them
+            // For example, if east 53rd street is one of the two closest streets, west 53rd should not be included
             $opposite1 = $this->getOppositeStreet($streetName1);
             if ($opposite1) {
                 $ignore[] = $opposite1;
@@ -146,6 +154,7 @@ class NewYorkCity extends Model
                 $ignore[] = $opposite2;
             }
 
+            // Street number 3
             $street3 = $this->getClosestStreet($lng, $lat, $borough, $ignore, $streetGeo);
             $streetName3 = $street3['properties']['FULLNAME'];
 
@@ -216,6 +225,7 @@ class NewYorkCity extends Model
             ];
         }
 
+        // If the location isn't in one of the boroughs, then search bridges and tunnels
         $street = $this->getClosestStreet($lng, $lat, 'bridges');
         $streetName = $street['properties']['FULLNAME'];
         return [

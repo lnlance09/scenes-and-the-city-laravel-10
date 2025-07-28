@@ -292,7 +292,7 @@ const SidebarComponent = ({
                         onClick={() => {
                             resetSessionData()
                             dispatch(logout())
-                            dispatch(setHasAnswered({ hasAnswered: false }))
+                            dispatch(setHasAnswered({ hasAnswered: false, index: 0 }))
                             dispatch(resetHistoryQuizzes())
                             dispatch(resetHistoryAnswers())
                             toast.success("You have been logged out!", toastConfig)

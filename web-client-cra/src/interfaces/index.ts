@@ -75,9 +75,9 @@ export type Quiz = {
     id: string
     img: string
     geoData: GeoData
-    hintOne: string
-    hintTwo: string
-    youtubeId: string
+    hintOne: Nullable<string>
+    hintTwo: Nullable<string>
+    youtubeId: Nullable<string>
     video: {
         title: string
         year: number
@@ -228,7 +228,7 @@ export type InitialAppState = {
 export type InitialHomeState = {
     quiz: DefaultQuiz
     partTwo: Nullable<Quiz>
-    answer: DefaultAnswer
+    answers: DefaultAnswer[]
     history: {
         answers: DefaultHistoryData
         quizzes: DefaultHistoryData

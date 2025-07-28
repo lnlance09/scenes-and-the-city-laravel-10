@@ -11,13 +11,15 @@ import {
     setQuiz,
     setPartTwo,
     setMarginOfError,
-    setCorrect
+    setCorrect,
+    addAnswer,
+    clearPartTwo
 } from "@reducers/home"
 import { dateFormat, isAfterToday, isValidDate, nyc, tsFormat } from "@utils/date"
 import { timeout } from "@utils/general"
 import { useNavigate, useParams } from "react-router-dom"
 import { ToastContainer } from "react-toastify"
-import { ReduxState } from "../interfaces"
+import { Answer, ReduxState } from "../interfaces"
 import { DateTime } from "luxon"
 import axios from "axios"
 import classNames from "classnames"
@@ -41,7 +43,7 @@ const IndexPage = () => {
     const validDate = typeof slug === "string" ? isValidDate(slug, dateFormat) : false
     const quizId = validQuizId ? slug : null
 
-    const hasAnswered = useSelector((state: ReduxState) => state.home.answer.hasAnswered)
+    const hasAnswered = useSelector((state: ReduxState) => state.home.answers[0].hasAnswered)
     const inverted = useSelector((state: ReduxState) => state.app.inverted)
     const verify = useSelector((state: ReduxState) => state.app.verify)
 
@@ -78,6 +80,20 @@ const IndexPage = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [slug, validQuizId, validDate])
 
+    const setAnswer = (answer: Answer, index: number) => {
+        if (index === 1) {
+            dispatch(addAnswer())
+        }
+        const { correct, hasAnswered, geoData, hintsUsed } = answer
+        dispatch(setHasAnswered({ hasAnswered, index }))
+        dispatch(setHintsUsed({ hintsUsed, index }))
+        dispatch(setAnswerGeoData({ geoData, index }))
+        dispatch(setCorrect({ correct, index }))
+        if (hasAnswered) {
+            dispatch(setMarginOfError({ margin: answer.marginOfError, index }))
+        }
+    }
+
     const getQuiz = async (url: string) => {
         setImgVisible(false)
         setLoading(true)
@@ -91,29 +107,23 @@ const IndexPage = () => {
                 }
             })
             .then((response) => {
-                const { answer, partTwo, quiz } = response.data
+                const { answers, partTwo, quiz } = response.data
                 const createdAt = DateTime.fromFormat(quiz.createdAt, tsFormat)
                     .setZone(nyc)
                     .toFormat(dateFormat)
-
                 setDate(createdAt)
                 setQuiz404(false)
                 dispatch(setQuiz({ quiz }))
                 dispatch(setPartTwo({ partTwo }))
-
-                const { correct, hasAnswered, geoData, hintsUsed } = answer
-                dispatch(setHasAnswered({ hasAnswered }))
-                dispatch(setHintsUsed({ hintsUsed }))
-                dispatch(setAnswerGeoData({ geoData }))
-                dispatch(setCorrect({ correct }))
-
-                if (hasAnswered) {
-                    dispatch(setMarginOfError({ margin: answer.marginOfError }))
+                setAnswer(answers[0], 0)
+                if (answers.length === 2) {
+                    setAnswer(answers[1], 1)
                 }
             })
             .catch(() => {
                 setQuiz404(true)
                 dispatch(clearQuiz())
+                dispatch(clearPartTwo())
             })
 
         await timeout(400)

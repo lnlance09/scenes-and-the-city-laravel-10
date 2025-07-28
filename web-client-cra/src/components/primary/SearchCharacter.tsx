@@ -1,5 +1,5 @@
-import { useEffect } from "react"
 import { Header, Segment, Table, Transition } from "semantic-ui-react"
+import { useEffect } from "react"
 import { FullChar, ReduxState } from "@interfaces/index"
 import { setChar as setAdminChar, setChars as setAdminChars } from "@reducers/admin"
 import { setChar, setChars } from "@reducers/form"
@@ -9,7 +9,7 @@ import axios from "axios"
 import translations from "@assets/translate.json"
 
 const animation = "fade"
-const duration = 1600
+const duration = 700
 
 type FormOrAdmin = "form" | "admin"
 type Props = {

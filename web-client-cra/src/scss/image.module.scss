@@ -57,8 +57,51 @@
             }
         }
 
-        img {
-            cursor: pointer;
+        .photoStack {
+            align-items: center;
+            display: flex;
+            justify-content: center;
+            margin: 7em 0;
+            width: 100%;
+            min-height: 360px; 
+
+            .imageWrapper {
+                align-items: center;
+                display: flex !important;
+                justify-content: center !important;
+                position: absolute;
+                height: auto;
+                width: auto;
+
+                img {
+                    cursor: pointer;
+                    height: 420px;
+                    width: auto;
+                }
+
+                &:nth-of-type(1) {
+                    transform: rotate(-10deg);
+                }
+
+                &:nth-of-type(2) {
+                    transform: rotate(3deg);
+                    margin-left: 3em;
+                    margin-bottom: 1em;
+                }
+            }
+
+            @media only screen and (min-width: 320px) and (max-width: 767px) {
+                margin: 3em 0 0 0;
+
+                .imageWrapper {
+                    height: auto;
+                    width: 80%;
+
+                    img {
+                        height: 50%;
+                    }
+                }
+            }
         }
     }
 }

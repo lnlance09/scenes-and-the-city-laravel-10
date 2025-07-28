@@ -58,7 +58,12 @@ const ImageUpload = ({ callback }: Props) => {
         <>
             <div {...getRootProps()}>
                 <input {...getInputProps()} />
-                <Segment inverted={inverted} placeholder style={placeholderStyle}>
+                <Segment
+                    className="stepOnePlaceholder"
+                    inverted={inverted}
+                    placeholder
+                    style={placeholderStyle}
+                >
                     {imgEmpty && (
                         <>
                             <Header
