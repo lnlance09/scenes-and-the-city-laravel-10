@@ -5,8 +5,8 @@
 
 .headerComponent {
 	.menu.pointing.secondary.headerMenu {
-		// background-image: linear-gradient(#1f1f1f 25%, colors.$blackBackgroundNormal 50%, #1f1f1f 75%);
-		background: colors.$blackBackgroundNormal;
+		background-image: linear-gradient(#ccc 25%, #eee 75%);
+		background: #f4f4f4;
 		height: 65px;
 		margin-bottom: 0;
 
@@ -73,7 +73,7 @@
 
 			img#logo {
 				cursor: pointer;
-				width: 250px;
+				width: 225px;
 			}
 
 			@media only screen and (min-width: 320px) and (max-width: 767px) {

@@ -32,9 +32,14 @@ type Props = {
 
 type AnswerState = {
     markers: MarkerProps[]
+    markersPartTwo: MarkerProps[]
 }
 
-type AnswerActionType = "SET_MARKER" | "CLEAR_MARKERS"
+type AnswerActionType =
+    | "SET_MARKER"
+    | "CLEAR_MARKERS"
+    | "CLEAR_MARKERS_PART_TWO"
+    | "SET_MARKER_PART_TWO"
 
 export type AnswerAction = {
     type: AnswerActionType
@@ -42,7 +47,8 @@ export type AnswerAction = {
 }
 
 export const initialAnswerState: AnswerState = {
-    markers: []
+    markers: [],
+    markersPartTwo: []
 }
 
 export const reducer: Reducer<AnswerState, AnswerAction> = (state, action) => {
@@ -52,10 +58,22 @@ export const reducer: Reducer<AnswerState, AnswerAction> = (state, action) => {
                 ...state,
                 markers: []
             }
+        case "CLEAR_MARKERS_PART_TWO":
+            return {
+                ...state,
+                markersPartTwo: []
+            }
         case "SET_MARKER":
             return {
                 ...state,
                 markers: action?.payload ? [...state.markers, action.payload] : [...state.markers]
+            }
+        case "SET_MARKER_PART_TWO":
+            return {
+                ...state,
+                markersPartTwo: action?.payload
+                    ? [...state.markersPartTwo, action.payload]
+                    : [...state.markersPartTwo]
             }
         default:
             throw new Error()
@@ -114,8 +132,9 @@ const AnswerSection = ({ callback, date, loading = true }: Props) => {
             }
         })
         if (answerPartTwo !== undefined) {
+            dispatchInternal({ type: "CLEAR_MARKERS_PART_TWO" })
             dispatchInternal({
-                type: "SET_MARKER",
+                type: "SET_MARKER_PART_TWO",
                 payload: {
                     callback: (data: GeoData) => {
                         showLocationDetails(data, 1)
@@ -161,7 +180,7 @@ const AnswerSection = ({ callback, date, loading = true }: Props) => {
             return
         }
         dispatchInternal({
-            type: "SET_MARKER",
+            type: "SET_MARKER_PART_TWO",
             payload: {
                 callback: () => null,
                 draggable: false,
@@ -171,7 +190,7 @@ const AnswerSection = ({ callback, date, loading = true }: Props) => {
             }
         })
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [quiz])
+    }, [answer, answerPartTwo])
 
     const showLocationDetails = (geoData: GeoData, index: 0 | 1) =>
         dispatch(setAnswerGeoData({ geoData, index }))
@@ -238,17 +257,6 @@ const AnswerSection = ({ callback, date, loading = true }: Props) => {
                     </Header>
                 </Segment>
             )}
-            {revealAnswer && (
-                <>
-                    <Header
-                        className="myAnswerHeader"
-                        content={lang.answer.actualAnswer}
-                        inverted={inverted}
-                        size="large"
-                    />
-                    {geoData && <LocationInfo answer={geoData} headerSize="medium" />}
-                </>
-            )}
         </>
     )
 
@@ -314,7 +322,6 @@ const AnswerSection = ({ callback, date, loading = true }: Props) => {
         />
     )
 
-    const mapGeoData = activeItem === 1 ? answer.geoData : answerPartTwo?.geoData
     const fullForm = (
         <>
             {canSubmit && <>{submissionHeader}</>}
@@ -325,17 +332,32 @@ const AnswerSection = ({ callback, date, loading = true }: Props) => {
                 secondary={!inverted}
                 stacked
             >
-                {mapGeoData !== undefined &&
-                    mapGeoData?.lat !== null &&
-                    mapGeoData?.lng !== null && (
+                {activeItem === 1 &&
+                    answer.geoData.lat !== null &&
+                    answer.geoData?.lng !== null && (
                         <>
                             <MapComponent
-                                lat={mapGeoData?.lat}
-                                lng={mapGeoData?.lng}
+                                lat={answer.geoData.lat}
+                                lng={answer.geoData.lng}
                                 markers={internalState.markers}
                             />
                             {!hasAnswered && (
-                                <LocationInfo answer={mapGeoData} headerSize="medium" />
+                                <LocationInfo answer={answer.geoData} headerSize="medium" />
+                            )}
+                        </>
+                    )}
+                {activeItem === 2 &&
+                    answerPartTwo !== undefined &&
+                    answerPartTwo.geoData.lat !== null &&
+                    answerPartTwo.geoData?.lng !== null && (
+                        <>
+                            <MapComponent
+                                lat={answerPartTwo.geoData.lat}
+                                lng={answerPartTwo.geoData.lng}
+                                markers={internalState.markersPartTwo}
+                            />
+                            {!hasAnswered && (
+                                <LocationInfo answer={answerPartTwo.geoData} headerSize="medium" />
                             )}
                         </>
                     )}
@@ -344,7 +366,25 @@ const AnswerSection = ({ callback, date, loading = true }: Props) => {
                 {hasAnswered && (
                     <Segment inverted={inverted}>
                         {activeItem === 1 && (
-                            <>{myAnswer(correct, hintsUsed, marginOfError, answer.geoData)}</>
+                            <>
+                                {myAnswer(correct, hintsUsed, marginOfError, answer.geoData)}
+                                {revealAnswer && (
+                                    <>
+                                        <Header
+                                            className="myAnswerHeader"
+                                            content={lang.answer.actualAnswer}
+                                            inverted={inverted}
+                                            size="large"
+                                        />
+                                        {quiz.geoData && (
+                                            <LocationInfo
+                                                answer={quiz.geoData}
+                                                headerSize="medium"
+                                            />
+                                        )}
+                                    </>
+                                )}
+                            </>
                         )}
                         {activeItem === 2 && answerPartTwo && (
                             <>
@@ -353,6 +393,22 @@ const AnswerSection = ({ callback, date, loading = true }: Props) => {
                                     answerPartTwo.hintsUsed,
                                     answerPartTwo.marginOfError,
                                     answerPartTwo.geoData
+                                )}
+                                {revealAnswer && (
+                                    <>
+                                        <Header
+                                            className="myAnswerHeader"
+                                            content={lang.answer.actualAnswer}
+                                            inverted={inverted}
+                                            size="large"
+                                        />
+                                        {partTwo?.geoData && (
+                                            <LocationInfo
+                                                answer={partTwo?.geoData}
+                                                headerSize="medium"
+                                            />
+                                        )}
+                                    </>
                                 )}
                             </>
                         )}

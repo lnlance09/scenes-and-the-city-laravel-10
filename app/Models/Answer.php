@@ -69,7 +69,7 @@ class Answer extends Model
         $nyc = new NewYorkCity();
         $lng = $answer->lng;
         $lat = $answer->lat;
-        if ($lng != 0 && $lat != 0) {
+        if (!is_null($lng) && !is_null($lat)) {
             $geoData = $nyc->getLocationDetails($lng, $lat);
             $geoData['lng'] = $lng;
             $geoData['lat'] = $lat;
@@ -78,7 +78,7 @@ class Answer extends Model
         $data['correct'] = $answer->correct;
         $data['hintsUsed'] = $answer->hints_used;
         $data['marginOfError'] = $answer->margin_of_error;
-        $data['hasAnswered'] = true;
+        $data['hasAnswered'] = !is_null($lng) && !is_null($lat);
         return $data;
     }
 }

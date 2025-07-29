@@ -443,6 +443,7 @@ class UserController extends Controller
 
         if ($type === 'answers') {
             $answers = Answer::where('user_id', $userId)
+                ->whereNotNull(['lat', 'lng'])
                 ->with(['quiz'])
                 ->orderBy('created_at', 'desc')
                 ->get();

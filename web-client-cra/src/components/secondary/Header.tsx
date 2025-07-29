@@ -107,7 +107,6 @@ const HeaderComponent = ({
                             />
                         ) : (
                             <Icon
-                                inverted
                                 name="options"
                                 onClick={() => setSidebarVisible(true)}
                                 size="large"
@@ -147,7 +146,7 @@ const HeaderComponent = ({
                             {inverted ? (
                                 <Icon color="green" inverted name="sun" />
                             ) : (
-                                <Icon inverted name="moon" />
+                                <Icon name="moon" />
                             )}
                         </Menu.Item>
                         <Menu.Item
@@ -171,7 +170,7 @@ const HeaderComponent = ({
                                     {inverted ? (
                                         <Icon color="green" inverted name="options" />
                                     ) : (
-                                        <Icon inverted name="options" />
+                                        <Icon name="options" />
                                     )}
                                 </>
                             )}

@@ -35,9 +35,8 @@ class CorrectAnswers extends Command
             $today . ' 00:00:00',
             $today . ' 23:59:59'
         ])
-            ->where(function ($query) {
-                $query->whereNotNull('lng')->whereNotNull('lat');
-            })
+            ->whereNotNull('lng')
+            ->whereNotNull('lat')
             ->with(['quiz'])
             ->get();
 
@@ -46,10 +45,9 @@ class CorrectAnswers extends Command
             $aLocation = Point::xy($a->lng, $a->lat);
             $qLocation = Point::xy($a->quiz->lng, $a->quiz->lat);
             $distance = $geos->distance($aLocation, $qLocation);
-            $correct = $distance < 0.05 ? 1 : 0;
 
             $answer = Answer::find($a->id);
-            $answer->correct = $correct;
+            $answer->correct = $distance < 0.05 ? 1 : 0;
             $answer->margin_of_error = $distance;
             $answer->save();
         }
