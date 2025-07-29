@@ -3,80 +3,106 @@
   <defs>
     <style>
       .cls-1 {
-        fill: #fff;
+        fill: #0310bb;
+      }
+
+      .cls-1, .cls-2, .cls-3, .cls-4 {
+        isolation: isolate;
+      }
+
+      .cls-1, .cls-4 {
+        font-family: TrajanPro-Bold, 'Trajan Pro';
+        font-size: 60px;
+        font-weight: 700;
+      }
+
+      .cls-2 {
+        fill: #000;
         font-family: TrajanPro-Regular, 'Trajan Pro';
         font-size: 21px;
       }
 
-      .cls-1, .cls-2, .cls-3 {
-        isolation: isolate;
-      }
-
-      .cls-3 {
-        fill: #0310bb;
-        font-family: TrajanPro-Bold, 'Trajan Pro';
-        font-size: 60px;
-        font-weight: 700;
-        stroke: #00a;
-        stroke-miterlimit: 10;
-        stroke-width: 2px;
+      .cls-4 {
+        fill: none;
       }
     </style>
   </defs>
-  <g class="cls-2">
-    <g class="cls-2">
-      <g class="cls-2">
-        <g class="cls-2">
-          <g class="cls-2">
-            <g class="cls-2">
-              <text class="cls-3" transform="translate(6.5 52.5)"><tspan x="0" y="0">Escenes</tspan></text>
+  <g class="cls-3">
+    <g class="cls-3">
+      <g class="cls-3">
+        <g class="cls-3">
+          <g class="cls-3">
+            <g class="cls-3">
+              <g class="cls-3">
+                <text class="cls-1" transform="translate(6.5 52.5)"><tspan x="0" y="0">Escenes</tspan></text>
+                <text class="cls-4" transform="translate(6.5 52.5)"><tspan x="0" y="0">Escenes</tspan></text>
+              </g>
             </g>
-            <g class="cls-2">
-              <text class="cls-3" transform="translate(6.5 52.5)"><tspan x="0" y="0">Escenes</tspan></text>
-              <text class="cls-3" transform="translate(6.5 52.5)"><tspan x="0" y="0">Escenes</tspan></text>
-            </g>
-          </g>
-        </g>
-      </g>
-    </g>
-  </g>
-  <g class="cls-2">
-    <g class="cls-2">
-      <g class="cls-2">
-        <g class="cls-2">
-          <g class="cls-2">
-            <g class="cls-2">
-              <text class="cls-1" transform="translate(290.4 29.3)"><tspan x="0" y="0">Y</tspan></text>
+            <g class="cls-3">
+              <g class="cls-3">
+                <text class="cls-1" transform="translate(6.5 52.5)"><tspan x="0" y="0">Escenes</tspan></text>
+                <text class="cls-4" transform="translate(6.5 52.5)"><tspan x="0" y="0">Escenes</tspan></text>
+              </g>
+              <g class="cls-3">
+                <text class="cls-1" transform="translate(6.5 52.5)"><tspan x="0" y="0">Escenes</tspan></text>
+                <text class="cls-4" transform="translate(6.5 52.5)"><tspan x="0" y="0">Escenes</tspan></text>
+              </g>
             </g>
           </g>
         </g>
       </g>
     </g>
   </g>
-  <g class="cls-2">
-    <g class="cls-2">
-      <g class="cls-2">
-        <g class="cls-2">
-          <g class="cls-2">
-            <g class="cls-2">
-              <text class="cls-1" transform="translate(283.9 52.6)"><tspan x="0" y="0">LA</tspan></text>
+  <g class="cls-3">
+    <g class="cls-3">
+      <g class="cls-3">
+        <g class="cls-3">
+          <g class="cls-3">
+            <g class="cls-3">
+              <g class="cls-3">
+                <text class="cls-2" transform="translate(290.4 29.3)"><tspan x="0" y="0">Y</tspan></text>
+              </g>
             </g>
           </g>
         </g>
       </g>
     </g>
   </g>
-  <g class="cls-2">
-    <g class="cls-2">
-      <g class="cls-2">
-        <g class="cls-2">
-          <g class="cls-2">
-            <g class="cls-2">
-              <text class="cls-3" transform="translate(321.2 53.8)"><tspan x="0" y="0">Cuidad</tspan></text>
+  <g class="cls-3">
+    <g class="cls-3">
+      <g class="cls-3">
+        <g class="cls-3">
+          <g class="cls-3">
+            <g class="cls-3">
+              <g class="cls-3">
+                <text class="cls-2" transform="translate(283.9 52.6)"><tspan x="0" y="0">LA</tspan></text>
+              </g>
             </g>
-            <g class="cls-2">
-              <text class="cls-3" transform="translate(321.2 53.8)"><tspan x="0" y="0">Cuidad</tspan></text>
-              <text class="cls-3" transform="translate(321.2 53.8)"><tspan x="0" y="0">Cuidad</tspan></text>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+  <g class="cls-3">
+    <g class="cls-3">
+      <g class="cls-3">
+        <g class="cls-3">
+          <g class="cls-3">
+            <g class="cls-3">
+              <g class="cls-3">
+                <text class="cls-1" transform="translate(321.2 53.8)"><tspan x="0" y="0">Cuidad</tspan></text>
+                <text class="cls-4" transform="translate(321.2 53.8)"><tspan x="0" y="0">Cuidad</tspan></text>
+              </g>
+            </g>
+            <g class="cls-3">
+              <g class="cls-3">
+                <text class="cls-1" transform="translate(321.2 53.8)"><tspan x="0" y="0">Cuidad</tspan></text>
+                <text class="cls-4" transform="translate(321.2 53.8)"><tspan x="0" y="0">Cuidad</tspan></text>
+              </g>
+              <g class="cls-3">
+                <text class="cls-1" transform="translate(321.2 53.8)"><tspan x="0" y="0">Cuidad</tspan></text>
+                <text class="cls-4" transform="translate(321.2 53.8)"><tspan x="0" y="0">Cuidad</tspan></text>
+              </g>
             </g>
           </g>
         </g>

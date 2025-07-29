@@ -63,10 +63,9 @@ class QuizController extends Controller
         ]);
         $date = $request->input('date');
         $today = Carbon::createFromFormat('n-j-Y', $date)->format('Y-m-d');
-
         $quiz = Quiz::where([
             'user_id' => Self::OFFICIAL_USER_ID,
-            'is_official' => true
+            'is_official' => 1
         ])
             ->whereBetween('created_at', [
                 $today . ' 00:00:00',

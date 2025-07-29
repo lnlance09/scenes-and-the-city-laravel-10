@@ -18,4 +18,4 @@ export const formatName = (data: FullChar | Actor) =>
 export const wrapText = (text: string) => `<span class="underline">${text}</span>`
 
 export const formatMargin = (margin: number, units: Units) =>
-    units === "kilometers" ? margin * 100 : margin * 100 * 0.621371
+    units === "kilometers" ? margin * 100 : margin * 100 * 0.66
