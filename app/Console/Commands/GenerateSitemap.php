@@ -38,10 +38,14 @@ class GenerateSitemap extends Command
 
         $quizzes = Quiz::all();
         foreach ($quizzes as $q) {
+            $img = $awsUrl . $q->scene->pics[0]->s3_url;
+            $url = URL::create($baseUrl . 'quizzes/' . $q->quiz_id);
+            $url = $url->addImage($img, '');
+            // $url = $url->addVideo($img, 'Video', 'Video Description', 'https://example.com/videos/source.mp4');
+            $time = Carbon::createFromFormat('Y-m-d H:i:s', $q->created_at);
+
             $sitemap->add(
-                URL::create($baseUrl . 'quizzes/' . $q->quiz_id)
-                    ->addImage($awsUrl . $q->scene->pics[0]->s3_url, '')
-                    ->setLastModificationDate(Carbon::createFromFormat($q->updated_at, ''))
+                $url->setLastModificationDate($time)
             );
         }
         $sitemap->writeToFile('sitemap.xml');

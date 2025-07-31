@@ -1,167 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
-    <url>
-        <loc>http://localhost:8000</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/CUZRT5xh</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/aoQKP2MO</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/KMAqAu0c</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/hl5TkbJU</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/CtksAGKL</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/zq0bT57y</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/rkKvjVb2</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/gU9skcCK</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/r7bCS1wq</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/pZJJ18mC</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/7ki6ODG0</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/ljnNbcIN</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/Mu3AfoNb</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/6KknKimf</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/6dSyNeV7</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/hXWqNdyL</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/gdVtDvrJ</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/tEGt5cUH</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/o6u2NY8V</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/Xbx27cEC</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/lMGLIJpw</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/2fvFp4tK</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/7BPbfHE3</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/AeMDxCXd</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/9C5giyMJ</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/xJvik4JR</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/nUuKHOZY</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/y2uFMLqc</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/hDFiol9s</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/JXg1PWLk</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/1DTxMxIp</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/6EoDQLYb</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/h5jTqtZW</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/iNiY1Vl2</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/tZPq5PKs</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/4qE1Mq9p</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/0FlyDT8k</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/JAMm84Qk</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/jedhI7Es</loc>
-    
-            </url>
-    <url>
-        <loc>http://localhost:8000/quizzes/BnKO0Xnk</loc>
-    
-            </url>
+<urlset
+	xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+	xmlns:xhtml="http://www.w3.org/1999/xhtml"
+	xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+	xmlns:video="http://www.google.com/schemas/sitemap-video/1.1"
+	xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
+	<url>
+		<loc>https://scenesandthecity.com/</loc>
+	</url>
+	<url>
+		<loc>https://scenesandthecity.com/quizzes/hlUGUX5U</loc>
+		<lastmod>2025-07-25T00:09:14-04:00</lastmod>
+		<image:image>
+			<image:loc>https://scenes-and-the-city.s3.us-west-2.amazonaws.com/quizzes/hlUGUX5U.jpg</image:loc>
+		</image:image>
+	</url>
+	<url>
+		<loc>https://scenesandthecity.com/quizzes/TY6SsnFp</loc>
+		<lastmod>2025-07-28T01:43:54-04:00</lastmod>
+		<image:image>
+			<image:loc>https://scenes-and-the-city.s3.us-west-2.amazonaws.com/quizzes/TY6SsnFp.jpg</image:loc>
+		</image:image>
+	</url>
+	<url>
+		<loc>https://scenesandthecity.com/quizzes/o7GAfvgq</loc>
+		<lastmod>2025-07-26T12:56:50-04:00</lastmod>
+		<image:image>
+			<image:loc>https://scenes-and-the-city.s3.us-west-2.amazonaws.com/quizzes/o7GAfvgq.jpg</image:loc>
+		</image:image>
+	</url>
+	<url>
+		<loc>https://scenesandthecity.com/quizzes/l5RkEMRS</loc>
+		<lastmod>2025-07-29T09:55:06-04:00</lastmod>
+		<image:image>
+			<image:loc>https://scenes-and-the-city.s3.us-west-2.amazonaws.com/quizzes/l5RkEMRS.jpg</image:loc>
+		</image:image>
+	</url>
+	<url>
+		<loc>https://scenesandthecity.com/quizzes/WjNjpUNJ</loc>
+		<lastmod>2025-07-30T05:24:33-04:00</lastmod>
+		<image:image>
+			<image:loc>https://scenes-and-the-city.s3.us-west-2.amazonaws.com/quizzes/WjNjpUNJ.jpg</image:loc>
+		</image:image>
+	</url>
+	<url>
+		<loc>https://scenesandthecity.com/quizzes/TQObG74t</loc>
+		<lastmod>2025-07-31T14:54:23-04:00</lastmod>
+		<image:image>
+			<image:loc>https://scenes-and-the-city.s3.us-west-2.amazonaws.com/quizzes/TQObG74t.jpg</image:loc>
+		</image:image>
+	</url>
 </urlset>
