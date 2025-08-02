@@ -34,5 +34,5 @@
         var sc_security="cd76c3d0"; 
     </script>
     <script src="https://www.statcounter.com/counter/counter.js" async></script>
-    <script src="/static/js/bundle.js?v=1"></script>
+    <script src="/static/js/bundle.js?v=2"></script>
 </html>
