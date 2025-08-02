@@ -145,14 +145,14 @@ const ImageSection = ({
                         <div>
                             {partTwo ? (
                                 <div className="photoStack">
-                                    {quiz.img && (
-                                        <Segment className="imageWrapper" inverted={inverted}>
-                                            {mainImg(quiz.img, false, "large")}
-                                        </Segment>
-                                    )}
                                     {partTwo.img && (
                                         <Segment className="imageWrapper" inverted={inverted}>
                                             {mainImg(partTwo.img, false, "large")}
+                                        </Segment>
+                                    )}
+                                    {quiz.img && (
+                                        <Segment className="imageWrapper" inverted={inverted}>
+                                            {mainImg(quiz.img, false, "large")}
                                         </Segment>
                                     )}
                                 </div>
