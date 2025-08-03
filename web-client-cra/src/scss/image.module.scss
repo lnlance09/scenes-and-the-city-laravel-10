@@ -70,14 +70,16 @@
                 cursor: pointer;
                 display: flex !important;
                 justify-content: center !important;
+                max-width: 700px;
+                padding: 1em 1em;
                 position: absolute;
                 height: auto;
                 width: auto;
 
                 img {
                     cursor: pointer;
-                    height: 420px;
-                    max-width: 700px;
+                    height: auto;
+                    max-width: 670px;
                     width: auto;
                 }
 
