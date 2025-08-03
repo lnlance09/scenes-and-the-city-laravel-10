@@ -95,14 +95,14 @@
             }
 
             @media only screen and (min-width: 320px) and (max-width: 767px) {
-                margin: 3em 0 0 0;
+                margin: 0;
+                height: auto;
+                width: auto;
 
                 .imageWrapper {
-                    height: auto;
-                    width: 80%;
-
                     img {
-                        height: 50%;
+                        height: auto;
+                        width: 100%;
                     }
                 }
             }
