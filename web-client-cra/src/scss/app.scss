@@ -17,6 +17,7 @@
 body {
 	height: 100vh !important;
 	margin: 0;
+	overflow-y: hidden;
 
 	&.scrolling.dimmable.dimmed {
 		overflow-x: scroll !important; // fixes issue with content shifting to the right when the modal opens
