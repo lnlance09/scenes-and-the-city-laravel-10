@@ -1,6 +1,7 @@
 import { Image } from "semantic-ui-react"
 
 export type ImageSize = "small" | "medium" | "large"
+
 type Params = {
     alt?: string
     callback?: () => any
