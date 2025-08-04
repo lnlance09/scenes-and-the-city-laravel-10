@@ -108,7 +108,8 @@ const AnswerSection = ({ callback, date, loading = true }: Props) => {
     const [formDisabled, setFormDisabled] = useState(true)
 
     const dt = DateTime.fromFormat(date, dateFormat).setZone(nyc)
-    const expiry = dt.plus({ days: 1 }).startOf("day").toRelative()
+    const days = dt.weekday === 6 ? 2 : 1
+    const expiry = dt.plus({ days }).startOf("day").toRelative()
     const isToday = dt.hasSame(DateTime.local(), "day")
     const canSubmit = isToday && !hasAnswered
     const displayForm = isToday || hasAnswered
